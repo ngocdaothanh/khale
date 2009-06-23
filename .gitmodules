@@ -1,0 +1,3 @@
+[submodule "lib/yaws"]
+	path = lib/yaws
+	url = git://github.com/klacke/yaws.git
