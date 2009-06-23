@@ -1,3 +1,6 @@
 [submodule "lib/yaws"]
 	path = lib/yaws
 	url = git://github.com/klacke/yaws.git
+[submodule "lib/herml"]
+	path = lib/herml
+	url = git://github.com/kevsmith/herml.git
