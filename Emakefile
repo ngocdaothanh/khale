@@ -1,4 +1,5 @@
-{'map_runner.erl', [
+% routes.erl
+{'*', [
     debug_info,
     {outdir, "ebin"}
 ]}.

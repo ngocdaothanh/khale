@@ -2,7 +2,7 @@
 
 -compile(export_all).
 
-map() -> [
+routes() -> [
     get, "", recent_contents
 ].
 

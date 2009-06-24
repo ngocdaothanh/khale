@@ -2,7 +2,7 @@
 
 -compile(export_all).
 
-map() -> [
+routes() -> [
 	get,    "articles",         index,
 	get,    "articles/Id",      show,
 	get,    "articles/new",     new,
