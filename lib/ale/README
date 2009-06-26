@@ -1,4 +1,5 @@
-Ale is an Erlang web framework for Yaws web server inspired by Sinatra.
+Ale is an Erlang web framework designed specially for Yaws web server. It is
+inspired by Sinatra.
 
 == Mapping from methods and URIs to controllers and actions
 

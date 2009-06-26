@@ -3,10 +3,11 @@
 -compile(export_all).
 
 gen() ->
+    io:format("Collecting routes...~n"),
     Forms = filelib:fold_files(".", "^controller_.*\.beam$", true,
         fun(FileName, Acc) ->
             BaseName = filename:basename(FileName, ".beam"),
-            io:format("~s...\n", [BaseName]),
+            io:format("  ~s...\n", [BaseName]),
             Controller = list_to_atom(BaseName),
             [gen(Controller) | Acc]
         end,
@@ -49,7 +50,7 @@ gen(Controller, [Method, Uri, Action | Rest], FormAcc) ->
         Tokens
     ),
 
-    Template = "run_tokens(~p, [~s]) -> "
+    Template = "route_tokens(~p, [~s]) -> "
         "apply(~p, ~p, [~s]);\n",
     Form = io_lib:format(Template, [Method, string:join(Tokens2, ", "), Controller, Action, string:join(Vars, ", ")]),
     gen(Controller, Rest, [Form | FormAcc]).

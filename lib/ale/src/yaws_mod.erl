@@ -8,38 +8,31 @@
 %-------------------------------------------------------------------------------
 % Called by Yaws as configured in yaws.conf
 
-%% start_mod
-start(_SC) ->
-    supervisor:start_link(?MODULE, []).
-
-init([]) ->
-    RestartStrategy = one_for_one,
-    MaxRestarts = 1000,
-    MaxSecondsBetweenRestarts = 3600,
-    SupFlags = {RestartStrategy, MaxRestarts, MaxSecondsBetweenRestarts},
-    HerlManager = {herml_manager, {herml_manager, start_link, [?MODULE, "."]}, permanent, brutal_kill, worker,     [herml_manager]},
-    {ok, {SupFlags, [HerlManager]}}.
-
 %% appmods
 out(Arg) ->
     RestMethod = rest_method(Arg),
     Uri = Arg#arg.appmoddata,
-    case routes:route_uri(RestMethod, Uri) of
+    try routes:route_uri(RestMethod, Uri) of
         % Give Yaws a chance to server static file
         % If Yaws cannot find a file at the Uri, out404 below will be called
         no_controller_and_action -> {page, Arg#arg.server_path};
 
         _Ignored -> build_response()
+    catch
+        % This is more convenient than Yaws' errormod_crash
+        Type : Reason ->
+            error_logger:error_report([
+                {type, Type}, {reason, Reason},
+                {trace, erlang:get_stacktrace()}
+            ]),
+            controller_application:error_500(Type, Reason),
+            build_response()
     end.
 
 %% errormod_404
-out404(_Arg, _GC, _SC) ->
-    controller_application:error_404(),
-    build_response().
-
-%% errormod_crash
-crashmsg(_Arg, _SC, _Str) ->
-    controller_application:error_500(),
+out404(Arg, _GC, _SC) ->
+    Uri = Arg#arg.appmoddata,
+    controller_application:error_404(Uri),
     build_response().
 
 %-------------------------------------------------------------------------------
