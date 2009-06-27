@@ -1,4 +1,4 @@
--module(yaws_mod).
+-module(ale_yaws_mod).
 
 -compile(export_all).
 
@@ -12,7 +12,7 @@
 out(Arg) ->
     RestMethod = rest_method(Arg),
     Uri = Arg#arg.appmoddata,
-    try routes:route_uri(RestMethod, Uri) of
+    try ale_routes:route_uri(RestMethod, Uri) of
         % Give Yaws a chance to server static file
         % If Yaws cannot find a file at the Uri, out404 below will be called
         no_controller_and_action -> {page, Arg#arg.server_path};

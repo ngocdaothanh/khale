@@ -7,5 +7,4 @@ routes() -> [
 ].
 
 recent_contents() ->
-    erlang:display(99), 9 = 8,
-    put(content, 8),"Recent contents".
+    put(content, "Recent contents").

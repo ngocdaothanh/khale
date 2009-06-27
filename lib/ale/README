@@ -41,3 +41,8 @@ the process dictionary. The framework will collect them and build the response.
 == Session
 
 For simplicity, only in-coookie session is supported.
+
+== Tips
+
+When developing, to compile and reload code after a change, from EShell run
+make:all([load]).

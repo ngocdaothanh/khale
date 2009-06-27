@@ -2,4 +2,4 @@
 erl_crash.dump
 *.beam
 log/*.*
-map_runner.erl
+ale_routes.erl
