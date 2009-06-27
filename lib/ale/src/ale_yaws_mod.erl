@@ -8,7 +8,25 @@
 %-------------------------------------------------------------------------------
 % Called by Yaws as configured in yaws.conf
 
-%% appmods
+%% Modifies the current SC to set docroot and xtra_docroots to the list of all
+%% public directories in the application.
+%%
+%% Called after Yaws has loaded.
+start(SC) ->
+    {ok, GC, [SCs]} = yaws_api:getconf(),  % The 3rd element is array of array
+
+    % docroot is undefined at this moment (see yaws.conf)
+    % SC2 = SC#sconf{xtra_docroots = public_dirs()} does not work because Yaws
+    % does not check public_dirs if it sees that docroot is undefined
+    SC2 = SC#sconf{docroot = "public", xtra_docroots = public_dirs()},
+
+    % 10: position of servername in the sconf record, see yaws.hrl
+    SCs2 = lists:keyreplace(SC#sconf.servername, 10, SCs, SC2),
+
+    yaws_api:setconf(GC, [SCs2]),
+
+    controller_application:start(SC2).
+
 out(Arg) ->
     RestMethod = rest_method(Arg),
     Uri = Arg#arg.appmoddata,
@@ -17,7 +35,7 @@ out(Arg) ->
         % If Yaws cannot find a file at the Uri, out404 below will be called
         no_controller_and_action -> {page, Arg#arg.server_path};
 
-        _Ignored -> build_response()
+        _Ignored -> ale:build_response()
     catch
         % This is more convenient than Yaws' errormod_crash
         Type : Reason ->
@@ -26,14 +44,36 @@ out(Arg) ->
                 {trace, erlang:get_stacktrace()}
             ]),
             controller_application:error_500(Type, Reason),
-            build_response()
+            ale:build_response()
     end.
 
-%% errormod_404
 out404(Arg, _GC, _SC) ->
     Uri = Arg#arg.appmoddata,
     controller_application:error_404(Uri),
-    build_response().
+    ale:build_response().
+
+%-------------------------------------------------------------------------------
+
+public_dirs() ->
+    public_dirs(filelib:wildcard("./*"), []).
+
+public_dirs(Dirs, Acc) ->
+    lists:foldl(
+        fun(Dir, Acc2) ->
+            case filelib:is_dir(Dir) of
+                false -> Acc2;
+
+                true ->
+                    Basename = filename:basename(Dir),
+                    case Basename of
+                        "public" -> [Dir | Acc];
+                        _ -> public_dirs(filelib:wildcard(Dir ++ "/*"), Acc2)
+                    end
+            end
+        end,
+        Acc,
+        Dirs
+    ).
 
 %-------------------------------------------------------------------------------
 
@@ -54,20 +94,3 @@ rest_method(Arg) ->
             end
     end.
 
-build_response() ->
-    Status = case get(status) of
-        undefined -> 200;
-        Status0 -> Status0
-    end,
-
-    ContentType = case get(content_type) of
-        undefined -> "text/html";
-        ContentType0 -> ContentType0
-    end,
-
-    Content = case get(content) of
-        undefined -> "text/html";
-        Content0 -> Content0
-    end,
-
-    [{status, Status}, {content, ContentType, Content}].

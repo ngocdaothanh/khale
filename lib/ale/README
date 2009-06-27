@@ -1,5 +1,10 @@
-Ale is an Erlang web framework designed specially for Yaws web server. It is
-inspired by Sinatra.
+Ale is an Erlang web framework designed specially for Yaws web server. It is a
+very thin layer above Yaws to make Yaws much easier to use.
+
+== Create new project
+
+ErlyDTL 0.5.2
+Yaws 1.82
 
 == Mapping from methods and URIs to controllers and actions
 
@@ -45,4 +50,5 @@ For simplicity, only in-coookie session is supported.
 == Tips
 
 When developing, to compile and reload code after a change, from EShell run
-make:all([load]).
+ale:sync()., it will call make:all([load]), which runs Emakefile to compile then
+reload. make is a standard module of Erlang.
