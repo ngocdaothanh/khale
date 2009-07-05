@@ -1,1 +1,14 @@
 Khale is a CMS based on Ale.
+
+Layout:
+* Currently there's no GUI to change the layout, e.g. the positions of blocks.
+  You have to edit the source code of the layout module manually.
+
+== Install
+
+Install Erlang.
+
+Install Ale (http://github.com/ngocdaothanh/ale) and Yaws
+(http://wiki.github.com/klacke/yaws) to Erlang's lib directory
+
+Run make to build.

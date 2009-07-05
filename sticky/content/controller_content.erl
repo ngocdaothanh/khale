@@ -3,18 +3,26 @@
 -compile(export_all).
 
 routes() -> [
-    get, "", recent_contents
+    get, "",                    search,
+    get, "cagegories/UnixName", search_by_category,
+    get, "keywords/Keyword",    search_by_keyword,
+
+    get, "new", new
 ].
 
-recent_contents() ->
-    ale:a(description, "CMS based on Ale based on Yaws"),
-    ale:a(keywords, "ale, erlang, yaws, web"),
-    ale:a(main_panel, "Recent contents"),
-    ale:a(scripts,    []),
+search(_Arg) ->
+    ContentForLayout = view_content_search:render(),
+    Script = [],
+    Ehtml = layout_default:render(ContentForLayout, Script),
+    {ehtml, Ehtml}.
 
-    {ok, T} = file:consult("themes/default/layout.ehtml"),
-    CT = yaws_api:ehtml_expander(T),
-    E = ale:build_template_environment(),
-    R = yaws_api:ehtml_apply(CT, E),
+search_by_category(_Arg, UnixName) ->
+    Category = model_category:find_by_unix_name(UnixName),
+    [].
 
-    ale:y(html, R).
+search_by_keyword(_Arg, Keyword) ->
+    [].
+
+new() ->
+    Instructions = model_content:instructions(),
+    view_content_new:render(Instructions).

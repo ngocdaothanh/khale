@@ -3,36 +3,32 @@
 -compile(export_all).
 
 routes() -> [
-	get,    "articles",         index,
-	get,    "articles/Id",      show,
-	get,    "articles/new",     new,
-	post,   "articles",         create,
-	get,    "articles/Id/edit", edit,
-	put,    "articles/Id",      update,
-	delete, "articles/Id",      delete
+    get,    "articles",         index,
+    get,    "articles/Id",      show,
+    get,    "articles/new",     new,
+    post,   "articles",         create,
+    get,    "articles/Id/edit", edit,
+    put,    "articles/Id",      update,
+    delete, "articles/Id",      delete
 ].
 
-before_filter() -> [
-	user, ensure_login, except, [index, show]
-].
+index(_Arg) ->
+    "index".
 
-index() ->
-	"index".
+show(_Arg, Id) ->
+    "show" ++ Id.
 
-show(Id) ->
-	"show" ++ Id.
+new(_Arg) ->
+    "new".
 
-new() ->
-	"new".
+create(_Arg) ->
+    "create".
 
-create() ->
-	"create".
+edit(_Arg, Id) ->
+    "edit" ++ Id.
 
-edit(Id) ->
-	"edit" ++ Id.
+update(_Arg, Id) ->
+    "update" ++ Id.
 
-update(Id) ->
-	"update" ++ Id.
-
-delete(Id) ->
-	"delete" ++ Id.
+delete(_Arg, Id) ->
+    "delete" ++ Id.

@@ -9,12 +9,8 @@
 start(_SC) ->
     ok.
 
-before_filter
+error_404(_Arg, _Uri) ->
+    [{status, 404}, {html, "Not found"}].
 
-error_404(_Uri) ->
-    ale:y(status, 404),
-    ale:y(html, "Not found").
-
-error_500(_Type, _Reason) ->
-    ale:y(status, 500),
-    ale:y(html, "There was error processing your request. The admin has been notified. Sorry for your inconvenience.").
+error_500(_Arg, _Type, _Reason) ->
+    [{status, 500}, {html, "There was error processing your request. The admin has been notified. Sorry for your inconvenience."}].

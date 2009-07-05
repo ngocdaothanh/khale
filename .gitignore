@@ -3,4 +3,3 @@ erl_crash.dump
 *.beam
 log/*.*
 ale_routes.erl
-erlydtl_parser.erl
