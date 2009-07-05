@@ -19,7 +19,9 @@ render() ->
                 {link, [{rel, "stylesheet"}, {type, "text/css"}, {href, "/static/css/reset.css"}]},
                 {link, [{rel, "stylesheet"}, {type, "text/css"}, {href, "/static/css/page.css"}]},
 
-                {script, [{type, "text/javascript"}, {src, "/static/js/jquery.js"}]}
+                {script, [{type, "text/javascript"}, {src, "/static/js/jquery.js"}]},
+                {script, [{type, "text/javascript"}, {src, "/static/tiny_mce/tiny_mce.js"}]},
+                {script, [{type, "text/javascript"}, {src, "/static/js/tiny_mce_config.js"}]}
             ]},
 
             {body, [], [

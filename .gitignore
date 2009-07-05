@@ -6,3 +6,4 @@ log/*.*
 
 ale_routes.erl
 mnesia
+docroot/static/tiny_mce
