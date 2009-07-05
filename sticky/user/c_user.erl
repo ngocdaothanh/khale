@@ -8,8 +8,7 @@ routes() -> [
 ].
 
 index(_Arg) ->
-    Users = m_user:all(),
-    v_user_index:render(Users).
+    ale:put(app, users, m_user:all()).
 
 login(_Arg) ->
-    v_user_login:render().
+    ok.

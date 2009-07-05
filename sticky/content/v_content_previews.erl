@@ -5,7 +5,7 @@
 -include("sticky.hrl").
 
 render() ->
-    {ul, [], [{li, [], render_one(C)} || C <- ale:get(app, contents)]}.
+    {ul, [{class, previews}], [{li, [{class, preview}], render_one(C)} || C <- ale:get(app, contents)]}.
 
 render_one(Content) ->
     LastComment = m_comment:last(Content#content.id),

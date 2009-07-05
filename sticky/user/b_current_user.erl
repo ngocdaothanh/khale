@@ -2,18 +2,19 @@
 
 -compile(export_all).
 
+-include("sticky.hrl").
+
 render(_Id, _Config) ->
-    % UserInfo = case wf:user() of
-    %     undefined -> #link{url = "/login", text = ?T("Login")};
-    %     User      -> helper_user:info(User)
-    % end,
-    % CreateContentLink = #link{url = "/new", text = ?T("Create new content")},
-    % UsersLink = #link{url = "/users", text = ?T("User list")},
-    % 
-    % Body = #list{body = [
-    %     #listitem{body = UserInfo},
-    %     #listitem{body = UsersLink},
-    %     #listitem{body = CreateContentLink}
-    % ]},
-    % {?T("User"), Body}.
-    [].
+    UserInfo = case ale:user() of
+        undefined -> {a, [{href, "/login"}], ?T("Login")};
+        User      -> p_user:render(User)
+    end,
+    CreateContentLink = {a, [{href, "/new"}], ?T("Create new content")},
+    UsersLink = {a, [{href, "/users"}], ?T("User list")},
+
+    Body = {ul, [], [
+        {li, [], UserInfo},
+        {li, [], UsersLink},
+        {li, [], CreateContentLink}
+    ]},
+    {?T("User"), Body}.

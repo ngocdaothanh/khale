@@ -1,3 +1,5 @@
+%%% Comments are sort by created_at.
+
 -module(m_comment).
 
 -compile(export_all).
@@ -16,8 +18,13 @@ create(UserId, ContentType, ContentId, Body) ->
 
 last(ContentId) ->
     Q1 = qlc:q([C || C <- mnesia:table(comment), C#comment.content_id == ContentId]),
-    Q2 = qlc:keysort(1 + 5, Q1, [{order, ascending}, {size, 1}]),    % sort by created_at
+    Q2 = qlc:keysort(1 + 5, Q1, [{order, ascending}, {size, 1}]),
     case m_helper:do(Q2) of
         [Comment] -> Comment;
         _ -> undefined
     end.
+
+all(ContentId) ->
+    Q1 = qlc:q([C || C <- mnesia:table(comment), C#comment.content_id == ContentId]),
+    Q2 = qlc:keysort(1 + 5, Q1, [{order, ascending}]),
+    m_helper:do(Q2).

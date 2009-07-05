@@ -8,7 +8,7 @@ render(Content, Linked)->
     User = m_user:find(Content#content.user_id),
     Url = io_lib:format("/show/~p", [Content#content.id]),
     [
-        {h2, [], 
+        {h1, [], 
             case Linked of
                 false -> yaws_api:htmlize(Content#content.title);
 

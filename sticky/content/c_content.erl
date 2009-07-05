@@ -2,24 +2,36 @@
 
 -compile(export_all).
 
-routes() -> [
-    get, "",                    previews,
-    get, "cagegories/UnixName", search_by_category,
-    get, "keywords/Keyword",    search_by_keyword,
+-include_lib("ale/include/ale.hrl").
 
-    get,    "show/Id", show,
-    delete, "show/Id", delete,
+routes() ->
+    Routes = [
+        get, "",                    previews,
+        get, "cagegories/UnixName", search_by_category,
+        get, "keywords/Keyword",    search_by_keyword,
 
-    get,  "new",      instructions,
-    get,  "new/Type", new,
-    post, "new/Type", create,
+        get,    "show/Id", show,
+        delete, "show/Id", delete,
 
-    get, "edit/Id", edit,
-    put, "edit/Id", update
-].
+        get,  "new",      instructions,
+
+        get, "edit/Id", edit,
+        put, "edit/Id", update
+    ],
+
+    lists:foldl(
+        fun(Type, Acc) ->
+            Uri = "new/" ++ atom_to_list(Type),
+            [
+                get,  Uri, new,
+                post, Uri, create | Acc
+            ]
+        end,
+        Routes,
+        m_content:types()
+    ).
 
 previews(_Arg) ->
-    ale:put(ale, layout, default_v_layout),
     Contents = m_content:all(),
     ale:put(app, contents, Contents).
 
@@ -33,7 +45,6 @@ search_by_keyword(_Arg, Keyword) ->
 %-------------------------------------------------------------------------------
 
 show(_Arg, Id) ->
-    ale:put(ale, layout, default_v_layout),
     Content = m_content:find(list_to_integer(Id)),
     ale:put(app, content, Content).
 
@@ -42,15 +53,28 @@ delete(_Arg, Id) ->
 
 %-------------------------------------------------------------------------------
 
-instructions() ->
-    Instructions = m_content:instructions(),
-    v_content_new:render(Instructions).
+instructions(_Arg) ->
+    ale:put(app, content_modules, m_content:modules()).
 
-new(_Arg, Type) ->
-    "new".
+new(Arg) ->
+    % Security has been checked in routes()
 
-create(_Arg) ->
-    "create".
+    Type = type_for_new_or_create(Arg),
+    ale:put(app, type, Type),
+    ale:put(app, partial_new, list_to_atom("p_" ++ Type ++ "_new")).
+
+create(Arg) ->
+    % Security has been checked in routes()
+
+    Type = type_for_new_or_create(Arg),
+    ale:put(app, type, Type),
+    ale:put(app, partial_new, list_to_atom("p_" ++ Type ++ "_new")),
+    ale:put(ale, view, v_content_new).
+
+type_for_new_or_create(Arg) ->
+    Uri = Arg#arg.appmoddata,
+    "new/" ++ Type = Uri,
+    Type.
 
 %-------------------------------------------------------------------------------
 

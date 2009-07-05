@@ -10,12 +10,11 @@ body {
 a { color: #E35; text-decoration: none; }
 a:hover { color: #E35; text-decoration: underline; }
 
-h1 { font-size: 2.2em; color: #BBB; clear: both; letter-spacing: -1px; }
-h2 { font-size: 1.5em; color: #DB0; clear: both; letter-spacing: -1px; }
-h3 { font-size: 1.2em; color: #79C; letter-spacing: -1px; }
-h4 { font-size: 0.9em; color: #777; text-transform: uppercase;  }
+h1 { font-size: 1.6em; color: #BBB; clear: both; letter-spacing: -1px; }
+h2 { font-size: 1.3em; color: #DB0; clear: both; letter-spacing: -1px; }
+h3 { font-size: 1.0em; color: #79C; letter-spacing: -1px; }
+h4 { font-size: 0.7em; color: #777; text-transform: uppercase;  }
 h1, h2, h3, h4 { font-weight: normal; margin-top: 1em; margin-bottom: 0.5em;  }
-h1:first-child, h2:first-child, h3:first-child, h4:first-child { margin-top: 0em; }
 
 ul { padding-left: 7px; }
 ul li { list-style: disc inside; }
@@ -24,6 +23,15 @@ p { margin-top: 10px; }
 
 .clear { clear: both; }
 
+.label {
+  display: block;
+  font-size: 0.9em;
+  font-weight: bold;
+  margin-top: 7px;
+}
+
+#header h1 { font-size: 2.5em; margin-top: 5px }
+
 #container {
   margin: 5px auto;
   width: 950px;
@@ -31,9 +39,10 @@ p { margin-top: 10px; }
   padding: 5px;
 }
 
-#main_block {
+#content_for_layout {
   width: 700px;
   float: left;
+  padding: 5px;
 }
 
 #sidebar {
@@ -52,4 +61,34 @@ p { margin-top: 10px; }
 .textarea {
   width: 100%;
   height: 400px;
+}
+
+ul.previews, ul.region {
+  margin-left: 0px;
+  padding-left: 0px;
+}
+
+ul.previews li.preview, ul.region li.block {
+  list-style-type: none;
+  margin-left: 0px;
+  margin-bottom: 1em;
+  padding-left: 0px;
+  padding-bottom: 1em;
+  border-bottom: solid 1px #EEE;
+}
+
+input[type="text"] {
+  width: 99%;
+}
+
+textarea {
+  width: 100%;
+  height: 400px;
+}
+
+input[type="submit"] {
+  display: block;
+  font-size: 0.9em;
+  font-weight: bold;
+  margin-top: 7px;
 }

@@ -1,4 +1,4 @@
--module(v_article_new).
+-module(p_article_new).
 
 -compile(export_all).
 
@@ -7,10 +7,10 @@
 render() ->
     [
         {span, [{class, label}], ?T("Title")},
-        {input, [{type, text}, {name, "title"}]},
+        {input, [{type, text}, {name, title}]},
 
         {span, [{class, label}], ?T("Abstract")},
-        {input, [{type, text}, {name, "abstract"}]},
+        {textarea, [{name, abstract}]},
 
         {span, [{class, label}], ?T("Body")},
         {textarea, [{name, body}]}

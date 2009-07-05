@@ -1,4 +1,5 @@
 -module(m_poll).
+-content_module(true).
 
 -compile(export_all).
 

@@ -1,4 +1,5 @@
 -module(m_event).
+-content_module(true).
 
 -compile(export_all).
 

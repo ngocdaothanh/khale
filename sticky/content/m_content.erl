@@ -8,8 +8,31 @@ migrate() ->
     m_helper:create_table(content,         record_info(fields, content)),
     m_helper:create_table(content_version, record_info(fields, content_version)).
 
-instructions() ->
-    m_helper:apply_to_all("^m_.*\.beam$", instruction).
+%% Returns the list of content modules. Content modules should define
+%% -content_module(true).
+modules() ->
+    filelib:fold_files("ebin", "^m_.*\.beam$", false,
+        fun(ModelFile, Acc) ->
+            Base = filename:basename(ModelFile, ".beam"),
+            Module = list_to_atom(Base),
+            code:ensure_loaded(Module),
+            Attributes = Module:module_info(attributes),
+            case proplists:get_value(content_module, Attributes) of
+                [true] -> [Module | Acc];
+                _      -> Acc
+            end
+        end,
+        []
+    ).
+
+types() ->
+    lists:map(
+        fun(Module) ->
+            [$m, $_ | Base] = atom_to_list(Module),
+            list_to_atom(Base)
+        end,
+        modules()
+    ).
 
 all() ->
     Stickies = all(true),

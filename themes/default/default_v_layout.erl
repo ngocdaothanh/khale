@@ -24,11 +24,17 @@ render() ->
 
             {body, [], [
                 {'div', [{id, "container"}], [
-                    {'div', [{id, "header"}],
-                        {h1, [], {a, [{href, "/"}], "Khale"}}
-                    },
+                    {'div', [{id, content_for_layout}], [
+                        {'div', [{id, "header"}],
+                            {h1, [], {a, [{href, "/"}], "Khale"}}
+                        },
 
-                    ale:get(ale, content_for_layout),
+                        ale:content_for_layout()
+                    ]},
+
+                    h_theme:region(sidebar),
+
+                    {br, [{class, clear}]},
 
                     {'div', [{id, "footer"}], [
                         "Powered by ",

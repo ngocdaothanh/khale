@@ -2,8 +2,19 @@
 
 -compile(export_all).
 
+-include("sticky.hrl").
+
 render() ->
     Content = ale:get(app, content),
+    DetailPartial = list_to_atom(
+        "p_" ++
+        atom_to_list(Content#content.type) ++
+        "_detail"
+    ),
+    Comments = m_comment:all(Content#content.id),
+
     [
-        p_content_header:render(Content, false)
+        p_content_header:render(Content, false),
+        DetailPartial:render(Content),
+        p_comments:render(Comments)
     ].

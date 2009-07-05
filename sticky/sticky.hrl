@@ -11,3 +11,5 @@
 -record(content_version, {id, content_id, user_id, title, data, created_at}).
 
 -record(comment, {id, user_id, content_id, body, created_at, updated_at}).
+
+-record(block, {id, type, data, region, position}).

@@ -1,4 +1,5 @@
 -module(m_article).
+-content_module(true).
 
 -compile(export_all).
 

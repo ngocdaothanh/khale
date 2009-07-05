@@ -9,6 +9,10 @@
 start(_SC) ->
     ok.
 
+before_filter(_Controller, _Action, _Args) ->
+    ale:put(ale, layout, default_v_layout),
+    false.
+
 error_404(_Arg, _Uri) ->
     ale:put(yaws, status, 404),
     ale:put(ale, view, default_v_error_404).

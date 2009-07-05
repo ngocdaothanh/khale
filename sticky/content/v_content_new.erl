@@ -4,11 +4,13 @@
 
 -include_lib("sticky.hrl").
 
-render(Instructions) ->
+render() ->
+    Type = ale:get(app, type),
+    PartialNew = ale:get(app, partial_new),
     [
-        {p, [], ?T("Which type of content do you want to create?")},
-        {ul, [],
-            [{li, [], I} || I <- Instructions]
-        },
-        {p, [], ?T("To avoid duplicate contents, before creating please search to check if similar thing has already existed.")}
+        {form, [{method, post}, {action, ["/new/", Type]}], [
+            PartialNew:render(),
+            {input, [{type, hidden}, {name, "_method"}, {value, post}]},
+            {input, [{type, submit}, {value, ?T("Save")}]}
+        ]}
     ].
