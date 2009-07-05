@@ -2,7 +2,7 @@
 
 -compile(export_all).
 
--include_lib("ale/include/ale.hrl").
+-include("sticky.hrl").
 
 routes() ->
     Routes = [
@@ -46,6 +46,8 @@ search_by_keyword(_Arg, Keyword) ->
 
 show(_Arg, Id) ->
     Content = m_content:find(list_to_integer(Id)),
+    Module = m_content:type_to_module(Content#content.type),
+    ale:put(app, title, Module:name()),
     ale:put(app, content, Content).
 
 delete(_Arg, Id) ->
@@ -54,6 +56,7 @@ delete(_Arg, Id) ->
 %-------------------------------------------------------------------------------
 
 instructions(_Arg) ->
+    ale:put(app, title, ?T("Create new content")),
     ale:put(app, content_modules, m_content:modules()).
 
 new(Arg) ->

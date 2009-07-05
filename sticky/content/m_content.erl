@@ -34,6 +34,9 @@ types() ->
         modules()
     ).
 
+type_to_module(Type) ->
+    list_to_atom("m_" ++ atom_to_list(Type)).
+
 all() ->
     Stickies = all(true),
     NonStickies = all(false),

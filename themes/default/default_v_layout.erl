@@ -14,7 +14,7 @@ render() ->
                 {link, [{rel, "icon"}, {type, "img/x-icon"}, {href, "/favicon.ico"}]},
                 {link, [{rel, "shortcut icon"}, {type, "img/x-icon"}, {href, "/favicon.ico"}]},
 
-                {title, [], "Khale"},
+                {title, [], h_theme:title_in_head()},
 
                 {link, [{rel, "stylesheet"}, {type, "text/css"}, {href, "/static/css/reset.css"}]},
                 {link, [{rel, "stylesheet"}, {type, "text/css"}, {href, "/static/css/page.css"}]},
@@ -23,11 +23,13 @@ render() ->
             ]},
 
             {body, [], [
-                {'div', [{id, "container"}], [
+                {'div', [{id, container}], [
                     {'div', [{id, content_for_layout}], [
-                        {'div', [{id, "header"}],
+                        {'div', [{id, header}],
                             {h1, [], {a, [{href, "/"}], "Khale"}}
                         },
+
+                        h_theme:title_in_body(),
 
                         ale:content_for_layout()
                     ]},
@@ -36,7 +38,7 @@ render() ->
 
                     {br, [{class, clear}]},
 
-                    {'div', [{id, "footer"}], [
+                    {'div', [{id, footer}], [
                         "Powered by ",
                         {a, [{href, "http://github.com/ngocdaothanh/khale"}], "Khale"}
                     ]}

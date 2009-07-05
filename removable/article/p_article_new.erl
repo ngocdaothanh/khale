@@ -5,6 +5,7 @@
 -include("sticky.hrl").
 
 render() ->
+    ale:put(app, title, ?T("Create new article")),
     [
         {span, [{class, label}], ?T("Title")},
         {input, [{type, text}, {name, title}]},
