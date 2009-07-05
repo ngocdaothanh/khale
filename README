@@ -1,14 +1,22 @@
-Khale is a CMS based on Ale.
+Khale is a CMS based on Ale based on Yaws.
 
 Layout:
 * Currently there's no GUI to change the layout, e.g. the positions of blocks.
   You have to edit the source code of the layout module manually.
 
-== Install
+== Install and Start
 
 Install Erlang.
 
 Install Ale (http://github.com/ngocdaothanh/ale) and Yaws
 (http://wiki.github.com/klacke/yaws) to Erlang's lib directory
 
-Run make to build.
+Run "make" to build.
+
+== Run
+
+Run "make migrate" to prepare DB schema.
+
+Run "make fake" if you want to add fake data.
+
+Run "make start" to start.

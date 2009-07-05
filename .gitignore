@@ -1,5 +1,8 @@
 .DS_Store
+
 erl_crash.dump
 *.beam
 log/*.*
+
 ale_routes.erl
+mnesia

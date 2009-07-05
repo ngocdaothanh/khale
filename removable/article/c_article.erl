@@ -1,19 +1,15 @@
--module(controller_articles).
+-module(c_article).
 
 -compile(export_all).
 
 routes() -> [
-    get,    "articles",         index,
-    get,    "articles/Id",      show,
     get,    "articles/new",     new,
+    get,    "articles/Id",      show,
     post,   "articles",         create,
     get,    "articles/Id/edit", edit,
     put,    "articles/Id",      update,
     delete, "articles/Id",      delete
 ].
-
-index(_Arg) ->
-    "index".
 
 show(_Arg, Id) ->
     "show" ++ Id.
