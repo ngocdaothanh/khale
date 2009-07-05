@@ -2,5 +2,6 @@
 
 -compile(export_all).
 
-render() ->
+render(Contents) ->
+    
     "Recent contents".

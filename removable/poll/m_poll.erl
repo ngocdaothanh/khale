@@ -15,7 +15,7 @@ create(UserId, CategoryIds, Title, AbstractAndQuestion, Selections) ->
     CreatedAt = erlang:universaltime(),
     Votes = lists:duplicate(length(Selections), 0),
     Poll = #content{
-        id = Id, user_id = UserId, content_type = poll,
+        id = Id, user_id = UserId, type = poll,
         title = Title, data = {AbstractAndQuestion, Selections, Votes},
         created_at = CreatedAt, updated_at = CreatedAt
     },

@@ -10,7 +10,9 @@ start(_SC) ->
     ok.
 
 error_404(_Arg, _Uri) ->
-    [{status, 404}, {html, "Not found"}].
+    ale:put(yaws, status, 404),
+    ale:put(ale, view, default_v_error_404).
 
 error_500(_Arg, _Type, _Reason) ->
-    [{status, 500}, {html, "There was error processing your request. The admin has been notified. Sorry for your inconvenience."}].
+    ale:put(yaws, status, 500),
+    ale:put(ale, view, default_v_error_500).

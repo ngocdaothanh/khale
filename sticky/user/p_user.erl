@@ -6,10 +6,10 @@
 
 render(User) ->
     Helper = m_user:helper_module(User),
-    {li, [], [
+    [
         gravatar(User#user.email, 30, "g", "identicon"),
-        {a, [{href, Helper:url(User)}], Helper:username(User)}
-    ]}.
+        {a, [{href, yaws_api:htmlize(Helper:url(User))}], yaws_api:htmlize(Helper:username(User))}
+    ].
 
 gravatar(Email, Size, Rating, Default) ->
     "".

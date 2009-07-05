@@ -1,8 +1,8 @@
--module(l_default).
+-module(default_v_layout).
 
 -compile(export_all).
 
-render(ContentForLayout, Scripts) ->
+render() ->
     [
         "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">",
         {html, [{xmlns, "http://www.w3.org/1999/xhtml"}, {'xml:lang', "en"}, {lang, "en"}], [
@@ -24,11 +24,19 @@ render(ContentForLayout, Scripts) ->
 
             {body, [], [
                 {'div', [{id, "container"}], [
-                    {'div', [{id, "header"}], "Khale"},
-                    ContentForLayout
+                    {'div', [{id, "header"}],
+                        {h1, [], {a, [{href, "/"}], "Khale"}}
+                    },
+
+                    ale:get(ale, content_for_layout),
+
+                    {'div', [{id, "footer"}], [
+                        "Powered by ",
+                        {a, [{href, "http://github.com/ngocdaothanh/khale"}], "Khale"}
+                    ]}
                 ]},
 
-                Scripts
+                ale:script()
             ]}
         ]}
     ].

@@ -14,7 +14,7 @@ create(UserId, CategoryIds, Title, Abstract, Body) ->
     Id = m_helper:next_id(content),
     CreatedAt = erlang:universaltime(),
     Article = #content{
-        id = Id, user_id = UserId, content_type = article,
+        id = Id, user_id = UserId, type = article,
         title = Title, data = {Abstract, Body},
         created_at = CreatedAt, updated_at = CreatedAt
     },

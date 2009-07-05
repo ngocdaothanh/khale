@@ -15,7 +15,7 @@ create(UserId, CategoryIds, Title, Invitation, DeadLine) ->
     CreatedAt = erlang:universaltime(),
     Participants = [],
     Event = #content{
-        id = Id, user_id = UserId, content_type = event,
+        id = Id, user_id = UserId, type = event,
         title = Title, data = {Invitation, DeadLine, Participants},
         created_at = CreatedAt, updated_at = CreatedAt
     },

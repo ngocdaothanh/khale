@@ -19,7 +19,7 @@ all() ->
 %% Sticky: bool()
 all(Sticky) ->
     Q1 = qlc:q([C || C <- mnesia:table(content), C#content.sticky == Sticky]),
-    Q2 = qlc:keysort(1 + 6, Q1, [{order, ascending}]),    % sort by updated_at
+    Q2 = qlc:keysort(1 + 7, Q1, [{order, ascending}]),    % sort by updated_at
     m_helper:do(Q2).
 
 save(Content, CategoryIds) ->
@@ -28,12 +28,16 @@ save(Content, CategoryIds) ->
         lists:foreach(
             fun(CategoryId) ->
                 CC = #category_content{
-                    category_id  = CategoryId,
-                    content_type = Content#content.content_type,
-                    content_id   = Content#content.id
+                    category_id = CategoryId,
+                    content_id  = Content#content.id
                 },
                 mnesia:write(CC)
             end,
             CategoryIds
         )
     end).
+
+find(Id) ->
+    Q = qlc:q([C || C <- mnesia:table(content), C#content.id == Id]),
+    [Content] = m_helper:do(Q),
+    Content.
