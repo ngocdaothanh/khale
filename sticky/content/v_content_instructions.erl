@@ -5,11 +5,10 @@
 -include_lib("sticky.hrl").
 
 render() ->
-    ContentModules = ale:get(app, content_modules),
     [
         {p, [], ?T("Which type of content do you want to create?")},
         {ul, [],
-            [{li, [], render_one(M)} || M <- ContentModules]
+            [{li, [], render_one(M)} || M <- ale:app(content_modules)]
         },
         {p, [], ?T("To avoid duplicate contents, before creating please search to check if similar thing has already existed.")}
     ].

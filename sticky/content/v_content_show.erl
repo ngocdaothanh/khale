@@ -5,7 +5,7 @@
 -include("sticky.hrl").
 
 render() ->
-    Content = ale:get(app, content),
+    Content = ale:app(content),
     DetailPartial = list_to_atom(
         "p_" ++
         atom_to_list(Content#content.type) ++
