@@ -22,9 +22,10 @@ routes() ->
     lists:foldl(
         fun(Type, Acc) ->
             Uri = "/new/" ++ atom_to_list(Type),
-            [
+            % The order of Routes may be important
+            Acc ++ [
                 get,  Uri, new,
-                post, Uri, create | Acc
+                post, Uri, create
             ]
         end,
         Routes,
