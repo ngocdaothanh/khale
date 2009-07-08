@@ -31,8 +31,7 @@ routes() ->
         m_content:types()
     ).
 
-cached_pages() -> [previews, instructions].
-cached_actions() -> [new].
+cached_actions_without_layout() -> [previews, instructions].
 
 %-------------------------------------------------------------------------------
 
