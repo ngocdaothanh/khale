@@ -20,13 +20,3 @@ create(UserId, CategoryIds, Title, AbstractAndQuestion) ->
         created_at = CreatedAt, updated_at = CreatedAt
     },
     m_content:save(Qa, CategoryIds).
-
-fake() ->
-    lists:foreach(
-        fun(Args) -> apply(?MODULE, create, Args) end,
-        [
-            [1, [1, 2], "What is Erlang?", "I want to study Erlang. Can you tell me about it?"],
-            [2, [2, 3], "What is Ruby?",   "I want to study Ruby. Can you tell me about it?"],
-            [2, [1, 3], "What is Java?",   "I want to study Java. Can you tell me about it?"]
-        ]
-    ).

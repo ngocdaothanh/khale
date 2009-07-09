@@ -9,9 +9,9 @@ routes() -> [
     get, "/login", login
 ].
 
-index(_Arg) ->
+index() ->
     ale:app(title, ?T("User list")),
     ale:app(users, m_user:all()).
 
-login(_Arg) ->
+login() ->
     ale:app(title, ?T("Login")).

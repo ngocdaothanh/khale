@@ -28,11 +28,6 @@ migrate() ->
     apply_to_all("^m_.*\.beam$", migrate),
     mnesia:stop().
 
-fake() ->
-    mnesia:start(),
-    apply_to_all("^m_.*\.beam$", fake),
-    mnesia:stop().
-
 %-------------------------------------------------------------------------------
 
 apply_to_all(BeamPattern, Function) ->

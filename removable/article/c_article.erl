@@ -2,8 +2,8 @@
 
 -compile(export_all).
 
-create(_Arg) ->
+create() ->
     "create".
 
-update(_Arg, Id) ->
+update(Id) ->
     "update" ++ Id.

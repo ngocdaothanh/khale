@@ -10,7 +10,7 @@
 start(_SC) ->
     ignore.
 
-before_filter(_Controller, _Action, _Arg, _Args) ->
+before_filter(_Controller, _Action, _Args) ->
     ale:layout(default_v_layout),
     false.
 

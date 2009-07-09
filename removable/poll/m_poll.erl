@@ -21,13 +21,3 @@ create(UserId, CategoryIds, Title, AbstractAndQuestion, Selections) ->
         created_at = CreatedAt, updated_at = CreatedAt
     },
     m_content:save(Poll, CategoryIds).
-
-fake() ->
-    lists:foreach(
-        fun(Args) -> apply(?MODULE, create, Args) end,
-        [
-            [1, [1, 2], "How good is Erlang?", "Erlang is becoming warm. What do you think about it?", ["Cool", "Not cool", "Sucks"]],
-            [2, [2, 3], "How good is Ruby?",   "Ruby has become hot. What do you think?", ["It's cool", "It sucks", "I will study it"]],
-            [2, [1, 3], "Is Java dead?",       "Are you using Java?", ["Absolutely", "I have not used it for years, it sucks", "I have not used it for years, miss it"]]
-        ]
-    ).

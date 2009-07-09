@@ -36,58 +36,59 @@ cached_actions_without_layout() -> [previews, instructions].
 
 %-------------------------------------------------------------------------------
 
-previews(_Arg) ->
+previews() ->
     Contents = m_content:all(),
     ale:app(contents, Contents).
 
-search_by_category(_Arg, UnixName) ->
+search_by_category(UnixName) ->
     Category = m_category:find_by_unix_name(UnixName),
     [].
 
-search_by_keyword(_Arg, Keyword) ->
+search_by_keyword(Keyword) ->
     [].
 
 %-------------------------------------------------------------------------------
 
-show(_Arg, Id) ->
+show(Id) ->
     Content = m_content:find(list_to_integer(Id)),
     Module = m_content:type_to_module(Content#content.type),
     ale:app(title, Module:name()),
     ale:app(content, Content).
 
-delete(_Arg, Id) ->
+delete(Id) ->
     "delete" ++ Id.
 
 %-------------------------------------------------------------------------------
 
-instructions(_Arg) ->
+instructions() ->
     ale:app(title, ?T("Create new content")),
     ale:app(content_modules, m_content:modules()).
 
-new(Arg) ->
+new() ->
     % Security has been checked in routes()
 
-    Type = type_for_new_or_create(Arg),
+    Type = type_for_new_or_create(),
     ale:app(type, Type),
     ale:app(partial_new, list_to_atom("p_" ++ Type ++ "_new")).
 
-create(Arg) ->
+create() ->
     % Security has been checked in routes()
 
-    Type = type_for_new_or_create(Arg),
+    Type = type_for_new_or_create(),
     ale:app(type, Type),
     ale:app(partial_new, list_to_atom("p_" ++ Type ++ "_new")),
     ale:put(ale, view, v_content_new).
 
-type_for_new_or_create(Arg) ->
-    Uri = Arg#arg.appmoddata,
-    "new/" ++ Type = Uri,
+type_for_new_or_create() ->
+    Arg = ale:arg(),
+    Uri = Arg#arg.server_path,
+    "/new/" ++ Type = Uri,
     Type.
 
 %-------------------------------------------------------------------------------
 
-edit(_Arg, Id) ->
+edit(Id) ->
     "edit" ++ Id.
 
-update(_Arg, Id) ->
+update(Id) ->
     "update" ++ Id.

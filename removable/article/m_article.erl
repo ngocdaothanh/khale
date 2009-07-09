@@ -20,13 +20,3 @@ create(UserId, CategoryIds, Title, Abstract, Body) ->
         created_at = CreatedAt, updated_at = CreatedAt
     },
     m_content:save(Article, CategoryIds).
-
-fake() ->
-    lists:foreach(
-        fun(Args) -> apply(?MODULE, create, Args) end,
-        [
-            [1, [1, 2], "Calling Erlang from Ruby", "A short abstract", "A long body"],
-            [1, [2, 3], "Calling Ruby from Java",   "A short abstract", "A long body"],
-            [2, [1, 3], "Calling Java from Erlang", "A short abstract", "A long body"]
-        ]
-    ).

@@ -15,12 +15,5 @@ migrate:
 	-pa ebin \
 	-noshell -s m_helper migrate -s init stop
 
-fake:
-	erl \
-	-mnesia dir mnesia \
-	-name khale@127.0.0.1 \
-	-pa ebin \
-	-noshell -s m_helper fake -s init stop
-
 start:
 	yaws --mnesiadir mnesia --name khale@127.0.0.1

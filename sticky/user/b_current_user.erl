@@ -6,11 +6,11 @@
 
 render(_Id, _Config) ->
     UserInfo = case ale:user() of
-        undefined -> {a, [{href, "/login"}], ?T("Login")};
+        undefined -> {a, [{href, ale:url_for(user, login)}], ?T("Login")};
         User      -> p_user:render(User)
     end,
-    CreateContentLink = {a, [{href, "/new"}], ?T("Create new content")},
-    UsersLink = {a, [{href, "/users"}], ?T("User list")},
+    CreateContentLink = {a, [{href, ale:url_for(content, instructions)}], ?T("Create new content")},
+    UsersLink = {a, [{href, ale:url_for(user, index)}], ?T("User list")},
 
     Body = {ul, [], [
         {li, [], UserInfo},

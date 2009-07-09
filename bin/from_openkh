@@ -1,0 +1,14 @@
+%%% This script converts data and files from OpenKH 0.5 to Khale. It uses
+%%% epgsql (http://bitbucket.org/will/epgsql/) to connect to PostgreSQL.
+
+main([]) ->
+    Host = "localhost",
+    Username = "postgres",
+    Password = "postgres",
+    Database = "0.5",
+    Port = 
+    {ok, C} = pgsql:connect(Host, Username, Password, [{database, Database}]),
+
+    {ok, Columns, Rows} = pgsql:equery(C, "SELECT id, email FROM users WHERE email"),
+    erlang:display(Rows),
+    pgsql:close(C).

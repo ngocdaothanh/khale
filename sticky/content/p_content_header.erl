@@ -6,13 +6,13 @@
 
 render(Content, Linked)->
     User = m_user:find(Content#content.user_id),
-    Url = io_lib:format("/show/~p", [Content#content.id]),
+    Uri = ale:url_for(content, show, integer_to_list(Content#content.id)),
     [
         {h1, [], 
             case Linked of
                 false -> yaws_api:htmlize(Content#content.title);
 
-                true  -> {a, [{href, Url}], yaws_api:htmlize(Content#content.title)}
+                true  -> {a, [{href, Uri}], yaws_api:htmlize(Content#content.title)}
             end
         },
         p_user:render(User)

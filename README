@@ -17,6 +17,4 @@ Run "make" to build.
 
 Run "make migrate" to prepare DB schema.
 
-Run "make fake" if you want to add fake data.
-
 Run "make start" to start.
