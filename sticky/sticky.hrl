@@ -13,3 +13,6 @@
 -record(comment, {id, user_id, content_id, body, created_at, updated_at}).
 
 -record(block, {id, type, data, region, position}).
+
+-define(MNESIA_WAIT_FOR_TABLES_TIMEOUT, 20000).
+-define(TABLE_OPTIONS, [{disc_copies, [node()]}]).

@@ -3,6 +3,7 @@
 erl_crash.dump
 *.beam
 log/*.*
+nodes/n*
 
 ale_routes.erl
 mnesia

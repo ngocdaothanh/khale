@@ -2,8 +2,44 @@
 
 -compile(export_all).
 
--define(MNESIA_WAIT_FOR_TABLES_TIMEOUT, 20000).
--define(TABLE_OPTIONS, [{disc_copies, [node()]}]).
+-include("sticky.hrl").
+
+migrate() ->
+    mnesia:create_schema([node()]),
+    mnesia:start(),
+    create_table(counter, [table, current_id]),    % for next_id/1
+    apply_to_all("^m_.*\.beam$", migrate),
+    mnesia:stop().
+
+%% Called by c_application on application start.
+start(Nodes) ->
+    mnesia:start(),
+    replicate(Nodes).
+
+%% If there is no directory "mnesia", replicates one from other nodes.
+replicate(Nodes) ->
+    % See: http://erlanganswers.com/web/mcedemo/mnesia/DistributedHelloWorld.html
+
+    % Merge tables of this node with those of other nodes
+    mnesia:change_config(extra_db_nodes, Nodes),
+
+    % This line will create directory "mnesia" if none exists
+    mnesia:change_table_copy_type(schema, node (), disc_copies),
+
+    % Replicate
+    lists:foreach(
+        fun(Table) ->
+            io:format("Replicate ~p...~n", [Table]),
+            Type = case lists:member(Table, ale_cache:ram_tables()) of
+                true  -> ram_copies;
+                false -> disc_copies
+            end,
+            mnesia:add_table_copy(Table, node(), Type)
+        end,
+        mnesia:system_info(tables)
+    ).
+
+%-------------------------------------------------------------------------------
 
 %% Other modules should call this function to create tables on migration.
 create_table(Name, Attributes) ->
@@ -21,17 +57,8 @@ next_id(Table) ->
 
 %-------------------------------------------------------------------------------
 
-migrate() ->
-    mnesia:create_schema([node()]),
-    mnesia:start(),
-    create_table(counter, [table, current_id]),    % for next_id/1
-    apply_to_all("^m_.*\.beam$", migrate),
-    mnesia:stop().
-
-%-------------------------------------------------------------------------------
-
 apply_to_all(BeamPattern, Function) ->
-    filelib:fold_files("ebin", BeamPattern, false,
+    filelib:fold_files(?ALE_ROOT ++ "/ebin", BeamPattern, false,
         fun(ModelFile, Acc) ->
             Base = filename:basename(ModelFile, ".beam"),
             Module = list_to_atom(Base),

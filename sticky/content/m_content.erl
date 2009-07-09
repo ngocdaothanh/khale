@@ -11,7 +11,7 @@ migrate() ->
 %% Returns the list of content modules. Content modules should define
 %% -content_module(true).
 modules() ->
-    filelib:fold_files("ebin", "^m_.*\.beam$", false,
+    filelib:fold_files(?ALE_ROOT ++ "/ebin", "^m_.*\.beam$", false,
         fun(ModelFile, Acc) ->
             Base = filename:basename(ModelFile, ".beam"),
             Module = list_to_atom(Base),

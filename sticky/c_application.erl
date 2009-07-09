@@ -2,12 +2,14 @@
 
 -compile(export_all).
 
-%% On load, after setting public directories, Ale calls this function to give
-%% the application a chance to prepare things. The return value should be
-%% {ok, SupPid} or ignore.
+%% On application startup, after setting public directories, Ale calls this
+%% function to give the application a chance to prepare things. The return value
+%% should be {ok, SupPid} or ignore.
 %%
-%% SC: see yaws.hrl
-start(_SC) ->
+%% SC   : see yaws.hrl
+%% Nodes: list of nodes as specified in yaws.conf
+start(_SC, Nodes) ->
+    m_helper:start(Nodes),
     ignore.
 
 before_filter(_Controller, _Action, _Args) ->
