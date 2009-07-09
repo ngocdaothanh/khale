@@ -14,7 +14,7 @@ before_filter(_Controller, _Action, _Args) ->
     ale:layout(default_v_layout),
     false.
 
-error_404(_Uri) ->
+error_404() ->
     ale:yaws(status, 404),
     ale:view(default_v_error_404).
 

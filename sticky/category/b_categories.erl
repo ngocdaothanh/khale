@@ -5,10 +5,10 @@
 -include("sticky.hrl").
 
 render(_Id, _Config) ->
-    ale:cache("b_categories", fun() ->
+    Body = ale:cache("b_categories", fun() ->
         Categories = m_category:all(),
-        Body = {ul, [],
-            [{li, [], {a, [{href, ["/cagegories/", C#category.unix_name]}], C#category.name}} || C <- Categories]
-        },
-        {?T("Categories"), Body}
-    end).
+        {ul, [],
+            [{li, [], {a, [{href, ale:url_for(content, search_by_category, C#category.unix_name)}], yaws_api:htmlize(C#category.name)}} || C <- Categories]
+        }
+    end, [ehtml]),
+    {?T("Categories"), Body}.

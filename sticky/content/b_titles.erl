@@ -5,10 +5,10 @@
 -include("sticky.hrl").
 
 render(_Id, _Config) ->
-    ale:cache("b_titles", fun() ->
+    Body = ale:cache("b_titles/body", fun() ->
         Contents = m_content:all(),
-        Body = {ul, [], 
-            [{li, [], {a, [{href, "/show/" ++ integer_to_list(C#content.id)}], C#content.title}} || C <- Contents]
-        },
-        {?T("Recent titles"), Body}
-    end).
+        {ul, [], 
+            [{li, [], {a, [{href, ale:url_for(content, show, integer_to_list(C#content.id))}], C#content.title}} || C <- Contents]
+        }
+    end, [ehtml]),
+    {?T("Recent titles"), Body}.
