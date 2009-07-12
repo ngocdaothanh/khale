@@ -30,11 +30,7 @@ replicate(Nodes) ->
     lists:foreach(
         fun(Table) ->
             io:format("Replicate ~p...~n", [Table]),
-            Type = case lists:member(Table, ale_cache:ram_tables()) of
-                true  -> ram_copies;
-                false -> disc_copies
-            end,
-            mnesia:add_table_copy(Table, node(), Type)
+            mnesia:add_table_copy(Table, node(), disc_copies)
         end,
         mnesia:system_info(tables)
     ).

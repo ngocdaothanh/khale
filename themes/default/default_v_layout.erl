@@ -3,8 +3,7 @@
 -compile(export_all).
 
 render() ->
-    [
-        "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">",
+    E = ale:r("default_v_layout", fun() ->
         {html, [{xmlns, "http://www.w3.org/1999/xhtml"}, {'xml:lang', "en"}, {lang, "en"}], [
             {head, [], [
                 {meta, [{'http-equiv', "content-type"}, {content, "text/html; charset=utf-8"}]},
@@ -14,7 +13,7 @@ render() ->
                 {link, [{rel, "icon"}, {type, "img/x-icon"}, {href, "/favicon.ico"}]},
                 {link, [{rel, "shortcut icon"}, {type, "img/x-icon"}, {href, "/favicon.ico"}]},
 
-                {title, [], h_theme:title_in_head()},
+                {title, [], '$title_in_head'},
 
                 {link, [{rel, "stylesheet"}, {type, "text/css"}, {href, "/static/css/reset.css"}]},
                 {link, [{rel, "stylesheet"}, {type, "text/css"}, {href, "/static/css/page.css"}]},
@@ -31,22 +30,30 @@ render() ->
                             {h1, [], {a, [{href, "/"}], "Khale"}}
                         },
 
-                        h_theme:title_in_body(),
-
-                        ale:content_for_layout()
+                        '$title_in_body',
+                        '$content_for_layout'
                     ]},
 
-                    h_theme:region(sidebar),
-
+                    '$sidebar',
                     {br, [{class, clear}]},
-
                     {'div', [{id, footer}], [
-                        "Powered by ",
-                        {a, [{href, "http://github.com/ngocdaothanh/khale"}], "Khale"}
+                        "Powered by ", {a, [{href, "http://github.com/ngocdaothanh/khale"}], "Khale"}
                     ]}
                 ]},
 
-                ale:script()
+                '$script'
             ]}
         ]}
+    end, [ehtmle]),
+
+    T = yaws_api:ehtml_apply(E, [
+        {title_in_head,      h_theme:title_in_head()},
+        {title_in_body,      h_theme:title_in_body()},
+        {content_for_layout, ale:content_for_layout()},
+        {sidebar,            h_theme:region(sidebar)},
+        {script,             ale:script()}
+    ]),
+    [
+        "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">",
+        T
     ].
