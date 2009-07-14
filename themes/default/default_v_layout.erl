@@ -3,7 +3,7 @@
 -compile(export_all).
 
 render() ->
-    E = ale:r("default_v_layout", fun() ->
+    E = ale:c("default_v_layout", fun() ->
         {html, [{xmlns, "http://www.w3.org/1999/xhtml"}, {'xml:lang', "en"}, {lang, "en"}], [
             {head, [], [
                 {meta, [{'http-equiv', "content-type"}, {content, "text/html; charset=utf-8"}]},
@@ -44,7 +44,7 @@ render() ->
                 '$script'
             ]}
         ]}
-    end, [ehtmle]),
+    end, ehtmle),
 
     T = yaws_api:ehtml_apply(E, [
         {title_in_head,      h_theme:title_in_head()},
