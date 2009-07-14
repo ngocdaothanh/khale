@@ -34,6 +34,8 @@ types() ->
         modules()
     ).
 
+type_strings() -> [atom_to_list(T) || T <- types()].
+
 type_to_module(Type) ->
     list_to_atom("m_" ++ atom_to_list(Type)).
 

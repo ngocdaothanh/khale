@@ -2,35 +2,23 @@
 
 -compile(export_all).
 
+-routes([
+    get, "/",                    previews,
+    get, "/cagegories/UnixName", search_by_category,
+    get, "/keywords/Keyword",    search_by_keyword,
+
+    get,    "/show/Id", show,
+    delete, "/show/Id", delete,
+
+    get, "/edit/Id", edit,
+    put, "/edit/Id", update,
+
+    get,  "/new",      instructions,
+    get,  "/new/Type", new,
+    post, "/new/Type", new
+]).
+
 -include("sticky.hrl").
-
-routes() ->
-    Routes = [
-        get, "/",                    previews,
-        get, "/cagegories/UnixName", search_by_category,
-        get, "/keywords/Keyword",    search_by_keyword,
-
-        get,    "/show/Id", show,
-        delete, "/show/Id", delete,
-
-        get, "/edit/Id", edit,
-        put, "/edit/Id", update,
-
-        get, "/new", instructions
-    ],
-
-    lists:foldl(
-        fun(Type, Acc) ->
-            Uri = "/new/" ++ atom_to_list(Type),
-            % The order of Routes may be important
-            Acc ++ [
-                get,  Uri, new,
-                post, Uri, create
-            ]
-        end,
-        Routes,
-        m_content:types()
-    ).
 
 cached_actions_without_layout() -> [previews, instructions].
 
@@ -64,26 +52,22 @@ instructions() ->
     ale:app(title, ?T("Create new content")),
     ale:app(content_modules, m_content:modules()).
 
-new() ->
-    % Security has been checked in routes()
+new(Type) ->
+    check_type(Type).
 
-    Type = type_for_new_or_create(),
-    ale:app(type, Type),
-    ale:app(partial_new, list_to_atom("p_" ++ Type ++ "_new")).
-
-create() ->
-    % Security has been checked in routes()
-
-    Type = type_for_new_or_create(),
-    ale:app(type, Type),
-    ale:app(partial_new, list_to_atom("p_" ++ Type ++ "_new")),
+create(Type) ->
+    check_type(Type),
     ale:put(ale, view, v_content_new).
 
-type_for_new_or_create() ->
-    Arg = ale:arg(),
-    Uri = Arg#arg.server_path,
-    "/new/" ++ Type = Uri,
-    Type.
+check_type(Type) ->
+    % Avoid list_to_atom hack
+    case lists:member(Type, m_content:type_strings()) of
+        false -> erlang:error(invalid_content_type);
+
+        true  ->
+            ale:app(type, Type),
+            ale:app(partial_new, list_to_atom("p_" ++ Type ++ "_new"))
+    end.
 
 %-------------------------------------------------------------------------------
 
