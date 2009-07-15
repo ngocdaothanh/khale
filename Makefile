@@ -2,7 +2,7 @@
 # collect routes from them (-pa ebin must be specified)
 compile:
 	erl -make
-	erl -noshell -pa ebin -s ale_routes_gen gen -s init stop
+	erl -noshell -pa ebin -s ale_routes_gen gen -s ale_cache_is_cached_gen gen -s init stop
 	erl -make
 
 clean:

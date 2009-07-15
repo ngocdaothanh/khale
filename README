@@ -1,20 +1,15 @@
-Khale is a CMS based on Ale based on Yaws.
-
-Layout:
-* Currently there's no GUI to change the layout, e.g. the positions of blocks.
-  You have to edit the source code of the layout module manually.
+Khale is a Bliki CMS based on Ale.
 
 == Install and Start
 
-Install Erlang.
+Install Ale (http://github.com/ngocdaothanh/ale) to Erlang lib directory.
 
-Install Ale (http://github.com/ngocdaothanh/ale) and Yaws
-(http://wiki.github.com/klacke/yaws) to Erlang's lib directory
-
-Run "make" to build.
+Run "make" to build Khale.
 
 == Run
 
-Run "make migrate" to prepare DB schema.
+Copy nodes/sample to nodes/n1, then modify as you wish. From nodes/n1, run:
+* "make migrate" to prepare DB schema
+* "make start" to start
 
-Run "make start" to start.
+You may create nodes/n2, n3 etc. if you wish to run Khale on multiple nodes.

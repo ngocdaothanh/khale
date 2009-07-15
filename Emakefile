@@ -2,6 +2,10 @@
     {outdir, "ebin"}
 ]}.
 
+{'ale_is_cached.erl', [
+    {outdir, "ebin"}
+]}.
+
 {'sticky/*', [
     {i, "sticky"},
     {outdir, "ebin"}

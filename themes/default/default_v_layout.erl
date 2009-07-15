@@ -3,7 +3,7 @@
 -compile(export_all).
 
 render() ->
-    E = ale:c("default_v_layout", fun() ->
+    E = ale:cache("default_v_layout", fun() ->
         {html, [{xmlns, "http://www.w3.org/1999/xhtml"}, {'xml:lang', "en"}, {lang, "en"}], [
             {head, [], [
                 {meta, [{'http-equiv', "content-type"}, {content, "text/html; charset=utf-8"}]},

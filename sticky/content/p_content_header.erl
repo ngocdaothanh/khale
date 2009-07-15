@@ -6,7 +6,7 @@
 
 render(Content, Linked)->
     User = m_user:find(Content#content.user_id),
-    Uri = ale:url_for(content, show, integer_to_list(Content#content.id)),
+    Uri = ale:url_for(content, show, [Content#content.id]),
     [
         {h1, [], 
             case Linked of

@@ -2,9 +2,11 @@
 
 erl_crash.dump
 *.beam
-log/*.*
+
+nodes/sample/log/*
 nodes/n*
 
 ale_routes.erl
+ale_is_cached.erl
 mnesia
 docroot/static/tiny_mce

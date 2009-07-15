@@ -1,7 +1,5 @@
 -module(c_content).
 
--compile(export_all).
-
 -routes([
     get, "/",                    previews,
     get, "/cagegories/UnixName", search_by_category,
@@ -18,9 +16,13 @@
     post, "/new/Type", new
 ]).
 
--include("sticky.hrl").
+-caches([
+    action_without_layout, [previews, instructions]
+]).
 
-cached_actions_without_layout() -> [previews, instructions].
+-compile(export_all).
+
+-include("sticky.hrl").
 
 %-------------------------------------------------------------------------------
 
