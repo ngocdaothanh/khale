@@ -5,6 +5,7 @@
 -include_lib("sticky.hrl").
 
 render() ->
+    ale:app(title, ?T("Create new content")),
     [
         {p, [], ?T("Which type of content do you want to create?")},
         {ul, [],

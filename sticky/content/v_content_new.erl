@@ -7,7 +7,7 @@
 render() ->
     PartialNew = ale:app(partial_new),
     [
-        {form, [{method, post}, {action, ["/new/", ale:app(type)]}], [
+        {form, [{method, post}, {action, ale:url_for(content, create, [ale:params(content_type)])}], [
             PartialNew:render(),
             {input, [{type, hidden}, {name, "_method"}, {value, post}]},
             {input, [{type, submit}, {value, ?T("Save")}]}

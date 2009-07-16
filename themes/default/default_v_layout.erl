@@ -49,9 +49,9 @@ render() ->
     T = yaws_api:ehtml_apply(E, [
         {title_in_head,      h_theme:title_in_head()},
         {title_in_body,      h_theme:title_in_body()},
-        {content_for_layout, ale:content_for_layout()},
+        {content_for_layout, ale:app(content_for_layout)},
         {sidebar,            h_theme:region(sidebar)},
-        {script,             ale:script()}
+        {script,             ale:app(script)}
     ]),
     [
         "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">",
