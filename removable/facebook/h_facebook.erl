@@ -1,3 +1,5 @@
+%%% http://wiki.developers.facebook.com/index.php/Detecting_Connect_Status
+
 -module(h_facebook).
 
 -compile(export_all).
@@ -12,15 +14,14 @@ before_layout() ->
     ale:app_add_script("FB.init(\"" ++ ApiKey ++ "\", \"/static/xd_receiver.htm\");").
 
 login_link() ->
-    ale:app_add_script("
-$('#login_facebook').click(function() {
-    FB.Connect.requireSession(function() {
-        window.location.href = '/facebook'
-    })
-});
-    "),
-
+    Js = ale:ff("p_facebook_login.js", [ale:url_for(facebook, login)]),
+    ale:app_add_script(Js),
     {a, [{href, "#"}, {id, login_facebook}], "Facebook"}.
+
+logout_link() ->
+    Js = ale:ff("p_facebook_logout.js", [ale:url_for(user, logout)]),
+    ale:app_add_script(Js),
+    {a, [{href, "#"}, {id, logout_facebook}], ?T("Logout")}.
 
 render_user(User) ->
     Uid = User#user.data,
