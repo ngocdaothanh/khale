@@ -24,10 +24,9 @@ logout_link() ->
     ale:app_add_script(Js),
     {a, [{href, "#"}, {id, logout_facebook}], ?T("Logout")}.
 
-render(User) ->
+render(User, AvatarSize) ->
     Uid  = User#user.indexed_data,
-    Size = p_user:avatar_size(),
     {
-        {'fb:profile-pic', [{uid, Uid}, {width, Size}]},
+        {'fb:profile-pic', [{uid, Uid}, {width, AvatarSize}]},
         {'fb:name', [{uid, Uid}, {linked, false}, {useyou, false}]}
     }.

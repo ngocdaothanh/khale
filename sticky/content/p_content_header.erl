@@ -11,7 +11,6 @@ render(Content, Linked)->
         {h1, [], 
             case Linked of
                 false -> yaws_api:htmlize(Content#content.title);
-
                 true  -> {a, [{href, Path}], yaws_api:htmlize(Content#content.title)}
             end
         },

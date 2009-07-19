@@ -4,6 +4,8 @@
 
 -include("sticky.hrl").
 
+-define(AVATAR_SIZE, 30).
+
 render(User) ->
     render(User, []).
 
@@ -13,7 +15,7 @@ render(User, Extras) ->
 
         _ ->
             UserModule = m_user:type_to_module(User#user.type),
-            UserModule:render(User)
+            UserModule:render(User, ?AVATAR_SIZE)
     end,
 
     Avatar2 = case Avatar of
@@ -57,6 +59,3 @@ render(User, Extras) ->
             {td, [], Extras4}
         }
     ]}.
-
-%% Same as the size of avatars in Facebook Comment Box.
-avatar_size() -> 30.
