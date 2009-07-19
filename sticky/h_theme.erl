@@ -22,6 +22,12 @@ title_in_body() ->
         _         -> {h3, [], yaws_api:htmlize(Title)}
     end.
 
+flash() ->
+    case ale:flash() of
+        undefined -> "";
+        Flash     -> {'div', [{id, flash}], Flash}
+    end.
+
 comments() ->
     [
         {h2, [], ?T("Comments")},

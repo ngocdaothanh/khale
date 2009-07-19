@@ -10,15 +10,16 @@ render(_Id, _Config) ->
             undefined ->
                 [
                     {p, [], ?T("Login with")},
-                    {ul, [], [
-                        {li, [], h_facebook:login_link()}
-                    ]}
+                    {ul, [],
+                        [{li, [], M:login_link()} || M <- m_user:modules()]
+                    }
                 ];
 
             User ->
+                UserModule = m_user:type_to_module(User#user.type),
                 [
                     p_user:render(User), {br},
-                    h_facebook:logout_link()
+                    UserModule:logout_link()
                 ]
         end
     ],

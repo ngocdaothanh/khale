@@ -11,19 +11,21 @@ migrate() ->
 %% Returns the list of content modules. Content modules should define
 %% -content_module(true).
 modules() ->
-    filelib:fold_files(?ALE_ROOT ++ "/ebin", "^m_.*\.beam$", false,
-        fun(ModelFile, Acc) ->
-            Base = filename:basename(ModelFile, ".beam"),
-            Module = list_to_atom(Base),
-            code:ensure_loaded(Module),
-            Attributes = Module:module_info(attributes),
-            case proplists:get_value(content_module, Attributes) of
-                [true] -> [Module | Acc];
-                _      -> Acc
-            end
-        end,
-        []
-    ).
+    ale:cache("khale_content_modules", fun() ->
+        filelib:fold_files(?ALE_ROOT ++ "/ebin", "^m_.*\.beam$", false,
+            fun(ModelFile, Acc) ->
+                Base = filename:basename(ModelFile, ".beam"),
+                Module = list_to_atom(Base),
+                code:ensure_loaded(Module),
+                Attributes = Module:module_info(attributes),
+                case proplists:get_value(content_module, Attributes) of
+                    [true] -> [Module | Acc];
+                    _      -> Acc
+                end
+            end,
+            []
+        )
+    end).
 
 types() ->
     lists:map(

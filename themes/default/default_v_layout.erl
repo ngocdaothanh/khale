@@ -32,6 +32,7 @@ render() ->
                             {h1, [], {a, [{href, "/"}], "Khale"}}
                         },
 
+                        '$flash',
                         '$title_in_body',
                         '$content_for_layout'
                     ]},
@@ -51,6 +52,7 @@ render() ->
     T = yaws_api:ehtml_apply(E, [
         {title_in_head,      h_theme:title_in_head()},
         {heads,              ale:app(heads)},
+        {flash,              h_theme:flash()},
         {title_in_body,      h_theme:title_in_body()},
         {content_for_layout, ale:app(content_for_layout)},
         {sidebar,            h_theme:region(sidebar)},

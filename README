@@ -2,7 +2,11 @@ Khale is a Bliki CMS based on Ale.
 
 == Install and Start
 
-Install Ale (http://github.com/ngocdaothanh/ale) to Erlang lib directory.
+Install:
+* Ale (http://github.com/ngocdaothanh/ale)
+* MochiWeb (http://code.google.com/p/mochiweb)
+* ErlangOpenID (http://github.com/ngocdaothanh/erlangopenid)
+to Erlang lib directory.
 
 Run "make" to build Khale.
 

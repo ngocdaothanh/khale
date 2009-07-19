@@ -20,15 +20,15 @@ login() ->
     AppSecret = proplists:get_value("facebook_secret", Arg#arg.opaque),
 
     case uid(ApiKey, AppSecret, Arg) of
-        undefined -> ok;
+        undefined ->
+            ale:flash(?T("Could not login with Facebook.")),
+            ale:yaws(redirect_local, "/"),
+            ale:view(undefined);
 
         Uid ->
             User = m_facebook:login(Uid),
-            ale:session(user, User)
-    end,
-
-    ale:view_module(undefined),
-    ale:yaws(redirect_local, "/").
+            c_user:login(User)
+    end.
 
 %-------------------------------------------------------------------------------
 

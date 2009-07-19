@@ -4,7 +4,8 @@
 
 -include("sticky.hrl").
 
--define(GRAVATAR_SIZE, 16).
-
 render(User) ->
-    h_facebook:render_user(User).
+    UserModule = m_user:type_to_module(User#user.type),
+    UserModule:render(User).
+
+avatar_size() -> 50.

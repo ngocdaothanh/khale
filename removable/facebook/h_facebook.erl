@@ -1,6 +1,7 @@
 %%% http://wiki.developers.facebook.com/index.php/Detecting_Connect_Status
 
 -module(h_facebook).
+-user_module(true).
 
 -compile(export_all).
 
@@ -23,7 +24,7 @@ logout_link() ->
     ale:app_add_script(Js),
     {a, [{href, "#"}, {id, logout_facebook}], ?T("Logout")}.
 
-render_user(User) ->
+render(User) ->
     Uid = User#user.data,
     [
         {'fb:profile-pic', [{uid, Uid}, {'facebook-logo', true}, {size, square}]},

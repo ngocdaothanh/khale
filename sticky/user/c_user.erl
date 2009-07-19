@@ -16,4 +16,13 @@ index() ->
 logout() ->
     ale:view(undefined),
     ale:clear_session(),
+
+    ale:flash(?T("You have successfully logged out.")),
     ale:yaws(redirect_local, "/").
+
+%% Called by login modules.
+login(User) ->
+    ale:session(user, User),
+    ale:flash(?T("You have successfully logged in.")),
+    ale:yaws(redirect_local, "/"),
+    ale:view(undefined).

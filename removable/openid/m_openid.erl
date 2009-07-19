@@ -1,4 +1,4 @@
--module(m_facebook).
+-module(m_openid).
 
 -compile(export_all).
 
@@ -8,15 +8,15 @@
 %%
 %% If the user table already has this Uid, this function returns the corresponding
 %% record, otherwise it creates a new record.
-login(Uid) ->
+login(OpenId) ->
     F = fun() ->
-        Q = qlc:q([R || R <- mnesia:table(user), R#user.type == facebook, R#user.data == Uid]),
+        Q = qlc:q([R || R <- mnesia:table(user), R#user.type == openid, R#user.data == OpenId]),
         case m_helper:do(Q) of
             [R] -> R;
 
             [] ->
                 Id = m_helper:next_id(user),
-                R = #user{id = Id, type = facebook, data = Uid},
+                R = #user{id = Id, type = openid, data = OpenId},
                 mnesia:write(R),
                 R
         end

@@ -92,3 +92,5 @@ input[type="submit"] {
   font-weight: bold;
   margin-top: 7px;
 }
+
+#flash { border: solid #9c9 2px; background-color: yellow; padding: 5px; font-weight: bold; }
