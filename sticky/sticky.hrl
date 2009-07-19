@@ -2,7 +2,9 @@
 
 -include_lib("stdlib/include/qlc.hrl").
 
--record(user, {id, type, email}).
+-record(about, {id, short, long}).
+
+-record(user, {id, type, data}).
 
 -record(category, {id, name, unix_name, position}).
 -record(category_content, {category_id, content_id}).

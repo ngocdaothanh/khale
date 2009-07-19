@@ -13,9 +13,5 @@ find(Id) ->
     User.
 
 all() ->
-    Q1 = qlc:q([U || U <- mnesia:table(user)]),
-    Q2 = qlc:keysort(1 + 1, Q1, [{order, ascending}]),    % sort by id (created order)
-    m_helper:do(Q2).
-
-helper_module(User) ->
-    list_to_atom("h_" ++ atom_to_list(User#user.type)).
+    Q = qlc:q([U || U <- mnesia:table(user)]),
+    m_helper:do(Q).

@@ -21,3 +21,9 @@ title_in_body() ->
         undefined -> "";
         _         -> {h3, [], yaws_api:htmlize(Title)}
     end.
+
+comments() ->
+    [
+        {h2, [], ?T("Comments")},
+        {'fb:comments', []}
+    ].

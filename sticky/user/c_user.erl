@@ -1,17 +1,19 @@
 -module(c_user).
 
 -routes([
-    get, "/users", index,
-    get, "/login", login
+    get, "/users",  index,
+    get, "/logout", logout
 ]).
 
 -compile(export_all).
 
--include_lib("ale/include/ale.hrl").
+-include_lib("sticky.hrl").
 
 index() ->
     ale:app(title, ?T("User list")),
     ale:app(users, m_user:all()).
 
-login() ->
-    ale:app(title, ?T("Login")).
+logout() ->
+    ale:view(undefined),
+    ale:clear_session(),
+    ale:yaws(redirect_local, "/").

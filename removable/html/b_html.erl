@@ -3,4 +3,4 @@
 -compile(export_all).
 
 render(_Id, Data) ->
-    {"About", "<p>This site is...</p>"}.
+    {"Notice", "<p>This is a notice...</p>"}.

@@ -4,7 +4,7 @@
 
 render() ->
     E = ale:cache("default_v_layout", fun() ->
-        {html, [{xmlns, "http://www.w3.org/1999/xhtml"}, {'xml:lang', "en"}, {lang, "en"}], [
+        {html, [{xmlns, "http://www.w3.org/1999/xhtml"}, {'xmlns:fb', "http://www.facebook.com/2008/fbml"}], [
             {head, [], [
                 {meta, [{'http-equiv', "content-type"}, {content, "text/html; charset=utf-8"}]},
                 {meta, [{name, "description"}, {content, "CMS based on Ale based on Yaws"}]},
@@ -20,12 +20,14 @@ render() ->
 
                 {script, [{type, "text/javascript"}, {src, "/static/js/jquery.js"}]},
                 {script, [{type, "text/javascript"}, {src, "/static/tiny_mce/tiny_mce.js"}]},
-                {script, [{type, "text/javascript"}, {src, "/static/js/tiny_mce_config.js"}]}
+                {script, [{type, "text/javascript"}, {src, "/static/js/tiny_mce_config.js"}]},
+
+                '$heads'
             ]},
 
             {body, [], [
                 {'div', [{id, container}], [
-                    {'div', [{id, content_for_layout}], [
+                    {'div', [{id, main}], [
                         {'div', [{id, header}],
                             {h1, [], {a, [{href, "/"}], "Khale"}}
                         },
@@ -41,17 +43,18 @@ render() ->
                     ]}
                 ]},
 
-                '$script'
+                '$scripts'
             ]}
         ]}
     end, ehtmle),
 
     T = yaws_api:ehtml_apply(E, [
         {title_in_head,      h_theme:title_in_head()},
+        {heads,              ale:app(heads)},
         {title_in_body,      h_theme:title_in_body()},
         {content_for_layout, ale:app(content_for_layout)},
         {sidebar,            h_theme:region(sidebar)},
-        {script,             ale:app(script)}
+        {scripts,            ale:app(scripts)}
     ]),
     [
         "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">",
