@@ -15,18 +15,19 @@ before_layout() ->
     ale:app_add_script("FB.init(\"" ++ ApiKey ++ "\", \"/static/xd_receiver.htm\");").
 
 login_link() ->
-    Js = ale:ff("p_facebook_login.js", [ale:url_for(facebook, login)]),
+    Js = ale:ff("p_facebook_login.js", [ale:path(facebook, login)]),
     ale:app_add_script(Js),
     {a, [{href, "#"}, {id, login_facebook}], "Facebook"}.
 
 logout_link() ->
-    Js = ale:ff("p_facebook_logout.js", [ale:url_for(user, logout)]),
+    Js = ale:ff("p_facebook_logout.js", [ale:path(user, logout)]),
     ale:app_add_script(Js),
     {a, [{href, "#"}, {id, logout_facebook}], ?T("Logout")}.
 
 render(User) ->
-    Uid = User#user.data,
-    [
-        {'fb:profile-pic', [{uid, Uid}, {'facebook-logo', true}, {size, square}]},
-        {'fb:name', [{uid, Uid}, {useyou, false}]}
-    ].
+    Uid  = User#user.indexed_data,
+    Size = p_user:avatar_size(),
+    {
+        {'fb:profile-pic', [{uid, Uid}, {width, Size}]},
+        {'fb:name', [{uid, Uid}, {linked, false}, {useyou, false}]}
+    }.

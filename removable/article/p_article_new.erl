@@ -7,6 +7,8 @@
 render() ->
     ale:app(title, ?T("Create new article")),
     [
+        {p, [], ?T("You can create content of type article to post a notice, a tutorial etc. You can allow everyone to freely edit to improve it.")},
+
         {span, [{class, label}], ?T("Title")},
         {input, [{type, text}, {name, title}]},
 

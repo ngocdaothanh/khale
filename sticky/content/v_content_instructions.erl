@@ -17,6 +17,6 @@ render() ->
 render_one(ContentModule) ->
     [$m, $_ | Type] = atom_to_list(ContentModule),
     [
-        {a, [{href, ale:url_for(content, new, [Type])}], ContentModule:name()}, ": ",
+        {a, [{href, ale:path(content, new, [Type])}], ContentModule:name()}, ": ",
         ContentModule:instruction()
     ].

@@ -1,8 +1,9 @@
 -module(c_user).
 
 -routes([
-    get, "/users",  index,
-    get, "/logout", logout
+    get, "/users",     index,
+    get, "/logout",    logout,
+    get, "/users/:id", show
 ]).
 
 -compile(export_all).
@@ -10,7 +11,6 @@
 -include_lib("sticky.hrl").
 
 index() ->
-    ale:app(title, ?T("User list")),
     ale:app(users, m_user:all()).
 
 logout() ->
@@ -26,3 +26,7 @@ login(User) ->
     ale:flash(?T("You have successfully logged in.")),
     ale:yaws(redirect_local, "/"),
     ale:view(undefined).
+
+show() ->
+    Id = list_to_integer(ale:params(id)),
+    ale:app(user, m_user:find(Id)).

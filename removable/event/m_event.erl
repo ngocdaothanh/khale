@@ -5,11 +5,7 @@
 
 -include("sticky.hrl").
 
-name() ->
-    ?T("Event").
-
-instruction() ->
-    ?T("Select if you want to invite people to participate in an event such as a party, AND you want to create a list of participants so that you know the exact number.").
+name() -> ?T("Event").
 
 create(UserId, CategoryIds, Title, Invitation, DeadLine) ->
     Id = m_helper:next_id(content),

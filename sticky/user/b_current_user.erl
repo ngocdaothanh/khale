@@ -17,10 +17,7 @@ render(_Id, _Config) ->
 
             User ->
                 UserModule = m_user:type_to_module(User#user.type),
-                [
-                    p_user:render(User), {br},
-                    UserModule:logout_link()
-                ]
+                p_user:render(User, [UserModule:logout_link()])
         end
     ],
     Content = [
@@ -34,5 +31,5 @@ render(_Id, _Config) ->
 new_content_link(ContentModule) ->
     [$m, $_ | Type] = atom_to_list(ContentModule),
     [
-        {a, [{href, ale:url_for(content, new, [Type])}], ContentModule:name()}
+        {a, [{href, ale:path(content, new, [Type])}], ContentModule:name()}
     ].

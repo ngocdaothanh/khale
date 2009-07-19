@@ -1,4 +1,5 @@
 %%% Please install http://github.com/pib/erlangopenid
+%%% http://openid.net/specs/openid-simple-registration-extension-1_0.html
 
 -module(c_openid).
 
@@ -19,9 +20,10 @@ login() ->
         post ->
             OpenId = ale:params(openid),
             inets:start(),
-            ReturnUrl = "http://localhost:3000/openid_return",  %ale:url_for(return),
+            ReturnUrl = "http://localhost:3000/openid_return",  %ale:path(return),
             RemoteUrl = openid:start_authentication(OpenId, ReturnUrl),
-            ale:yaws(redirect, RemoteUrl),
+            RemoteUrl2 = RemoteUrl ++ "&openid.sreg.optional=email,fullname",
+            ale:yaws(redirect, RemoteUrl2),
             ale:view(undefined)
     end.
 
@@ -31,12 +33,13 @@ return() ->
     case openid:finish_authentication(Params) of
         {ok, OpenId} ->
             OpenId2 = shorten(OpenId),
-            User = m_openid:login(OpenId2),
+            Email = proplists:get_value("openid.sreg.email", Params),
+            User = m_openid:login(OpenId2, Email),
             c_user:login(User);
 
         _ ->
             ale:flash(?T("Could not login with the provided OpenID.")),
-            ale:yaws(redirect_local, ale:url_for(login)),
+            ale:yaws(redirect_local, ale:path(login)),
             ale:view(undefined)
     end.
 

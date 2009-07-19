@@ -39,3 +39,5 @@ find(Id) ->
 all() ->
     Q = qlc:q([U || U <- mnesia:table(user)]),
     m_helper:do(Q).
+
+num_contents(User) -> 2.

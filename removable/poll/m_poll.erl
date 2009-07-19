@@ -5,11 +5,7 @@
 
 -include("sticky.hrl").
 
-name() ->
-    ?T("Poll").
-
-instruction() ->
-    ?T("A poll is a question with a set of selectable responses. Select if you want to ask a short question and limit the number of responses.").
+name() -> ?T("Poll").
 
 create(UserId, CategoryIds, Title, AbstractAndQuestion, Selections) ->
     Id = m_helper:next_id(content),

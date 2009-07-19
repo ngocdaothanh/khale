@@ -5,11 +5,7 @@
 
 -include("sticky.hrl").
 
-name() ->
-    ?T("Q/A").
-
-instruction() ->
-    ?T("A Q/A is a collection of questions, answers and discussions. Select if you want to ask something and would like everyone to freely answer or discuss.").
+name() -> ?T("Q/A").
 
 create(UserId, CategoryIds, Title, AbstractAndQuestion) ->
     Id = m_helper:next_id(content),

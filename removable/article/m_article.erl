@@ -5,11 +5,7 @@
 
 -include("sticky.hrl").
 
-name() ->
-    ?T("Article").
-
-instruction() ->
-    ?T("Select if you want to post an article, a notice, a tutorial etc. You can allow everyone to freely edit to improve it.").
+name() -> ?T("Article").
 
 create(UserId, CategoryIds, Title, Abstract, Body) ->
     Id = m_helper:next_id(content),
