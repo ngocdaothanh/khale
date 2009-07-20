@@ -15,7 +15,7 @@ create(Name, UnixName, Position) ->
 
 all() ->
     Q1 = qlc:q([C || C <- mnesia:table(category)]),
-    Q2 = qlc:keysort(1 + 3, Q1, [{order, ascending}]),    % sort by position
+    Q2 = qlc:keysort(1 + 4, Q1, [{order, ascending}]),    % sort by position
     m_helper:do(Q2).
 
 find_by_unix_name(UnixName) ->

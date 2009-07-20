@@ -4,9 +4,7 @@
 
 -include("sticky.hrl").
 
-migrate() ->
-    m_helper:create_table(content,         record_info(fields, content)),
-    m_helper:create_table(content_version, record_info(fields, content_version)).
+migrate() -> m_helper:create_table(content, record_info(fields, content)).
 
 %% Returns the list of content modules. Content modules should define
 %% -content_module(true).
@@ -38,19 +36,35 @@ types() ->
 
 type_strings() -> [atom_to_list(T) || T <- types()].
 
-type_to_module(Type) ->
-    list_to_atom("m_" ++ atom_to_list(Type)).
+type_to_module(Type) -> list_to_atom("m_" ++ atom_to_list(Type)).
 
-all() ->
-    Stickies = all(true),
-    NonStickies = all(false),
-    Stickies ++ NonStickies.
+more(LastContentUpdatedAt) ->
+    Stickies = case LastContentUpdatedAt of
+        undefined -> stickies();
+        _         -> []
+    end,
+    Stickies ++ nonstickies(LastContentUpdatedAt).
 
-%% Sticky: bool()
-all(Sticky) ->
-    Q1 = qlc:q([C || C <- mnesia:table(content), C#content.sticky == Sticky]),
-    Q2 = qlc:keysort(1 + 7, Q1, [{order, ascending}]),    % sort by updated_at
+%% Returns sticky contents sorted reveresely by sticky strength.
+stickies() ->
+    Q1 = qlc:q([C || C <- mnesia:table(content), C#content.sticky > 0]),
+    Q2 = qlc:keysort(1 + 8, Q1, [{order, descending}]),
     m_helper:do(Q2).
+
+%% Returns nonsticky contents sorted reveresely by updated_at.
+nonstickies(LastContentUpdatedAt) ->
+    {atomic, Contents} = mnesia:transaction(fun() ->
+        Q1 = case LastContentUpdatedAt of
+            undefined -> qlc:q([R || R <- mnesia:table(content), R#content.sticky == 0]);
+            _         -> qlc:q([R || R <- mnesia:table(content), R#content.sticky == 0, R#content.updated_at > LastContentUpdatedAt])
+        end,
+        Q2 = qlc:keysort(1 + 7, Q1, [{order, descending}]),
+        QC = qlc:cursor(Q2),
+        Contents2 = qlc:next_answers(QC, 10),
+        qlc:delete_cursor(QC),
+        Contents2
+    end),
+    Contents.
 
 save(Content, CategoryIds) ->
     mnesia:transaction(fun() ->

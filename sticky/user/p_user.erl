@@ -4,7 +4,7 @@
 
 -include("sticky.hrl").
 
--define(AVATAR_SIZE, 30).
+-define(AVATAR_SIZE, 32).
 
 render(User) ->
     render(User, []).
@@ -50,9 +50,9 @@ render(User, Extras) ->
     end,
 
     Id = User#user.id,
-    {table, [], [
+    {table, [{class, user}], [
         {tr, [], [
-            {td, [{rowspan, 2}], Avatar2},
+            {td, [{class, avatar}, {rowspan, 2}], Avatar2},
             {td, [], {a, [{href, ale:path(user, show, [Id])}], Name}}
         ]},
         {tr, [],

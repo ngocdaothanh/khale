@@ -17,3 +17,8 @@ Copy nodes/sample to nodes/n1, then modify as you wish. From nodes/n1, run:
 * "make start" to start
 
 You may create nodes/n2, n3 etc. if you wish to run Khale on multiple nodes.
+
+== TODO
+
+* Tag
+* Search by title, tag, content etc.

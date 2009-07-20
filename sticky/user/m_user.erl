@@ -31,13 +31,25 @@ modules() ->
 
 type_to_module(Type) -> list_to_atom([$h, $_ | atom_to_list(Type)]).
 
+more(LastUserId) ->
+    {atomic, Users} = mnesia:transaction(fun() ->
+        Q1 = case LastUserId of
+            undefined -> qlc:q([R || R <- mnesia:table(user)]);
+            _         -> qlc:q([R || R <- mnesia:table(user), R#user.id < LastUserId])
+        end,
+        Q2 = qlc:keysort(1 + 1, Q1, [{order, descending}]),  % sort by id
+        QC = qlc:cursor(Q2),
+        Users2 = qlc:next_answers(QC, 10),
+        qlc:delete_cursor(QC),
+        Users2
+    end),
+    Users.
+
 find(Id) ->
     Q = qlc:q([U || U <- mnesia:table(user), U#user.id == Id]),
-    [User] = m_helper:do(Q),
-    User.
-
-all() ->
-    Q = qlc:q([U || U <- mnesia:table(user)]),
-    m_helper:do(Q).
+    case m_helper:do(Q) of
+        [User] -> User;
+        _      -> undefined
+    end.
 
 num_contents(User) -> 2.

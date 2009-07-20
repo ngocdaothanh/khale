@@ -34,13 +34,13 @@ p { margin-top: 10px; }
 
 #container {
   margin: 5px auto;
-  width: 800px;
+  width: 960px;
   border: solid #EEE 1px;
   padding: 5px;
 }
 
 #main {
-  width: 550px;
+  width: 710px;
   float: left;
   padding: 5px;
 }
@@ -68,7 +68,7 @@ ul.previews, ul.region {
   padding-left: 0px;
 }
 
-ul.previews li.preview, ul.region li.block {
+ul.previews li.preview, ul.region li.block, ul#users li {
   list-style-type: none;
   margin-left: 0px;
   margin-bottom: 1em;
@@ -94,3 +94,5 @@ input[type="submit"] {
 }
 
 #flash { border: solid #9c9 2px; background-color: yellow; padding: 5px; font-weight: bold; }
+
+td.avatar { padding-right: 5px; }

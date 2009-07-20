@@ -11,13 +11,12 @@
     get, "/edit/:id", edit,
     put, "/edit/:id", update,
 
-    get,  "/new",      instructions,
     get,  "/new/:content_type", new,
     post, "/new/:content_type", create
 ]).
 
 -caches([
-    action_without_layout, [previews, instructions]
+    action_without_layout, [previews]
 ]).
 
 -compile(export_all).
@@ -27,7 +26,7 @@
 %-------------------------------------------------------------------------------
 
 previews() ->
-    Contents = m_content:all(),
+    Contents = m_content:more(undefined),
     ale:app(contents, Contents).
 
 search_by_category() ->
@@ -53,8 +52,6 @@ delete() ->
     "delete" ++ Id.
 
 %-------------------------------------------------------------------------------
-
-instructions() -> ale:app(content_modules, m_content:modules()).
 
 new() -> check_type().
 
