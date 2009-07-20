@@ -1,9 +1,13 @@
+%%% There's not much need to search by content type.
+
 -module(c_content).
 
 -routes([
     get, "/",                      previews,
-    get, "/cagegories/:unix_name", search_by_category,
-    get, "/keywords/:keyword",     search_by_keyword,
+    get, "/cagegories/:unix_name", previews_by_category,
+
+    get, "/previews_more/:last_content_updated_at",         previews_more,
+    get, "/cagegories/:unix_name/:last_content_updated_at", previews_more_by_category,
 
     get,    "/show/:id", show,
     delete, "/show/:id", delete,
@@ -25,18 +29,25 @@
 
 %-------------------------------------------------------------------------------
 
-previews() ->
-    Contents = m_content:more(undefined),
-    ale:app(contents, Contents).
+previews()                  -> all_previews().
+previews_by_category()      -> all_previews().
+previews_more()             -> all_previews().
+previews_more_by_category() -> all_previews().
 
-search_by_category() ->
-    UnixName = ale:params(unix_name),
-    Category = m_category:find_by_unix_name(UnixName),
-    [].
+all_previews() ->
+    UnixName = case ale:params(unix_name) of
+        undefined -> undefined;
+        Name -> Name
+    end,
 
-search_by_keyword() ->
-    Keyword = ale:params(keyword),
-    [].
+    LastContentUpdatedAt = case ale:params(last_content_updated_at) of
+        undefined -> undefined;
+        YMDHMiS   -> h_content:string_to_timestamp(YMDHMiS)
+    end,
+
+    Contents = m_content:more(UnixName, LastContentUpdatedAt),
+    ale:app(contents, Contents),
+    ale:view(previews).
 
 %-------------------------------------------------------------------------------
 

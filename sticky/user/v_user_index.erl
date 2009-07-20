@@ -14,7 +14,7 @@ render() ->
 
         false ->
             LastUser = lists:last(Users),
-            {a, [{id, users_more}, {href, ale:path(more, [LastUser#user.id])}], ?T("More...")}
+            {a, [{id, users_more}, {href, ale:path(index, [LastUser#user.id])}], ?T("More...")}
     end,
 
     {ul, [{id, users}], [

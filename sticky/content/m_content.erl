@@ -38,7 +38,7 @@ type_strings() -> [atom_to_list(T) || T <- types()].
 
 type_to_module(Type) -> list_to_atom("m_" ++ atom_to_list(Type)).
 
-more(LastContentUpdatedAt) ->
+more(_UnixName, LastContentUpdatedAt) ->
     Stickies = case LastContentUpdatedAt of
         undefined -> stickies();
         _         -> []
@@ -56,7 +56,7 @@ nonstickies(LastContentUpdatedAt) ->
     {atomic, Contents} = mnesia:transaction(fun() ->
         Q1 = case LastContentUpdatedAt of
             undefined -> qlc:q([R || R <- mnesia:table(content), R#content.sticky == 0]);
-            _         -> qlc:q([R || R <- mnesia:table(content), R#content.sticky == 0, R#content.updated_at > LastContentUpdatedAt])
+            _         -> qlc:q([R || R <- mnesia:table(content), R#content.sticky == 0, R#content.updated_at < LastContentUpdatedAt])
         end,
         Q2 = qlc:keysort(1 + 7, Q1, [{order, descending}]),
         QC = qlc:cursor(Q2),

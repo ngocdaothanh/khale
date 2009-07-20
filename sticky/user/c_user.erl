@@ -1,22 +1,21 @@
 -module(c_user).
 
 -routes([
-    get, "/users",               index,
-    get, "/users_more/:last_id", more,
-    get, "/logout",              logout,
-    get, "/users/:id",           show
+    get, "/users",                    index,
+    get, "/users_more/:last_user_id", index,
+    get, "/logout",                   logout,
+    get, "/users/:id",                show
 ]).
 
 -compile(export_all).
 
 -include_lib("sticky.hrl").
 
-index() -> ale:app(users, m_user:more(undefined)).
-
-more() ->
-    LastId = list_to_integer(ale:params(last_id)),
-    ale:app(users, m_user:more(LastId)),
-    ale:view(index).
+index() ->
+    case ale:params(last_user_id) of
+        undefined   -> ale:app(users, m_user:more(undefined));
+        LastUserIdS -> ale:app(users, m_user:more(list_to_integer(LastUserIdS)))
+    end.
 
 logout() ->
     ale:view(undefined),
