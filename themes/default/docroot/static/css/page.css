@@ -63,12 +63,12 @@ p { margin-top: 10px; }
   height: 400px;
 }
 
-ul.previews, ul.region {
+ul.previews, ul.region, ul#users, ul.comments {
   margin-left: 0px;
   padding-left: 0px;
 }
 
-ul.previews li.preview, ul.region li.block, ul#users li {
+ul.previews li.preview, ul.region li.block, ul#users li, ul.comments li.comment {
   list-style-type: none;
   margin-left: 0px;
   margin-bottom: 1em;
@@ -76,6 +76,8 @@ ul.previews li.preview, ul.region li.block, ul#users li {
   padding-bottom: 1em;
   border-bottom: solid 1px #EEE;
 }
+
+li.odd  { background-color: #EEE; }
 
 input[type="text"] {
   width: 99%;

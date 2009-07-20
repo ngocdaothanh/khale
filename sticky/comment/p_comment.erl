@@ -5,7 +5,7 @@
 -include("sticky.hrl").
 
 render(Comment, Editable) ->
-    User = user:find(Comment#comment.user_id),
+    User = m_user:find(Comment#comment.user_id),
     [
         p_user:render(User),
         Comment#comment.body

@@ -2,13 +2,15 @@
 %%% epgsql (http://bitbucket.org/will/epgsql/) to connect to PostgreSQL.
 %%%
 %%% This is semiautomatic.
+%%%
+%%% It may be optimal to keep strings as binaries.
 
 -module(from_openkh).
 
 -compile(export_all).
 
 -include("sticky.hrl").
--include("../../removable/article/article.hrl").
+-include("../../../removable/article/article.hrl").
 
 code_change() ->
     Host     = "localhost",
@@ -22,6 +24,7 @@ code_change() ->
     migrate_users(C),
     migrate_catagories(C),
     migrate_articles(C),
+    migrate_comments(C),
 
     pgsql:close(C).
 
@@ -66,8 +69,9 @@ migrate_articles(C) ->
             UpdatedAt2 = timestamp_pg_to_mn(UpdatedAt),
 
             ContentId = m_helper:next_id(content),
-            V = migrate_article_versions(C, Id, ContentId),
+            content_id_pg_to_mn(Id, ContentId),
 
+            V = migrate_article_versions(C, Id, ContentId),
             R = #content{
                 id = ContentId, user_id = V#article_version.user_id,
                 type = article, title = V#article_version.title,
@@ -94,7 +98,7 @@ migrate_article_versions(C, NodeId, ContentId) ->
             CreatedAt2 = timestamp_pg_to_mn(CreatedAt),
 
             File = "/tmp/khale/article/" ++ integer_to_list(NodeId) ++ "_" ++ integer_to_list(AVId) ++ ".yml",
-            %file:write_file(, Yaml),
+            %file:write_file(File, Yaml),
 
             {ok, BAbstract} = file:read_file(File ++ ".abstract.txt"),
             {ok, BBody}     = file:read_file(File ++ ".body.txt"),
@@ -114,14 +118,54 @@ migrate_article_versions(C, NodeId, ContentId) ->
     ),
     lists:last(Vs).
 
+migrate_comments(C) ->
+    {ok, _Columns, Rows} = pgsql:equery(C, "SELECT node_id, message, user_id, ip, created_at, updated_at FROM comments ORDER BY id"),
+    lists:foreach(
+        fun(Row) ->
+            {PgNodeId, Message, PgUserId, Ip, CreatedAt, UpdatedAt} = Row,
+            case content_id_pg_to_mn(PgNodeId) of
+                undefined -> ok;
+
+                ContentId ->
+                    Body       = binary_to_list(Message),
+                    UserId     = user_id_pg_to_mn(PgUserId),
+                    Ip2        = binary_to_list(Ip),
+                    CreatedAt2 = timestamp_pg_to_mn(CreatedAt),
+                    UpdatedAt2 = timestamp_pg_to_mn(UpdatedAt),
+
+                    Id = m_helper:next_id(comment),
+                    Comment = #comment{
+                        id = Id, user_id = UserId, content_id = ContentId,
+                        body = Body, created_at = CreatedAt2,
+                        updated_at = UpdatedAt2, ip = Ip2
+                    },
+                    mnesia:transaction(fun() -> mnesia:write(Comment) end)
+            end
+        end,
+        Rows
+    ).
+
+%-------------------------------------------------------------------------------
+
 timestamp_pg_to_mn(Timestamp) ->
-    {Date, {H, M, S}} = Timestamp,
+    {Date, {H, M, S}} = Timestamp,  % S is a float
     {Date, {H, M, round(S)}}.
 
 user_id_pg_to_mn(PgId, MnId) -> put({user_id, PgId}, MnId).
-    
+
 user_id_pg_to_mn(PgId) ->
     case get({user_id, PgId}) of
-        undefined -> 1;
+        undefined -> 1;  % User deleted?
         X         -> X
+    end.
+
+content_id_pg_to_mn(PgId, MnId) -> put({content_id, PgId}, MnId).
+
+content_id_pg_to_mn(PgId) ->
+    case get({content_id, PgId}) of
+        undefined ->
+            io:format("Content was not migrated: ~p~n", [PgId]),
+            undefined;
+
+        X -> X
     end.

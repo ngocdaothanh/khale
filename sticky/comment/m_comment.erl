@@ -17,12 +17,18 @@ create(UserId, ContentType, ContentId, Body) ->
         created_at = CreatedAt, updated_at = CreatedAt}.
 
 last(ContentId) ->
-    Q1 = qlc:q([C || C <- mnesia:table(comment), C#comment.content_id == ContentId]),
-    Q2 = qlc:keysort(1 + 5, Q1, [{order, ascending}, {size, 1}]),
-    case m_helper:do(Q2) of
-        [Comment] -> Comment;
-        _ -> undefined
-    end.
+    {atomic, Comment} = mnesia:transaction(fun() ->
+        Q1 = qlc:q([C || C <- mnesia:table(comment), C#comment.content_id == ContentId]),
+        Q2 = qlc:keysort(1 + 5, Q1, [{order, descending}]),
+        QC = qlc:cursor(Q2),
+        Comment2 = case qlc:next_answers(QC, 1) of
+            [Comment3] -> Comment3;
+            _          -> undefined
+        end,
+        qlc:delete_cursor(QC),
+        Comment2
+    end),
+    Comment.
 
 all(ContentId) ->
     Q1 = qlc:q([C || C <- mnesia:table(comment), C#comment.content_id == ContentId]),

@@ -1,6 +1,9 @@
 -include_lib("ale/include/ale.hrl").
-
 -include_lib("stdlib/include/qlc.hrl").
+
+-define(MNESIA_WAIT_FOR_TABLES_TIMEOUT, 20000).
+-define(TABLE_OPTIONS, [{disc_copies, [node()]}]).
+-define(ITEMS_PER_PAGE, 10).
 
 -record(about, {id, short, long}).
 
@@ -15,8 +18,3 @@
 -record(comment, {id, user_id, content_id, body, created_at, updated_at, ip}).
 
 -record(block, {id, type, data, region, position}).
-
--define(MNESIA_WAIT_FOR_TABLES_TIMEOUT, 20000).
--define(TABLE_OPTIONS, [{disc_copies, [node()]}]).
-
--define(ITEMS_PER_PAGE, 10).

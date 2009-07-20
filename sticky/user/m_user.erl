@@ -52,4 +52,7 @@ find(Id) ->
         _      -> undefined
     end.
 
-num_contents(User) -> 2.
+num_contents(User) ->
+    Q = qlc:q([undefined || R <- mnesia:table(content), R#content.user_id == User#user.id]),
+    L = m_helper:do(Q),
+    length(L).

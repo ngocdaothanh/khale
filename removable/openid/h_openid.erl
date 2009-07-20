@@ -14,5 +14,5 @@ render(User, AvatarSize) ->
     {Email, Fullname} = User#user.extra_data,
     {
         ale:gravatar(Email, AvatarSize, OpenId),
-        yaws_api:htmlize(Fullname)
+        {b, [], yaws_api:htmlize(Fullname)}
     }.
