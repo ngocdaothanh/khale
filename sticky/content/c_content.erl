@@ -9,6 +9,8 @@
     get, "/previews_more/:last_content_updated_at",         previews_more,
     get, "/cagegories/:unix_name/:last_content_updated_at", previews_more_by_category,
 
+    get, "/titles_more/:last_content_updated_at", titles_more,
+
     get,    "/show/:id", show,
     delete, "/show/:id", delete,
 
@@ -29,12 +31,13 @@
 
 %-------------------------------------------------------------------------------
 
-previews()                  -> all_previews().
-previews_by_category()      -> all_previews().
-previews_more()             -> all_previews().
-previews_more_by_category() -> all_previews().
+previews()                  -> previews_or_titles(previews).
+previews_by_category()      -> previews_or_titles(previews).
+previews_more()             -> previews_or_titles(previews).
+previews_more_by_category() -> previews_or_titles(previews).
+titles_more()               -> previews_or_titles(titles).
 
-all_previews() ->
+previews_or_titles(View) ->
     UnixName = case ale:params(unix_name) of
         undefined -> undefined;
         Name -> Name
@@ -47,7 +50,7 @@ all_previews() ->
 
     Contents = m_content:more(UnixName, LastContentUpdatedAt),
     ale:app(contents, Contents),
-    ale:view(previews).
+    ale:view(View).
 
 %-------------------------------------------------------------------------------
 

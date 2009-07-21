@@ -15,7 +15,10 @@ start(_SC, Nodes) ->
     ignore.
 
 before_action(_Controller, _Action) ->
-    ale:layout_module(default_v_layout),
+    case ale:method() == get andalso ale:params(without_layout) == "true" of
+        true  -> ok;
+        false -> ale:layout_module(default_v_layout)
+    end,
     false.
 
 error_404() ->

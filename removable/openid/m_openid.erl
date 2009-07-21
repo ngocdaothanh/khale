@@ -13,6 +13,7 @@ login(OpenId, Email, Fullname) ->
         Q = qlc:q([R || R <- mnesia:table(user), R#user.type == openid, R#user.indexed_data == OpenId]),
         case m_helper:do(Q) of
             [R] ->
+                % Update Email and Fullname
                 R2 = R#user{extra_data = {Email, Fullname}},
                 mnesia:write(R2),
                 R2;

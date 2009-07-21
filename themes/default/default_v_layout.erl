@@ -20,7 +20,7 @@ render() ->
 
                 {script, [{type, "text/javascript"}, {src, "/static/js/jquery.js"}]},
                 {script, [{type, "text/javascript"}, {src, "/static/tiny_mce/tiny_mce.js"}]},
-                {script, [{type, "text/javascript"}, {src, "/static/js/tiny_mce_config.js"}]},
+                {script, [{type, "text/javascript"}, {src, "/static/js/khale.js"}]},
 
                 '$heads'
             ]},

@@ -6,14 +6,14 @@
 
 render() ->
     Contents = ale:app(contents),
-    NumContents = length(Contents),
-    More = case NumContents < ?ITEMS_PER_PAGE of
+
+    More = case length(Contents) < ?ITEMS_PER_PAGE of
         true -> [];
 
         false ->
             LastContent = lists:last(Contents),
             LastContentUpdatedAt = h_content:timestamp_to_string(LastContent#content.updated_at),
-            {a, [{id, previews_more}, {href, ale:path(previews_more, [LastContentUpdatedAt])}], ?T("More...")}
+            {a, [{onclick, "return more(this)"}, {href, ale:path(previews_more, [LastContentUpdatedAt])}], ?T("More...")}
     end,
 
     [

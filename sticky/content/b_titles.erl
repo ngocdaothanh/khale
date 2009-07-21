@@ -5,10 +5,12 @@
 -include("sticky.hrl").
 
 render(_Id, _Config) ->
-    Body = ale:cache("b_titles/body", fun() ->
-        Contents = m_content:more(undefined, undefined),
-        {ul, [], 
-            [{li, [], {a, [{href, ale:path(content, show, [C#content.id])}], C#content.title}} || C <- Contents]
-        }
-    end, ehtml),
+    case ale:app(contents) of
+        undefined ->
+            Contents = m_content:more(undefined, undefined),
+            ale:app(contents, Contents);
+
+        _ -> ok
+    end,
+    Body = v_content_titles:render(),
     {?T("Recently Updated Titles"), Body}.

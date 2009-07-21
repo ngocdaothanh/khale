@@ -8,16 +8,15 @@ render() ->
     ale:app(title, ?T("Users")),
 
     Users = ale:app(users),
-    NumUsers = length(Users),
-    More = case NumUsers < ?ITEMS_PER_PAGE of
+    More = case length(Users) < ?ITEMS_PER_PAGE of
         true -> [];
 
         false ->
             LastUser = lists:last(Users),
-            {a, [{id, users_more}, {href, ale:path(index, [LastUser#user.id])}], ?T("More...")}
+            {a, [{onclick, "return more(this)"}, {href, ale:path(index, [LastUser#user.id])}], ?T("More...")}
     end,
 
-    {ul, [{id, users}], [
+    {ul, [{class, users}], [
         [{li, [], p_user:render(U)} || U <- Users],
         More
     ]}.
