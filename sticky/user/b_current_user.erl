@@ -9,7 +9,7 @@ render(_Id, _Config) ->
         case ale:session(user) of
             undefined ->
                 [
-                    {p, [], ?T("Login with")},
+                    {a, [{name, login}]}, {p, [], ?T("Login with")},
                     {ul, [],
                         [{li, [], M:login_link()} || M <- m_user:modules()]
                     }

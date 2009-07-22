@@ -6,22 +6,16 @@
 
 render() ->
     Contents = ale:app(contents),
-
-    More = case length(Contents) < ?ITEMS_PER_PAGE of
-        true -> [];
-
-        false ->
-            LastContent = lists:last(Contents),
+    h_application:more(
+        Contents, previews, preview,
+        fun render_content_preview/1,
+        fun(LastContent) ->
             LastContentUpdatedAt = h_content:timestamp_to_string(LastContent#content.updated_at),
-            {a, [{onclick, "return more(this)"}, {href, ale:path(previews_more, [LastContentUpdatedAt])}], ?T("More...")}
-    end,
+            ale:path(previews_more, [LastContentUpdatedAt])
+        end
+    ).
 
-    [
-        {ul, [{class, previews}], [{li, [{class, preview}], render_one(C)} || C <- Contents]},
-        More
-    ].
-
-render_one(Content) ->
+render_content_preview(Content) ->
     PreviewPartial = list_to_atom(
         "p_" ++
         atom_to_list(Content#content.type) ++

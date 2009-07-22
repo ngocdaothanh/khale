@@ -10,5 +10,5 @@ render() ->
     [
         About#about.long,
         {p, [], ?T("If you have any comment about this site (bug report, idea etc.), please write it here.")},
-        h_theme:comments()
+        h_application:comments()
     ].

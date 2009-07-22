@@ -5,18 +5,16 @@
 -include("sticky.hrl").
 
 render() ->
+    ale:app(title, ?T("Recently Updated Titles")),
+
     Contents = ale:app(contents),
-
-    More = case length(Contents) < ?ITEMS_PER_PAGE of
-        true -> [];
-
-        false ->
-            LastContent = lists:last(Contents),
+    h_application:more(
+        Contents, undefined, undefined,
+        fun(Content) ->
+            {a, [{href, ale:path(content, show, [Content#content.id])}], yaws_api:htmlize(Content#content.title)}
+        end,
+        fun(LastContent) ->
             LastContentUpdatedAt = h_content:timestamp_to_string(LastContent#content.updated_at),
-            {a, [{onclick, "return more(this)"}, {href, ale:path(content, titles_more, [LastContentUpdatedAt])}], ?T("More...")}
-    end,
-
-    [
-        {ul, [], [{li, [], {a, [{href, ale:path(content, show, [C#content.id])}], yaws_api:htmlize(C#content.title)}} || C <- Contents]},
-        More
-    ].
+            ale:path(content, titles_more, [LastContentUpdatedAt])
+        end
+    ).

@@ -1,4 +1,4 @@
--module(h_theme).
+-module(h_application).
 
 -compile(export_all).
 
@@ -32,4 +32,28 @@ comments() ->
     [
         {h2, [], ?T("Comments")},
         {'fb:comments', []}
+    ].
+
+more(Items, UlClass, LiClass, ItemRenderFun, MorePathFun) ->
+    More = case length(Items) < ?ITEMS_PER_PAGE of
+        true -> [];
+
+        false ->
+            LastItem = lists:last(Items),
+            {a, [{onclick, "return more(this)"}, {href, MorePathFun(LastItem)}], ?T("More...")}
+    end,
+
+    LUlClass = case UlClass of
+        undefined -> [];
+        _         -> [{class, UlClass}]
+    end,
+    LLiClass = case LiClass of
+        undefined -> [];
+        _         -> [{class, LiClass}]
+    end,
+    [
+        {ul, LUlClass,
+            [{li, LLiClass, ItemRenderFun(Item)} || Item <- Items]
+        },
+        More
     ].

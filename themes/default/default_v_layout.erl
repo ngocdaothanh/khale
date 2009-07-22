@@ -20,7 +20,7 @@ render() ->
 
                 {script, [{type, "text/javascript"}, {src, "/static/js/jquery.js"}]},
                 {script, [{type, "text/javascript"}, {src, "/static/tiny_mce/tiny_mce.js"}]},
-                {script, [{type, "text/javascript"}, {src, "/static/js/khale.js"}]},
+                {script, [{type, "text/javascript"}, {src, "/static/js/application.js"}]},
 
                 '$heads'
             ]},
@@ -50,12 +50,12 @@ render() ->
     end, ehtmle),
 
     T = yaws_api:ehtml_apply(E, [
-        {title_in_head,      h_theme:title_in_head()},
+        {title_in_head,      h_application:title_in_head()},
         {heads,              ale:app(heads)},
-        {flash,              h_theme:flash()},
-        {title_in_body,      h_theme:title_in_body()},
+        {flash,              h_application:flash()},
+        {title_in_body,      h_application:title_in_body()},
         {content_for_layout, ale:app(content_for_layout)},
-        {sidebar,            h_theme:region(sidebar)},
+        {sidebar,            h_application:region(sidebar)},
         {scripts,            ale:app(scripts)}
     ]),
     [

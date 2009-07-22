@@ -20,9 +20,12 @@ login() ->
         post ->
             OpenId = ale:params(openid),
             try
+                % FIXME: design so that modules can hook into the application startup procedure
                 inets:start(),
-                ReturnUrl = "http://localhost:3000/openid_return",  %ale:path(return),
-                RemoteUrl = openid:start_authentication(OpenId, ReturnUrl),
+                ssl:start(),
+
+                ReturnUrl  = ale:schema_host_port(ale:path(return)),
+                RemoteUrl  = openid:start_authentication(OpenId, ReturnUrl),
                 RemoteUrl2 = RemoteUrl ++ "&openid.sreg.required=email,fullname",
                 ale:yaws(redirect, RemoteUrl2),
                 ale:view(undefined)
