@@ -11,7 +11,6 @@ render() ->
         Comments, comments, comment,
         fun(Comment) -> p_comment:render(Comment, true) end,
         fun(LastComment) ->
-            LastCommentCreatedAt = h_content:timestamp_to_string(LastComment#comment.created_at),
-            ale:path(comment, more, [ContentId, LastCommentCreatedAt])
+            ale:path(comment, more, [ContentId, LastComment#comment.id])
         end
     ).

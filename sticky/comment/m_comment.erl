@@ -34,13 +34,14 @@ last(ContentId) ->
     end),
     Comment.
 
-more(ContentId, LastCommentCreatedAt) ->
+more(ContentId, LastCommentId) ->
+    % OPTIMIZE: sort by updated at ~ sort by id
     {atomic, Comments} = mnesia:transaction(fun() ->
-        Q1 = case LastCommentCreatedAt of
+        Q1 = case LastCommentId of
             undefined -> qlc:q([R || R <- mnesia:table(comment), R#comment.content_id == ContentId]);
-            _         -> qlc:q([R || R <- mnesia:table(comment), R#comment.content_id == ContentId, R#comment.created_at < LastCommentCreatedAt])
+            _         -> qlc:q([R || R <- mnesia:table(comment), R#comment.content_id == ContentId, R#comment.id < LastCommentId])
         end,
-        Q2 = qlc:keysort(1 + 5, Q1, [{order, descending}]),
+        Q2 = qlc:keysort(1 + 1, Q1, [{order, descending}]),
         QC = qlc:cursor(Q2),
         Comments2 = qlc:next_answers(QC, ?ITEMS_PER_PAGE),
         qlc:delete_cursor(QC),
