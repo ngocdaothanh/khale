@@ -25,15 +25,10 @@ title_in_body() ->
 flash() ->
     case ale:flash() of
         undefined -> "";
-        Flash     -> {'div', [{id, flash}], Flash}
+        Flash     -> {'div', [{class, flash}], Flash}
     end.
 
-comments() ->
-    [
-        {h2, [], ?T("Comments")},
-        {'fb:comments', []}
-    ].
-
+%% Cycle is not supported because it makes "More..." difficult to implement.
 more(Items, UlClass, LiClass, ItemRenderFun, MorePathFun) ->
     More = case length(Items) < ?ITEMS_PER_PAGE of
         true -> [];
@@ -51,9 +46,8 @@ more(Items, UlClass, LiClass, ItemRenderFun, MorePathFun) ->
         undefined -> [];
         _         -> [{class, LiClass}]
     end,
+
     [
-        {ul, LUlClass,
-            [{li, LLiClass, ItemRenderFun(Item)} || Item <- Items]
-        },
+        {ul, LUlClass, [{li, LLiClass, ItemRenderFun(Item)} || Item <- Items]},
         More
     ].

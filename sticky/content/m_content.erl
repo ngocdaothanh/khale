@@ -60,7 +60,7 @@ nonstickies(LastContentUpdatedAt) ->
         end,
         Q2 = qlc:keysort(1 + 7, Q1, [{order, descending}]),
         QC = qlc:cursor(Q2),
-        Contents2 = qlc:next_answers(QC, 10),
+        Contents2 = qlc:next_answers(QC, ?ITEMS_PER_PAGE),
         qlc:delete_cursor(QC),
         Contents2
     end),

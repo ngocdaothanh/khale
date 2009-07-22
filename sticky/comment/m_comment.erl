@@ -9,12 +9,16 @@
 migrate() ->
     m_helper:create_table(comment, record_info(fields, comment)).
 
-create(UserId, ContentType, ContentId, Body) ->
-    Id = 1,
-    CreatedAt = erlang:universaltime(),
-    Comment = #comment{id = Id, user_id = UserId,
-        content_id = ContentId, body = Body,
-        created_at = CreatedAt, updated_at = CreatedAt}.
+create(UserId, ContentId, Body) ->
+    mnesia:transaction(fun() ->
+        Id = m_helper:next_id(comment),
+        CreatedAt = erlang:universaltime(),
+        Comment = #comment{id = Id, user_id = UserId,
+            content_id = ContentId, body = Body,
+            created_at = CreatedAt, updated_at = CreatedAt
+        },
+        mnesia:write(Comment)
+    end).
 
 last(ContentId) ->
     {atomic, Comment} = mnesia:transaction(fun() ->
@@ -30,7 +34,16 @@ last(ContentId) ->
     end),
     Comment.
 
-all(ContentId) ->
-    Q1 = qlc:q([C || C <- mnesia:table(comment), C#comment.content_id == ContentId]),
-    Q2 = qlc:keysort(1 + 5, Q1, [{order, ascending}]),
-    m_helper:do(Q2).
+more(ContentId, LastCommentCreatedAt) ->
+    {atomic, Comments} = mnesia:transaction(fun() ->
+        Q1 = case LastCommentCreatedAt of
+            undefined -> qlc:q([R || R <- mnesia:table(comment), R#comment.content_id == ContentId]);
+            _         -> qlc:q([R || R <- mnesia:table(comment), R#comment.content_id == ContentId, R#comment.created_at < LastCommentCreatedAt])
+        end,
+        Q2 = qlc:keysort(1 + 5, Q1, [{order, descending}]),
+        QC = qlc:cursor(Q2),
+        Comments2 = qlc:next_answers(QC, ?ITEMS_PER_PAGE),
+        qlc:delete_cursor(QC),
+        Comments2
+    end),
+    Comments.

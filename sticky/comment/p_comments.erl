@@ -6,8 +6,13 @@
 
 %% Render all comments for a content.
 render(Content) ->
-    Composer = case ale:session(user) of
-        undefined -> {a, [{href, "#login"}], ?T("You need to login to write comment.")};
+    User = ale:session(user),
+    Composer1 = case User of
+        undefined ->
+            {
+                'div', [{class, flash}],
+                {a, [{href, "#login"}], ?T("You need to login to write comment.")}
+            };
 
         _ ->
             [
@@ -16,26 +21,18 @@ render(Content) ->
             ]
     end,
 
-    Comments = m_comment:all(Content#content.id),
+    Comments = m_comment:more(Content#content.id, undefined),
+
+    Note = case (length(Comments) > 1) andalso (User == undefined) of
+        true  -> {p, [], {em, [], ["(", ?T("The latest comment is displayed first"), ")"]}};
+        false -> ""
+    end,
+    Composer2 = {'div', [{id, comment_composer}], [Composer1, Note]},
+
+    ale:app(content_id, Content#content.id),
+    ale:app(comments, Comments),
     [
         {h2, [], ?T("Comments")},
-
-        {ul, [{class, comments}], [
-            {li, [{class, comment}], Composer},
-            cycle(Comments)
-        ]}
+        Composer2,
+        v_comment_more:render()
     ].
-
-cycle(Comments) ->
-    {_, Ret} = lists:foldl(
-        fun
-            (C, {"odd", Acc}) ->
-                {"even", [Acc, {li, [{class, "comment odd"}],  p_comment:render(C, true)}]};
-
-            (C, {"even", Acc}) ->
-                {"odd",  [Acc, {li, [{class, "comment even"}], p_comment:render(C, true)}]}
-        end,
-        {"odd", []},
-        Comments
-    ),
-    Ret.

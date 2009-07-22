@@ -39,7 +39,7 @@ more(LastUserId) ->
         end,
         Q2 = qlc:keysort(1 + 1, Q1, [{order, descending}]),  % sort by id
         QC = qlc:cursor(Q2),
-        Users2 = qlc:next_answers(QC, 10),
+        Users2 = qlc:next_answers(QC, ?ITEMS_PER_PAGE),
         qlc:delete_cursor(QC),
         Users2
     end),
