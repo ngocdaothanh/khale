@@ -7,13 +7,7 @@
 render(_Id, _Config) ->
     Profile = [
         case ale:session(user) of
-            undefined ->
-                [
-                    {a, [{name, login}]}, {p, [], ?T("Login with")},
-                    {ul, [],
-                        [{li, [], M:login_link()} || M <- m_user:modules()]
-                    }
-                ];
+            undefined -> h_user:login_links();
 
             User ->
                 UserModule = m_user:type_to_module(User#user.type),

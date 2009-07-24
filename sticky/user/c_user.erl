@@ -28,7 +28,10 @@ logout() ->
 login(User) ->
     ale:session(user, User),
     ale:flash(?T("You have successfully logged in.")),
-    ale:yaws(redirect_local, "/"),
+
+    Target = base64:decode_to_string(ale:session(base64_target)),
+    ale:yaws(redirect_local, Target),
+    ale:session(base64_target, undefined),  % OPTIMIZE: delete unused session variable
     ale:view(undefined).
 
 show() ->

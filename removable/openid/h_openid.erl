@@ -5,7 +5,7 @@
 
 -include("sticky.hrl").
 
-login_link() -> {a, [{href, ale:path(openid, login)}], "OpenID"}.
+login_link(Base64Target) -> {a, [{href, ale:path(openid, login, [Base64Target])}], "OpenID"}.
 
 logout_link() -> {a, [{href, ale:path(user, logout)}], ?T("Logout")}.
 

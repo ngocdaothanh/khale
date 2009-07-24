@@ -9,10 +9,10 @@ render(Content) ->
     User = ale:session(user),
     Composer1 = case User of
         undefined ->
-            {
-                'div', [{class, flash}],
-                {a, [{href, "#login"}], ?T("You need to login to write comment.")}
-            };
+            [
+                {p, [{class, flash}], ?T("You need to login to write comment.")},
+                h_user:login_links("comments")  % See below
+            ];
 
         _ ->
             [
@@ -32,6 +32,7 @@ render(Content) ->
     ale:app(content_id, Content#content.id),
     ale:app(comments, Comments),
     [
+        {a, [{name, comments}]},
         {h2, [], ?T("Comments")},
         Composer2,
         v_comment_more:render()

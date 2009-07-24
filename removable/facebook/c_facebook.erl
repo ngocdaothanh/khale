@@ -1,7 +1,7 @@
 -module(c_facebook).
 
 -routes([
-    get, "/facebook", login
+    get, "/facebook/:base64_target", login
 ]).
 
 -compile(export_all).
@@ -22,11 +22,12 @@ login() ->
     case uid(ApiKey, AppSecret, Arg) of
         undefined ->
             ale:flash(?T("Could not login with Facebook.")),
-            ale:yaws(redirect_local, "/"),
+            ale:yaws(redirect_local, ale:params(login_target)),
             ale:view(undefined);
 
         Uid ->
             User = m_facebook:login(Uid),
+            ale:session(base64_target, ale:params(base64_target)),
             c_user:login(User)
     end.
 

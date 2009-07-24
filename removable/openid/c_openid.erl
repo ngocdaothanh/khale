@@ -4,9 +4,9 @@
 -module(c_openid).
 
 -routes([
-    get,  "/openid",        login,
-    post, "/openid",        login,
-    get,  "/openid_return", return
+    get,  "/openid/:base64_target", login,
+    post, "/openid",                login,
+    get,  "/openid_return",         return
 ]).
 
 -compile(export_all).
@@ -15,7 +15,7 @@
 
 login() ->
     case ale:method() of
-        get -> ok;
+        get -> ale:session(base64_target, ale:params(base64_target));
 
         post ->
             OpenId = ale:params(openid),
