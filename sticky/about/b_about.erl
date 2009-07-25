@@ -15,8 +15,8 @@ render(_Id, _Data) ->
 
     % Link to comments is always displayed, so that the first one can be created
     CommentsLinkText = case mnesia:table_info(comment, size) of
-        0           -> ?T("Comments");
-        NumComments -> ?TF("~p comments", [NumComments])
+        0           -> ?T("Comments about this site");
+        NumComments -> ?TF("~p comments about this site", [NumComments])
     end,
     CommentsLink = {li, [], {a, [{href, ale:path(about, about)}], CommentsLinkText}},
 

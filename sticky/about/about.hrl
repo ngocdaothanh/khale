@@ -1,0 +1,1 @@
+-record(about, {short_introduction, long_introduction}).

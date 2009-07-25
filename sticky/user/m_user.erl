@@ -52,7 +52,12 @@ find(Id) ->
         _   -> undefined
     end.
 
-num_contents(User) ->
-    Q = qlc:q([undefined || R <- mnesia:table(content), R#content.user_id == User#user.id]),
-    L = m_helper:do(Q),
-    length(L).
+contents(User) ->
+    {atomic, Contents} = mnesia:transaction(fun() ->
+        Q1 = qlc:q([R || R <- mnesia:table(content), R#content.user_id == User#user.id]),
+        Q2 = qlc:keysort(5, Q1, [{order, descending}]),  % Reverse sort by created_at
+        qlc:e(Q2)
+    end),
+    Contents.
+
+num_contents(User) -> length(contents(User)).

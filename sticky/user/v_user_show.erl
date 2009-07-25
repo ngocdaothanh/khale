@@ -8,4 +8,16 @@ render() ->
     ale:app(title, ?T("User")),
 
     User = ale:app(user),
-    p_user:render(User).
+    Contents = m_user:contents(User),
+    [
+        p_user:render(User),
+        {ul, [],
+            lists:map(
+                fun(Content) ->
+                    HModule = h_content:h_module(Content),
+                    {li, [], {a, [{href, ale:path(content, show, [Content#content.id])}], HModule:title(Content)}}
+                end,
+                Contents
+            )
+        }
+    ].

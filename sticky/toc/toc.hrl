@@ -1,1 +1,1 @@
--record(toc_data, {body}).
+-record(toc, {body}).
