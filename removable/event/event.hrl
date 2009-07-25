@@ -1,1 +1,2 @@
+-record(event, {name, invitation, deadline, participants}).
 -record(participant, {user_id, user_note, accepted = false, invitor_note}).

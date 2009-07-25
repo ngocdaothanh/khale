@@ -1,19 +1,20 @@
 -module(m_poll).
--content_module(true).
 
 -compile(export_all).
 
 -include("sticky.hrl").
+-include("poll.hrl").
 
-name() -> ?T("Poll").
+content() -> [{public_creatable, true}].
 
-create(UserId, CategoryIds, Title, AbstractAndQuestion, Selections) ->
+create(UserId, CategoryIds, Question, Context, Choices) ->
     Id = m_helper:next_id(content),
     CreatedAt = erlang:universaltime(),
-    Votes = lists:duplicate(length(Selections), 0),
+    Votes = lists:duplicate(length(Choices), 0),
+    Data = #poll{question = Question, context = Context, choices = Choices, votes = Votes},
     Poll = #content{
-        id = Id, user_id = UserId, type = poll,
-        title = Title, data = {AbstractAndQuestion, Selections, Votes},
+        id = Id, user_id = UserId,
+        data = Data,
         created_at = CreatedAt, updated_at = CreatedAt
     },
     m_content:save(Poll, CategoryIds).

@@ -10,8 +10,8 @@ render(Content, Linked)->
     [
         {h1, [], 
             case Linked of
-                false -> yaws_api:htmlize(Content#content.title);
-                true  -> {a, [{href, Path}], yaws_api:htmlize(Content#content.title)}
+                false -> h_content:title(Content);
+                true  -> {a, [{href, Path}], h_content:title(Content)}
             end
         },
         p_user:render(User)

@@ -57,7 +57,7 @@ previews_or_titles(View) ->
 show() ->
     Id = list_to_integer(ale:params(id)),
     Content = m_content:find(Id),
-    Module = m_content:type_to_module(Content#content.type),
+    Module = h_content:h_module(Content),
     ale:app(title, Module:name()),
     ale:app(content, Content).
 

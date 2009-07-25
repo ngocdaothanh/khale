@@ -5,8 +5,6 @@
 -include("sticky.hrl").
 
 create() ->
-    Arg = ale:arg(),
-
     T1 = ale:params(title),
     A1 = ale:params(abstract),
     B1 = ale:params(body),

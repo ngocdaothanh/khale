@@ -7,18 +7,21 @@
 migrate() -> m_helper:create_table(content, record_info(fields, content)).
 
 %% Returns the list of content modules. Content modules should define
-%% -content_module(true).
+%% content() -> [Option].
+%%
+%% Option:
+%% * noncreatable
 modules() ->
+    % FIXME: save to SC's ets
     ale:cache("khale_content_modules", fun() ->
         filelib:fold_files(?ALE_ROOT ++ "/ebin", "^m_.*\.beam$", false,
             fun(ModelFile, Acc) ->
                 Base = filename:basename(ModelFile, ".beam"),
                 Module = list_to_atom(Base),
                 code:ensure_loaded(Module),
-                Attributes = Module:module_info(attributes),
-                case proplists:get_value(content_module, Attributes) of
-                    [true] -> [Module | Acc];
-                    _      -> Acc
+                case erlang:function_exported(Module, content, 0) of
+                    true  -> [Module | Acc];
+                    false -> Acc
                 end
             end,
             []
@@ -36,7 +39,7 @@ types() ->
 
 type_strings() -> [atom_to_list(T) || T <- types()].
 
-type_to_module(Type) -> list_to_atom("m_" ++ atom_to_list(Type)).
+type(Content) -> element(1, Content#content.data).
 
 more(_UnixName, LastContentUpdatedAt) ->
     Stickies = case LastContentUpdatedAt of
@@ -48,7 +51,7 @@ more(_UnixName, LastContentUpdatedAt) ->
 %% Returns sticky contents sorted reveresely by sticky strength.
 stickies() ->
     Q1 = qlc:q([C || C <- mnesia:table(content), C#content.sticky > 0]),
-    Q2 = qlc:keysort(1 + 8, Q1, [{order, descending}]),
+    Q2 = qlc:keysort(7, Q1, [{order, descending}]),
     m_helper:do(Q2).
 
 %% Returns nonsticky contents sorted reveresely by updated_at.
@@ -58,7 +61,7 @@ nonstickies(LastContentUpdatedAt) ->
             undefined -> qlc:q([R || R <- mnesia:table(content), R#content.sticky == 0]);
             _         -> qlc:q([R || R <- mnesia:table(content), R#content.sticky == 0, R#content.updated_at < LastContentUpdatedAt])
         end,
-        Q2 = qlc:keysort(1 + 7, Q1, [{order, descending}]),
+        Q2 = qlc:keysort(6, Q1, [{order, descending}]),
         QC = qlc:cursor(Q2),
         Contents2 = qlc:next_answers(QC, ?ITEMS_PER_PAGE),
         qlc:delete_cursor(QC),

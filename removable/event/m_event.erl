@@ -1,19 +1,19 @@
 -module(m_event).
--content_module(true).
 
 -compile(export_all).
 
 -include("sticky.hrl").
+-include("event.hrl").
 
-name() -> ?T("Event").
+content() -> [{public_creatable, true}].
 
-create(UserId, CategoryIds, Title, Invitation, DeadLine) ->
+create(UserId, CategoryIds, Name, Invitation, Deadline) ->
     Id = m_helper:next_id(content),
     CreatedAt = erlang:universaltime(),
-    Participants = [],
+    Data = #event{name = Name, invitation = Invitation, deadline = Deadline, participants = []},
     Event = #content{
-        id = Id, user_id = UserId, type = event,
-        title = Title, data = {Invitation, DeadLine, Participants},
+        id = Id, user_id = UserId,
+        data = Data,
         created_at = CreatedAt, updated_at = CreatedAt
     },
     m_content:save(Event, CategoryIds).

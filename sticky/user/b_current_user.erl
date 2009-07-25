@@ -24,6 +24,7 @@ render(_Id, _Config) ->
 
 new_content_link(ContentModule) ->
     [$m, $_ | Type] = atom_to_list(ContentModule),
+    HModule = list_to_atom([$h, $_ | Type]),
     [
-        {a, [{href, ale:path(content, new, [Type])}], ContentModule:name()}
+        {a, [{href, ale:path(content, new, [Type])}], HModule:name()}
     ].

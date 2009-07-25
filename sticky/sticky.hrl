@@ -8,13 +8,15 @@
 -record(about, {id, short, long}).
 
 % indexed_data is indexed for fast lookup
--record(user, {id, type, indexed_data, extra_data}).
+-record(user, {id, type, admin = false, indexed_data, extra_data}).
 
--record(category, {id, name, unix_name, position}).
+-record(category, {id, name, unix_name, position, toc_id}).
 -record(category_content, {category_id, content_id}).
 
--record(content, {id, user_id, type, title, data, created_at, updated_at, sticky = 0, views = 0, ip}).
+-record(content, {id, user_id, data, created_at, updated_at, sticky = 0, views = 0, ip}).
 
 -record(comment, {id, user_id, content_id, body, created_at, updated_at, ip}).
 
 -record(block, {id, type, data, region, position}).
+
+-record(toc_data, {body}).

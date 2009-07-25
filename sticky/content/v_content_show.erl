@@ -6,12 +6,8 @@
 
 render() ->
     Content = ale:app(content),
-    DetailPartial = list_to_atom(
-        "p_" ++
-        atom_to_list(Content#content.type) ++
-        "_detail"
-    ),
-
+    Type = m_content:type(Content),
+    DetailPartial = list_to_atom("p_" ++ atom_to_list(Type) ++ "_detail"),
     [
         p_content_header:render(Content, false),
         DetailPartial:render(Content),

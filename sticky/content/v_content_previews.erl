@@ -16,12 +16,8 @@ render() ->
     ).
 
 render_content_preview(Content) ->
-    PreviewPartial = list_to_atom(
-        "p_" ++
-        atom_to_list(Content#content.type) ++
-        "_preview"
-    ),
-
+    Type = m_content:type(Content),
+    PreviewPartial = list_to_atom("p_" ++ atom_to_list(Type) ++ "_preview"),
     [
         p_content_header:render(Content, true),
         PreviewPartial:render(Content),

@@ -1,18 +1,19 @@
 -module(m_qa).
--content_module(true).
 
 -compile(export_all).
 
 -include("sticky.hrl").
+-include("qa.hrl").
 
-name() -> ?T("Q/A").
+content() -> [{public_creatable, true}].
 
-create(UserId, CategoryIds, Title, AbstractAndQuestion) ->
+create(UserId, CategoryIds, Question, Context) ->
     Id = m_helper:next_id(content),
     CreatedAt = erlang:universaltime(),
+    Data = #qa{question = Question, context = Context},
     Qa = #content{
-        id = Id, user_id = UserId, type = qa,
-        title = Title, data = AbstractAndQuestion,
+        id = Id, user_id = UserId,
+        data = Data,
         created_at = CreatedAt, updated_at = CreatedAt
     },
     m_content:save(Qa, CategoryIds).

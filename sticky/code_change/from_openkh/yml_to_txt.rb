@@ -3,6 +3,8 @@
 
 require 'yaml'
 
+Files = Dir.glob('./*.yaml')
+
 Files.each do |f|
   a = YAML::load(File.read(f))
   abstract = a[0]

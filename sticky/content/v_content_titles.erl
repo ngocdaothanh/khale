@@ -11,7 +11,8 @@ render() ->
     h_application:more(
         Contents, undefined, undefined,
         fun(Content) ->
-            {a, [{href, ale:path(content, show, [Content#content.id])}], yaws_api:htmlize(Content#content.title)}
+            HModule = h_content:h_module(Content),
+            {a, [{href, ale:path(content, show, [Content#content.id])}], HModule:title(Content)}
         end,
         fun(LastContent) ->
             LastContentUpdatedAt = h_content:timestamp_to_string(LastContent#content.updated_at),

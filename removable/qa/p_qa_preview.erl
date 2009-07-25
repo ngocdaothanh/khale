@@ -3,7 +3,8 @@
 -compile(export_all).
 
 -include("sticky.hrl").
+-include("qa.hrl").
 
 render(Content) ->
-    AbstractAndQuestion = Content#content.data,
-    {'div', [], AbstractAndQuestion}.
+    Data = Content#content.data,
+    {'div', [], Data#qa.context}.

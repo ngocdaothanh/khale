@@ -46,10 +46,10 @@ more(LastUserId) ->
     Users.
 
 find(Id) ->
-    Q = qlc:q([U || U <- mnesia:table(user), U#user.id == Id]),
+    Q = qlc:q([R || R <- mnesia:table(user), R#user.id == Id]),
     case m_helper:do(Q) of
-        [User] -> User;
-        _      -> undefined
+        [R] -> R;
+        _   -> undefined
     end.
 
 num_contents(User) ->

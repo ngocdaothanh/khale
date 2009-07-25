@@ -1,0 +1,1 @@
+-record(poll, {question, context, choices, votes}).

@@ -3,7 +3,8 @@
 -compile(export_all).
 
 -include("sticky.hrl").
+-include("event.hrl").
 
 render(Content) ->
-    {Invitation, _DeadLine, _Participants} = Content#content.data,
-    {'div', [], Invitation}.
+    Data = Content#content.data,
+    {'div', [], Data#event.invitation}.

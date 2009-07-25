@@ -3,7 +3,8 @@
 -compile(export_all).
 
 -include("sticky.hrl").
+-include("poll.hrl").
 
 render(Content) ->
-    {AbstractAndQuestion, Selections, Votes} = Content#content.data,
-    {'div', [], AbstractAndQuestion}.
+    Data = Content#content.data,
+    {'div', [], Data#poll.context}.

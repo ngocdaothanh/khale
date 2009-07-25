@@ -72,10 +72,14 @@ migrate_articles(C) ->
             content_id_pg_to_mn(Id, ContentId),
 
             V = migrate_article_versions(C, Id, ContentId),
+            ArticleData = #article{
+                title    = V#article_version.title,
+                abstract = V#article_version.abstract,
+                body     = V#article_version.body
+            },
             R = #content{
                 id = ContentId, user_id = V#article_version.user_id,
-                type = article, title = V#article_version.title,
-                data = {V#article_version.abstract, V#article_version.body},
+                data = ArticleData,
                 created_at = V#article_version.created_at,
                 updated_at = UpdatedAt2, sticky = 0, views = Views,
                 ip = V#article_version.ip
@@ -107,7 +111,7 @@ migrate_article_versions(C, NodeId, ContentId) ->
 
             Id = m_helper:next_id(article_version),
             V = #article_version{
-                id = Id, content_id = ContentId, user_id = UserId2, title = Title2,
+            id = Id, content_id = ContentId, user_id = UserId2, title = Title2,
                 abstract = Abstract, body = Body, created_at = CreatedAt2, ip = Ip2
             },
 
