@@ -4,6 +4,4 @@
 
 -include("sticky.hrl").
 
-render(Content) ->
-    AbstractAndQuestion = Content#content.data,
-    {'div', [], AbstractAndQuestion}.
+render(Content) -> p_qa_preview:render(Content).

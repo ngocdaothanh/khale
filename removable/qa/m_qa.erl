@@ -7,10 +7,10 @@
 
 content() -> [{public_creatable, true}].
 
-create(UserId, CategoryIds, Question, Context) ->
+create(UserId, CategoryIds, Question, Detail) ->
     Id = m_helper:next_id(content),
     CreatedAt = erlang:universaltime(),
-    Data = #qa{question = Question, context = Context},
+    Data = #qa{question = Question, detail = Detail},
     Qa = #content{
         id = Id, user_id = UserId,
         data = Data,

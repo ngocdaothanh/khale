@@ -13,9 +13,9 @@
 -record(category, {id, name, unix_name, position, toc_id}).
 -record(category_content, {category_id, content_id}).
 
--record(content, {id, user_id, data, created_at, updated_at, sticky = 0, views = 0, ip}).
+-record(content, {id, user_id, ip, data, created_at, updated_at, sticky = 0, views = 0, thread_updated_at}).
 
--record(comment, {id, user_id, content_id, body, created_at, updated_at, ip}).
+-record(comment, {id, user_id, ip, content_id, body, created_at, updated_at}).
 
 -record(block, {id, type, data, region, position}).
 

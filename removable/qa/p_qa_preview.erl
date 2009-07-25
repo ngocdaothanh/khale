@@ -7,4 +7,4 @@
 
 render(Content) ->
     Data = Content#content.data,
-    {'div', [], Data#qa.context}.
+    Data#qa.detail.

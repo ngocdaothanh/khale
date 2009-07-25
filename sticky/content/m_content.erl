@@ -51,17 +51,17 @@ more(_UnixName, LastContentUpdatedAt) ->
 %% Returns sticky contents sorted reveresely by sticky strength.
 stickies() ->
     Q1 = qlc:q([C || C <- mnesia:table(content), C#content.sticky > 0]),
-    Q2 = qlc:keysort(7, Q1, [{order, descending}]),
+    Q2 = qlc:keysort(8, Q1, [{order, descending}]),
     m_helper:do(Q2).
 
-%% Returns nonsticky contents sorted reveresely by updated_at.
+%% Returns nonsticky contents sorted reveresely by thread_updated_at.
 nonstickies(LastContentUpdatedAt) ->
     {atomic, Contents} = mnesia:transaction(fun() ->
         Q1 = case LastContentUpdatedAt of
             undefined -> qlc:q([R || R <- mnesia:table(content), R#content.sticky == 0]);
             _         -> qlc:q([R || R <- mnesia:table(content), R#content.sticky == 0, R#content.updated_at < LastContentUpdatedAt])
         end,
-        Q2 = qlc:keysort(6, Q1, [{order, descending}]),
+        Q2 = qlc:keysort(10, Q1, [{order, descending}]),
         QC = qlc:cursor(Q2),
         Contents2 = qlc:next_answers(QC, ?ITEMS_PER_PAGE),
         qlc:delete_cursor(QC),

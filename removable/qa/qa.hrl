@@ -1,1 +1,1 @@
--record(qa, {question, context}).
+-record(qa, {question, detail}).
