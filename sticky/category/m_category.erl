@@ -8,10 +8,21 @@ migrate() ->
     m_helper:create_table(category,         record_info(fields, category)),
     m_helper:create_table(category_content, record_info(fields, category_content), bag).
 
-create(Name, UnixName, Position) ->
-    Id = m_helper:next_id(category),
-    Category = #category{id = Id, name = Name, unix_name = UnixName, position = Position},
-    mnesia:transaction(fun() -> mnesia:write(Category) end).
+create(Name, UnixName, Position, UserId, Ip) ->
+    F = fun() ->
+        Id = m_helper:next_id(category),
+        Category = #category{
+            id = Id,
+            name = Name, unix_name = UnixName, position = Position, toc = "",
+            user_id = UserId, ip = Ip
+        },
+        ok = mnesia:write(Category),
+        Category
+    end,
+    case mnesia:transaction(F) of
+        {atomic, R} -> R;
+        _           -> undefined
+    end.
 
 all() ->
     Q1 = qlc:q([C || C <- mnesia:table(category)]),

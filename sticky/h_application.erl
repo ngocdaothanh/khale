@@ -6,7 +6,7 @@
 
 region(Region) ->
     Blocks = m_block:all(Region),
-    {'ul', [{class, region}, {id, Region}], [p_block:render(B) || B <- Blocks]}.
+    {'ul', [{class, region}, {id, Region}], [h_block:render(B) || B <- Blocks]}.
 
 title_in_head() ->
     Title = ale:app(title),

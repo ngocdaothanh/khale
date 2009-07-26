@@ -1,4 +1,1 @@
--record(article, {title, abstract, body}).
-
-% Versions are inferred from created_at
--record(article_version, {id, content_id, user_id, title, abstract, body, created_at, ip}).
+-record(article, {id, title, abstract, body, user_id, ip, created_at, updated_at, views = 0}).

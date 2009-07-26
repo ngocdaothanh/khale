@@ -8,21 +8,14 @@ render() ->
     Contents = ale:app(contents),
     h_application:more(
         Contents, previews, preview,
-        fun render_content_preview/1,
+        fun render_one/1,
         fun(LastContent) ->
-            LastContentUpdatedAt = h_content:timestamp_to_string(LastContent#content.updated_at),
-            ale:path(previews_more, [LastContentUpdatedAt])
+            PrevThreadUpdatedAt1 = m_content:thread_updated_at(LastContent),
+            PrevThreadUpdatedAt2 = h_content:timestamp_to_string(PrevThreadUpdatedAt1),
+            ale:path(previews_more, [PrevThreadUpdatedAt2])
         end
     ).
 
-render_content_preview(Content) ->
-    Type = m_content:type(Content),
-    PreviewPartial = list_to_atom("p_" ++ atom_to_list(Type) ++ "_preview"),
-    [
-        p_content_header:render(Content, true),
-        PreviewPartial:render(Content),
-        case m_comment:last(Content#content.id) of
-            undefined   -> "";
-            LastComment -> {ul, [{class, comments}], {li, [{class, "comment odd"}], p_comment:render(LastComment, false)}}
-        end
-    ].
+render_one(Content) ->
+    HModule = h_content:h_module(Content),
+    HModule:render_preview(Content).

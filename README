@@ -1,4 +1,34 @@
-Khale is a Bliki CMS based on Ale.
+Khale is a somewhat-open CMS suitable for creating sites for open communities.
+
+== Features
+
+Authentication:
+* Facebook
+* OpenID
+
+Authorization:
+* Admins
+* Normal users
+
+Types of content:
+* Article: Only the creator can edit
+* Series: Series of articles, many users can collaborate to create a series of
+  article, but a creator can only edit his own article
+* Q/A: Forum-like questions and answers
+* Poll
+* Event: You can invite others to participate an event
+
+A contents can be mounted to multiple categories. Each category has a TOC
+(table of contents). TOC can only be editted by admins.
+
+The whole site also has TOC and "about" to introduce about the site.
+
+Sticky property for contents is not supported, you can use TOC or HTML block
+to create links to contents you want to make sticky.
+
+All types of contents have commemts.
+
+Khale is designed so that more features can be easily added.
 
 == Install and Start
 

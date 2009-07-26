@@ -48,8 +48,7 @@ do(Q) ->
     {atomic, Val} = mnesia:transaction(fun() -> qlc:e(Q) end),
     Val.
 
-next_id(Table) ->
-    mnesia:dirty_update_counter(counter, Table, 1).
+next_id(Table) -> mnesia:dirty_update_counter(counter, Table, 1).
 
 %-------------------------------------------------------------------------------
 

@@ -5,7 +5,7 @@
 -include("sticky.hrl").
 
 render(_Id, _Data) ->
-    About = m_about:find(),
+    About = m_about:find(undefined),
 
     % Link to users is hidden if there is no user
     UsersLink = case mnesia:table_info(user, size) of

@@ -5,8 +5,6 @@
 -include("sticky.hrl").
 -include("poll.hrl").
 
-name() -> yaws_api:htmlize(?T("Poll")).
+render_name() -> yaws_api:htmlize(?T("Poll")).
 
-title(Content) ->
-    Data = Content#content.data,
-    yaws_api:htmlize(Data#poll.question).
+render_title(Poll) -> yaws_api:htmlize(Poll#poll.question).

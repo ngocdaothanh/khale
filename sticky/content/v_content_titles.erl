@@ -12,10 +12,11 @@ render() ->
         Contents, undefined, undefined,
         fun(Content) ->
             HModule = h_content:h_module(Content),
-            {a, [{href, ale:path(content, show, [Content#content.id])}], HModule:title(Content)}
+            {a, [{href, HModule:show_path(Content)}], HModule:render_title(Content)}
         end,
         fun(LastContent) ->
-            LastContentUpdatedAt = h_content:timestamp_to_string(LastContent#content.updated_at),
-            ale:path(content, titles_more, [LastContentUpdatedAt])
+            PrevThreadUpdatedAt1 = m_content:thread_updated_at(LastContent),
+            PrevThreadUpdatedAt2 = h_content:timestamp_to_string(PrevThreadUpdatedAt1),
+            ale:path(content, titles_more, [PrevThreadUpdatedAt2])
         end
     ).

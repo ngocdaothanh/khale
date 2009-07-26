@@ -1,4 +1,4 @@
--module(p_block).
+-module(h_block).
 
 -compile(export_all).
 

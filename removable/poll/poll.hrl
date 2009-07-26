@@ -1,1 +1,1 @@
--record(poll, {question, context, choices, votes}).
+-record(poll, {id, question, context, choices, votes, user_id, ip, created_at}).

@@ -2,13 +2,13 @@
 
 -compile(export_all).
 
-title(Content) ->
-    HelperModule = h_module(Content),
-    HelperModule:title(Content).
-
 h_module(Content) ->
-    Type = m_content:type(Content),
-    list_to_atom("h_" ++ atom_to_list(Type)).
+    Type = element(1, Content),
+    list_to_atom([$h, $_ | atom_to_list(Type)]).
+
+title(Content) ->
+    HModule = h_module(Content),
+    HModule:title(Content).
 
 timestamp_to_string({{Y, M, D}, {H, Mi, S}}) ->
     string:join([integer_to_list(N) || N <- [Y, M, D, H, Mi, S]], "-").

@@ -1,2 +1,2 @@
--record(event, {name, invitation, deadline, participants}).
--record(participant, {user_id, user_note, accepted = false, invitor_note}).
+-record(event, {id, name, invitation, deadline, participants, user_id, ip, created_at, updated_at, views = 0}).
+-record(participant, {user_id, participant_note, accepted = false, invitor_note}).

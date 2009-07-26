@@ -23,8 +23,9 @@ render(_Id, _Config) ->
     {?T("User"), Body}.
 
 new_content_link(ContentModule) ->
-    [$m, $_ | Type] = atom_to_list(ContentModule),
-    HModule = list_to_atom([$h, $_ | Type]),
+    [$m, $_ | TypeS] = atom_to_list(ContentModule),
+    Type = list_to_atom(TypeS),
+    HModule = list_to_atom([$h, $_ | TypeS]),
     [
-        {a, [{href, ale:path(content, new, [Type])}], HModule:name()}
+        {a, [{href, ale:path(Type, new)}], HModule:render_name()}
     ].

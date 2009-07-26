@@ -1,4 +1,4 @@
--module(p_event_new).
+-module(v_event_new).
 
 -compile(export_all).
 

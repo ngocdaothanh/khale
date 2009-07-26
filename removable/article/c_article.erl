@@ -1,8 +1,21 @@
 -module(c_article).
 
+-routes([
+    get,    "/articles/new",      new,
+    get,    "/articles/:id",      show,
+    post,   "/articles",          create,
+    get,    "/articles/:id/edit", edit,
+    put,    "/articles/:id",      update,
+    delete, "/articles/:id",      delete
+]).
+
 -compile(export_all).
 
 -include("sticky.hrl").
+
+show() ->
+    Id = list_to_integer(ale:params(id)),
+    ale:app(article, m_article:find(Id)).
 
 create() ->
     T1 = ale:params(title),

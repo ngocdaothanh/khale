@@ -5,15 +5,16 @@
 -include("sticky.hrl").
 -include("event.hrl").
 
+migrate() -> m_helper:create_table(event, record_info(fields, event)).
+
 content() -> [{public_creatable, true}].
 
-create(UserId, CategoryIds, Name, Invitation, Deadline) ->
+create(Name, Invitation, Deadline, UserId, Ip, CategoryIds) ->
     Id = m_helper:next_id(content),
     CreatedAt = erlang:universaltime(),
-    Data = #event{name = Name, invitation = Invitation, deadline = Deadline, participants = []},
-    Event = #content{
-        id = Id, user_id = UserId,
-        data = Data,
-        created_at = CreatedAt, updated_at = CreatedAt
+    Event = #event{
+        id = Id,
+        name = Name, invitation = Invitation, deadline = Deadline, participants = [],
+        user_id = UserId, ip = Ip, created_at = CreatedAt, updated_at = CreatedAt
     },
     m_content:save(Event, CategoryIds).

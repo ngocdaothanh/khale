@@ -1,24 +1,24 @@
-%%% There's not much need to search by content type.
-
+%%% xxx_content_xxx are modules that just aggregate contents of all types to
+%%% display them as a list reverse sorted by updated_at property of the threads
+%%% that contains the contents.
+%%%
+%%% View-related modules provide useful things that specific content modules
+%%% can use to build their user interfaces.
+%%%
+%%% Features:
+%%% * Pagination
+%%% * ATOM
+%%% * Search
 -module(c_content).
 
 -routes([
     get, "/",                      previews,
     get, "/cagegories/:unix_name", previews_by_category,
 
-    get, "/previews_more/:last_content_updated_at",         previews_more,
-    get, "/cagegories/:unix_name/:last_content_updated_at", previews_more_by_category,
+    get, "/previews_more/:prev_thread_updated_at",         previews_more,
+    get, "/cagegories/:unix_name/:prev_thread_updated_at", previews_more_by_category,
 
-    get, "/titles_more/:last_content_updated_at", titles_more,
-
-    get,    "/show/:id", show,
-    delete, "/show/:id", delete,
-
-    get, "/edit/:id", edit,
-    put, "/edit/:id", update,
-
-    get,  "/new/:content_type", new,
-    post, "/new/:content_type", create
+    get, "/titles_more/:prev_thread_updated_at", titles_more
 ]).
 
 -caches([
@@ -28,8 +28,6 @@
 -compile(export_all).
 
 -include("sticky.hrl").
-
-%-------------------------------------------------------------------------------
 
 previews()                  -> previews_or_titles(previews).
 previews_by_category()      -> previews_or_titles(previews).
@@ -43,52 +41,11 @@ previews_or_titles(View) ->
         Name -> Name
     end,
 
-    LastContentUpdatedAt = case ale:params(last_content_updated_at) of
+    PrevThreadUpdatedAt = case ale:params(prev_thread_updated_at) of
         undefined -> undefined;
         YMDHMiS   -> h_content:string_to_timestamp(YMDHMiS)
     end,
 
-    Contents = m_content:more(UnixName, LastContentUpdatedAt),
+    Contents = m_content:more(UnixName, PrevThreadUpdatedAt),
     ale:app(contents, Contents),
     ale:view(View).
-
-%-------------------------------------------------------------------------------
-
-show() ->
-    Id = list_to_integer(ale:params(id)),
-    Content = m_content:find(Id),
-    Module = h_content:h_module(Content),
-    ale:app(title, Module:name()),
-    ale:app(content, Content).
-
-delete() ->
-    Id = list_to_integer(ale:params(id)),
-    "delete" ++ Id.
-
-%-------------------------------------------------------------------------------
-
-new() -> check_type().
-
-create(Type) ->
-    check_type(),
-    Type = ale:params(content_type),
-    Controller = list_to_atom("c_" ++ Type),
-    Controller:create().
-
-% Checks to avoid list_to_atom hack.
-check_type() ->
-    Type = ale:params(content_type),
-    case lists:member(Type, m_content:type_strings()) of
-        false -> erlang:error(invalid_content_type);
-        true  -> ale:app(partial_new, list_to_atom("p_" ++ Type ++ "_new"))
-    end.
-
-%-------------------------------------------------------------------------------
-
-edit() ->
-    Id = list_to_integer(ale:params(id)),
-    "edit" ++ Id.
-
-update() ->
-    Id = list_to_integer(ale:params(id)),
-    "update" ++ Id.

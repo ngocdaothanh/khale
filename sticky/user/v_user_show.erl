@@ -15,7 +15,7 @@ render() ->
             lists:map(
                 fun(Content) ->
                     HModule = h_content:h_module(Content),
-                    {li, [], {a, [{href, ale:path(content, show, [Content#content.id])}], HModule:title(Content)}}
+                    {li, [], {a, [{href, "ale:path(content, show, [Content#content.id])"}], HModule:title(Content)}}
                 end,
                 Contents
             )

@@ -1,4 +1,4 @@
--module(p_qa_new).
+-module(v_qa_new).
 
 -compile(export_all).
 
