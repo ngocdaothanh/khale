@@ -16,7 +16,7 @@ render() ->
         end,
         fun(LastContent) ->
             PrevThreadUpdatedAt1 = m_content:thread_updated_at(LastContent),
-            PrevThreadUpdatedAt2 = h_content:timestamp_to_string(PrevThreadUpdatedAt1),
+            PrevThreadUpdatedAt2 = h_application:timestamp_to_string(PrevThreadUpdatedAt1),
             ale:path(content, titles_more, [PrevThreadUpdatedAt2])
         end
     ).

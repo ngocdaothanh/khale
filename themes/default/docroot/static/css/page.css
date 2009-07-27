@@ -80,7 +80,7 @@ ul.previews li.preview, ul.region li.block, ul.users li, ul.comments li.comment 
 li.odd  { background-color: #EEE; }
 
 input[type="text"] {
-  width: 99%;
+  width: 98%;
 }
 
 textarea {
@@ -103,4 +103,16 @@ td.avatar { padding-right: 5px; }
   margin-bottom: 1em;
   padding-bottom: 1em;
   border-bottom: solid 1px #EEE;
+}
+
+#chat_output {
+  border: 1px solid #DDDDDD;
+  height: 20em;
+  overflow: auto;
+}
+
+#chat_output li {
+  list-style-type: none;
+  margin-left: 0px;
+  padding-left: 0px;
 }

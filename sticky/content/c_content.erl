@@ -43,7 +43,7 @@ previews_or_titles(View) ->
 
     PrevThreadUpdatedAt = case ale:params(prev_thread_updated_at) of
         undefined -> undefined;
-        YMDHMiS   -> h_content:string_to_timestamp(YMDHMiS)
+        YMDHMiS   -> h_application:string_to_timestamp(YMDHMiS)
     end,
 
     Contents = m_content:more(UnixName, PrevThreadUpdatedAt),

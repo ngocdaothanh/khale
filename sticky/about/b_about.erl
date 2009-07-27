@@ -13,19 +13,19 @@ render(_Id, _Data) ->
         NumUsers -> {li, [], {a, [{href, ale:path(user,  index)}], ?TF("~p users", [NumUsers])}}
     end,
 
-    % Link to comments is always displayed, so that the first one can be created
-    CommentsLinkText = case mnesia:table_info(comment, size) of
-        0           -> ?T("Comments about this site");
-        NumComments -> ?TF("~p comments about this site", [NumComments])
+    % Link to discussions is always displayed, so that the first one can be created
+    DiscussionsLinkText = case m_discussion:count(about, undefined) of
+        0           -> ?T("Discussions about this site");
+        NumDiscussions -> ?TF("~p discussions about this site", [NumDiscussions])
     end,
-    CommentsLink = {li, [], {a, [{href, ale:path(about, about)}], CommentsLinkText}},
+    DiscussionsLink = {li, [], {a, [{href, ale:path(about, about)}], DiscussionsLinkText}},
 
     Body = [
         About#about.short,
 
         {ul, [], [
             UsersLink,
-            CommentsLink
+            DiscussionsLink
         ]}
     ],
     {"About", Body}.

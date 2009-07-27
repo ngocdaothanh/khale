@@ -70,6 +70,7 @@ migrate_catagories(C) ->
         Rows
     ).
 
+%% First author + last version
 % migrate_tocs(C) ->
 %     % sticky = category ID, 0 = whole site
 %     {ok, _, Rows} = pgsql:equery(C, "SELECT id, active_version, views, sticky, updated_at FROM nodes WHERE type LIKE 'Toc' ORDER BY sticky"),
@@ -191,7 +192,7 @@ migrate_comments(C) ->
                     CreatedAt2 = timestamp_pg_to_mn(CreatedAt),
                     UpdatedAt2 = timestamp_pg_to_mn(UpdatedAt),
 
-                    % Special processing for forum: if this is the first comment
+                    % Special processing for forum: if this is the first discussion
                     % for a forum, then move it to the corresponding qa's detail
                     Content = m_content:find(ContentType, ContentId),
                     case (ContentType == qa) andalso (Content#qa.detail == undefined) of
@@ -200,15 +201,15 @@ migrate_comments(C) ->
                             mnesia:transaction(fun() -> mnesia:write(Content2) end);
 
                         false ->
-                            Id = m_helper:next_id(comment),
-                            Comment = #comment{
+                            Id = m_helper:next_id(discussion),
+                            Discussion = #discussion{
                                 id = Id,
                                 content_type = ContentType, content_id = ContentId,
                                 body = Body,
                                 user_id = UserId, ip = Ip2,
                                 created_at = CreatedAt2, updated_at = UpdatedAt2
                             },
-                            mnesia:transaction(fun() -> mnesia:write(Comment) end)
+                            mnesia:transaction(fun() -> mnesia:write(Discussion) end)
                     end
             end
         end,

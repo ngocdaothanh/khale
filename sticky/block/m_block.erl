@@ -9,9 +9,10 @@ migrate() ->
 
 all(Region) ->
     [
-        #block{id = 1, type = html},
-        #block{id = 2, type = titles},
-        #block{id = 3, type = current_user},
-        #block{id = 4, type = categories},
-        #block{id = 5, type = about}
+        #block{type = html},
+        #block{type = chat},
+        #block{type = titles},
+        #block{type = current_user},
+        #block{type = categories},
+        #block{type = about}
     ].

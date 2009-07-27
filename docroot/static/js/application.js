@@ -30,3 +30,26 @@ function more(a) {
     });
     return false;
 };
+
+function update_chat() {
+    var output = $('#chat_output');
+    output[0].scrollTop = output[0].scrollHeight;
+    var NowString = $('#chat_output input:last').val();
+    $.get('/chats/' + NowString, function(Html) {
+        output.append(Html);
+        update_chat();
+    })
+};
+$(function() {
+    $('#chat_input').keydown(function(evt) {
+        if (evt.keyCode == 13) {
+            var input = $('#chat_input');
+            var msg = $.trim(input.val());
+            if (msg != '') {
+                $.post('/chats', {msg: msg});
+            }
+            input.val('');
+        }
+    });
+    update_chat();
+});

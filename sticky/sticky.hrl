@@ -16,11 +16,11 @@
 
 -record(category_content, {category_id, content_type, content_id}).
 
--record(comment, {id, content_type, content_id, body, user_id, ip, created_at, updated_at}).
+-record(discussion, {id, content_type, content_id, body, user_id, ip, created_at, updated_at}).
 
 % Used to sort contents, updated_at id updated when:
 % * Content is updated
-% * Comment is created, updated
+% * Discussion is created, updated
 %
 % content_type_id: {type, id}
 -record(thread, {content_type_id, updated_at}).

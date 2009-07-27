@@ -12,5 +12,5 @@ render() ->
         {h1, [], h_article:render_title(Article)},
         h_user:render(User),
         {'div', [], [Article#article.abstract, Article#article.body]},
-        h_comment:render_all(article, Article#article.id)
+        h_discussion:render_all(article, Article#article.id)
     ].
