@@ -3,5 +3,5 @@
 -compile(export_all).
 
 render() ->
-    {NameMsgList, PrevNow} = ale:app(name_msg_list_and_prev_now),
-    h_chat:render_name_msg_list(NameMsgList, PrevNow).
+    {Msgs, PrevNow} = ale:app(msgs_prev_now),
+    h_chat:render_msgs(Msgs, PrevNow).

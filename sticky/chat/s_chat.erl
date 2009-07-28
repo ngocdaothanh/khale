@@ -4,20 +4,20 @@
 -compile(export_all).
 
 -define(SERVER, {global, ?MODULE}).
--define(MSG_STORAGE_SIZE, 2).
+-define(MSG_STORAGE_SIZE, 100).
 -define(TIMEOUT, 10000).
 
--record(state, {name_msg_now_list, clients}).
+-record(state, {msg_now_list, clients}).
 
 %% The whole site has only one chat room.
 start_link()     -> gen_server:start_link(?SERVER, ?MODULE, [], []).
 
-%% When there is new chat message, Pid will be sent {chat, Name, Msg, Now}.
+%% When there is new chat message, Pid will be sent {chat, Msg, Now}.
 subscribe(Pid)   -> gen_server:cast(?SERVER, {subscribe, Pid}).
 
 unsubscribe(Pid) -> gen_server:cast(?SERVER, {unsubscribe, Pid}).
 
-chat(Name, Msg)  -> gen_server:cast(?SERVER, {chat, Name, Msg}).
+chat(Msg)        -> gen_server:cast(?SERVER, {chat, Msg}).
 
 %% Returns {[{Name, Msg}], NewPrevNow}.
 msgs(PrevNow)    -> gen_server:call(?SERVER, {msgs, PrevNow}).
@@ -26,28 +26,28 @@ timeout() -> ?TIMEOUT.
 
 %-------------------------------------------------------------------------------
 
-init([]) -> {ok, #state{name_msg_now_list = [], clients = []}}.
+init([]) -> {ok, #state{msg_now_list = [], clients = []}}.
 
 handle_call({msgs, PrevNow}, _From, State) ->
-    NameMsgNowList = State#state.name_msg_now_list,
-    NameMsgList1 = lists:foldl(
-        fun({Name, Msg, Now}, Acc) ->
+    MsgNowList = State#state.msg_now_list,
+    Msgs1 = lists:foldl(
+        fun({Msg, Now}, Acc) ->
             case Now > PrevNow of
-                true  -> [{Name, Msg} | Acc];
+                true  -> [Msg | Acc];
                 false -> Acc
             end
         end,
         [],
-        NameMsgNowList
+        MsgNowList
     ),
 
-    Reply = case NameMsgList1 of
+    Reply = case Msgs1 of
         [] -> {[], PrevNow};
 
         _ ->
-            NameMsgList2 = lists:reverse(NameMsgList1),
-            {_, _, PrevNow2} = lists:last(NameMsgNowList),
-            {NameMsgList2, PrevNow2}
+            Msgs2 = lists:reverse(Msgs1),
+            {_, PrevNow2} = lists:last(MsgNowList),
+            {Msgs2, PrevNow2}
     end,
     {reply, Reply, State}.
 
@@ -59,25 +59,24 @@ handle_cast({unsubscribe, Pid}, State) ->
     Clients = State#state.clients,
     {noreply, State#state{clients = Clients -- [Pid]}, ?TIMEOUT};
 
-handle_cast({chat, Name, Msg}, State) ->
+handle_cast({chat, Msg}, State) ->
     Clients = State#state.clients,
     Now = now(),
     lists:foreach(
-        fun(Pid) -> Pid ! {chat, Name, Msg, Now} end,
+        fun(Pid) -> Pid ! {chat, Msg, Now} end,
         Clients
     ),
 
-    NameMsgNowList1 = State#state.name_msg_now_list,
-    NameMsgNowList2 = case length(NameMsgNowList1) of
+    MsgNowList1 = State#state.msg_now_list,
+    MsgNowList2 = case length(MsgNowList1) of
         ?MSG_STORAGE_SIZE ->
-            [_Hd | Rest] = NameMsgNowList1,
+            [_Hd | Rest] = MsgNowList1,
             Rest;
 
-        _ -> NameMsgNowList1
+        _ -> MsgNowList1
     end,
-    NameMsgTimeStamp = {Name, Msg, Now},
-    NameMsgNowList3 = NameMsgNowList2 ++ [NameMsgTimeStamp],
-    {noreply, State#state{name_msg_now_list = NameMsgNowList3, clients = []}}.
+    MsgNowList3 = MsgNowList2 ++ [{Msg, Now}],
+    {noreply, State#state{msg_now_list = MsgNowList3, clients = []}}.
 
 handle_info(timeout, State) -> {noreply, State#state{clients = []}}.
 
