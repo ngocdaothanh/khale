@@ -5,7 +5,9 @@
 -include("sticky.hrl").
 
 render() ->
-    ale:app(title, ?T("About")),
+    Title = ?T("About"),
+    ale:app(title_in_head, Title),
+    ale:app(title_in_body, Title),
     About = m_about:find(undefined),
     [
         About#about.long,

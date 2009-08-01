@@ -1,45 +1,49 @@
 -module(c_chat).
 
 -routes([
-    get,  "/chats/:prev_now", index,
-    post, "/chats",           create
+    get,  "/chats/:now", index,
+    post, "/chats",      create
 ]).
 
 -compile(export_all).
 
 -include("sticky.hrl").
+-define(TIMEOUT, 60000).
 
 before_action(_) ->
-    ale:layout_module(undefined),
+    ale:view(undefined),
     false.
 
 index() ->
-    PrevNow1 = ale:params(prev_now),
-    PrevNow2 = h_application:string_to_now(PrevNow1),
-    {Msgs1, PrevNow3} = s_chat:msgs(PrevNow2),
+    Now1 = ale:params(now),
+    Now2 = h_application:string_to_now(Now1),
+    case s_chat:subscribe(self(), Now2) of
+        {NumUsers, Msgs, Now3} ->
+            Data = {struct, [
+                {numUsers, NumUsers},
+                {msgs, {array, Msgs}},
+                {now, h_application:now_to_string(Now3)}
+            ]},
+            ale:yaws(content, "application/json", json:encode(Data));
 
-    % Return immediately if there is message
-    {Msgs2, PrevNow4} = case Msgs1 of
-        [] ->
-            s_chat:subscribe(self()),
+        NumUsers ->
             receive
-                {chat, Msg, Now} -> {Msgs1 ++ [Msg], Now};
-                _                      -> {Msgs1, PrevNow3}
-            after s_chat:timeout()     -> {Msgs1, PrevNow3}
-            end;
-
-        _ -> {Msgs1, PrevNow3}
-    end,
-
-    case Msgs2 of
-        [] -> ale:view(undefined);
-        _  -> ale:app(msgs_prev_now, {Msgs2, PrevNow4})
+                {chat, NumUsers2, Msg, Now3} ->
+                    Data = {struct, [
+                        {numUsers, NumUsers2},
+                        {msgs, {array, [Msg]}},
+                        {now, h_application:now_to_string(Now3)}
+                    ]},
+                    ale:yaws(content, "application/json", json:encode(Data))
+            after ?TIMEOUT ->
+                s_chat:unsubscribe(self()),
+                Data = {struct, [{numUsers, NumUsers}]},
+                ale:yaws(content, "application/json", json:encode(Data))
+            end
     end.
 
 create() ->
-    ale:view(undefined),
     case ale:params(msg) of
         undefined -> ok;
-
-        Msg -> s_chat:chat(Msg)
+        Msg       -> s_chat:publish(Msg)
     end.

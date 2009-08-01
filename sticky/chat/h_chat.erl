@@ -2,7 +2,6 @@
 
 -compile(export_all).
 
-render_msgs(Msgs, PrevNow) ->
-    RenderedMsgs = [{li, [], ["- ", yaws_api:htmlize(Msg)]} || Msg <- Msgs],
-    RenderedPrevNow     = {input, [{type, hidden}, {value, h_application:now_to_string(PrevNow)}]},
-    {ul, [], RenderedMsgs ++ RenderedPrevNow}.
+render_msgs(Msgs) ->
+    RenderedMsgs = [{li, [], yaws_api:htmlize(Msg)} || Msg <- Msgs],
+    {ul, [], RenderedMsgs}.

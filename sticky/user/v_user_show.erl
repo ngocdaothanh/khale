@@ -5,7 +5,9 @@
 -include("sticky.hrl").
 
 render() ->
-    ale:app(title, ?T("User")),
+    Title = ?T("User"),
+    ale:app(title_in_head, Title),
+    ale:app(title_in_body, Title),
 
     User = ale:app(user),
     Contents = m_user:contents(User),

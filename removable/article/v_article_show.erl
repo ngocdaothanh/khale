@@ -5,8 +5,11 @@
 -include("article.hrl").
 
 render() ->
-    ale:app(title, h_article:render_name()),
+    ale:app(title_in_body, h_article:render_name()),
+
     Article = ale:app(article),
+    ale:app(title_in_head, h_article:render_title(Article)),
+
     User = m_user:find(Article#article.user_id),
     [
         {h1, [], h_article:render_title(Article)},

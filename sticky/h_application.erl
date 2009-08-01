@@ -9,17 +9,15 @@ region(Region) ->
     {'ul', [{class, region}, {id, Region}], [h_block:render(B) || B <- Blocks]}.
 
 title_in_head() ->
-    Title = ale:app(title),
-    case Title of
+    case ale:app(title_in_head) of
         undefined -> "Khale";
-        _         -> ["Khale - ", yaws_api:htmlize(Title)]
+        Title     -> ["Khale - ", yaws_api:htmlize(Title)]
     end.
 
 title_in_body() ->
-    Title = ale:app(title),
-    case Title of
+    case ale:app(title_in_body) of
         undefined -> "";
-        _         -> {h3, [], yaws_api:htmlize(Title)}
+        Title     -> {h3, [], yaws_api:htmlize(Title)}
     end.
 
 flash() ->

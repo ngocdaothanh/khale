@@ -40,13 +40,13 @@ p { margin-top: 10px; }
 }
 
 #main {
-  width: 710px;
+  width: 660px;
   float: left;
   padding: 5px;
 }
 
 #sidebar {
-  width: 230px;
+  width: 280px;
   float: right;
 }
 
@@ -110,9 +110,10 @@ td.avatar { padding-right: 5px; }
   height: 20em;
   overflow: auto;
 }
-
+/*
 #chat_output li {
   list-style-type: none;
   margin-left: 0px;
   padding-left: 0px;
 }
+*/

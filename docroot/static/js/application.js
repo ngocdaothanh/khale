@@ -31,15 +31,32 @@ function more(a) {
     return false;
 };
 
-function update_chat() {
+function updateChat(now) {
+    // Scroll down
     var output = $('#chat_output');
     output[0].scrollTop = output[0].scrollHeight;
-    var NowString = $('#chat_output input:last').val();
-    $.get('/chats/' + NowString, function(Html) {
-        output.append(Html);
-        update_chat();
+
+    $.getJSON('/chats/' + now, function(data) {
+        var numUsers = data.numUsers;
+        if (numUsers != null) {
+            $('#chat_users').html('' + numUsers + '');
+        }
+
+        var msgs = data.msgs;
+        if (msgs != null) {
+            var ul = $('#chat_output ul');
+            for (var i = 0; i < msgs.length; i++) {
+                var escaped = $('<div/>').text(msgs[i]).html();
+                ul.append("<li>" + escaped + "</li>");
+            }
+        }
+
+        var now2 = data.now;
+        now3 = (now2 == null)? now : now2;
+        updateChat(now3);
     })
 };
+
 $(function() {
     $('#chat_input').keydown(function(evt) {
         if (evt.keyCode == 13) {
@@ -51,5 +68,4 @@ $(function() {
             input.val('');
         }
     });
-    update_chat();
 });

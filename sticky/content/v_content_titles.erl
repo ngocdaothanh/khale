@@ -5,7 +5,9 @@
 -include("sticky.hrl").
 
 render() ->
-    ale:app(title, ?T("Recently Updated Titles")),
+    Title = ?T("Recently Updated Titles"),
+    ale:app(title_in_head, Title),
+    ale:app(title_in_body, Title),
 
     Contents = ale:app(contents),
     h_application:more(
