@@ -31,12 +31,12 @@ function more(a) {
     return false;
 };
 
-function updateChat(now) {
+function chatMore(now) {
     // Scroll down
     var output = $('#chat_output');
     output[0].scrollTop = output[0].scrollHeight;
 
-    $.getJSON('/chats/' + now, function(data) {
+    $.post('/chats/' + now, null, function(data) {
         var numUsers = data.numUsers;
         if (numUsers != null) {
             $('#chat_users').html('' + numUsers + '');
@@ -53,8 +53,8 @@ function updateChat(now) {
 
         var now2 = data.now;
         now3 = (now2 == null)? now : now2;
-        updateChat(now3);
-    })
+        chatMore(now3);
+    }, "json");
 };
 
 $(function() {

@@ -1,7 +1,7 @@
 -module(c_chat).
 
 -routes([
-    get,  "/chats/:now", index,
+    post, "/chats/:now", more,  % POST is used to avoid browser cache
     post, "/chats",      create
 ]).
 
@@ -14,7 +14,7 @@ before_action(_) ->
     ale:view(undefined),
     false.
 
-index() ->
+more() ->
     Now1 = ale:params(now),
     Now2 = h_application:string_to_now(Now1),
     case s_chat:subscribe(self(), Now2) of

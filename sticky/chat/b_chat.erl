@@ -9,7 +9,7 @@ render(_Id, _Config) ->
     NumUsers2             = NumUsers + 1,  % 1: this user
     Now2                  = h_application:now_to_string(Now),
 
-    ale:app_add_script("updateChat('" ++ Now2 ++ "');"),
+    ale:app_add_script("chatMore('" ++ Now2 ++ "');"),
     Body = [
         {p, [], [
             ?T("Users"), ": ",
