@@ -10,7 +10,7 @@
 -include("sticky.hrl").
 -define(TIMEOUT, 60000).
 
-before_action(_) ->
+before_action() ->
     ale:view(undefined),
     false.
 

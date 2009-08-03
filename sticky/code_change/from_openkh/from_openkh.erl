@@ -26,10 +26,16 @@ code_change() ->
     {ok, C} = pgsql:connect(Host, Username, Password, [{database, Database}, {port, Port}]),
 
     migrate_users(C),
+
+    migrate_site(C),
+
     migrate_catagories(C),
-    %migrate_tocs(C),
+    migrate_tocs(C),
+
     migrate_articles(C),
     migrate_forums(C),
+    migrate_polls(C),
+
     migrate_comments(C),
 
     pgsql:close(C).
@@ -56,6 +62,15 @@ migrate_users(C) ->
         Rows
     ).
 
+migrate_site(_C) ->
+    Site = #site{
+        id = 1,
+        name_short = "NS", name_long = "NL",
+        about_short = "AS", about_long = "AL",
+        toc = "TOC", user_id = 1, updated_at = now()
+    },
+    mnesia:transaction(fun() -> mnesia:write(Site) end).
+
 migrate_catagories(C) ->
     {ok, _, Rows} = pgsql:equery(C, "SELECT id, name, path, position FROM categories ORDER BY position"),
     lists:foreach(
@@ -63,36 +78,44 @@ migrate_catagories(C) ->
             {PgId, Name, Path, Position} = Row,
             Name2    = binary_to_list(Name),
             UnixName = binary_to_list(Path),
-            Category = m_category:create(Name2, UnixName, Position, 1, {127, 0, 0, 1}),
+            Category = m_category:create(Name2, UnixName, Position, 1),
 
             category_id_pg_to_mn(PgId, Category#category.id)
         end,
         Rows
     ).
 
-%% First author + last version
-% migrate_tocs(C) ->
-%     % sticky = category ID, 0 = whole site
-%     {ok, _, Rows} = pgsql:equery(C, "SELECT id, active_version, views, sticky, updated_at FROM nodes WHERE type LIKE 'Toc' ORDER BY sticky"),
-%     lists:foreach(
-%         fun(Row) ->
-%             {TocId, ActiveVersion, Views, CategoryId, UpdatedAt} = Row,
-%             CategoryId2 = category_id_pg_to_mn(CategoryId),
-%             UpdatedAt2  = timestamp_pg_to_mn(UpdatedAt),
-% 
-%             % Use the last version
-%             {ok, _, Rows} = pgsql:equery(C, "SELECT id, _body, user_id, ip, created_at FROM node_versions WHERE node_id = " ++ integer_to_list(NodeId) ++ " AND version = " ++ integer_to_list(ActiveVersion)),
-% 
-%             case CategoryId of
-%                 0 -> ok;
-% 
-%                 _ ->
-%                     Q = qlc:q([R || R <- mnesia:table(category), R#category.id == CategoryId2]),
-%                     [Category] = m_helper:do(Q),
-%                     Category2 = Category#category{toc_id = TocId}
-%             end
-%         Rows
-%     ).
+%% Only one version, all admins can edit thus the first author is not important.
+migrate_tocs(C) ->
+    % sticky = category ID, 0 = whole site
+    {ok, _, Rows} = pgsql:equery(C, "SELECT id, active_version, sticky, updated_at FROM nodes WHERE type LIKE 'Toc' ORDER BY sticky"),
+    lists:foreach(
+        fun(Row) ->
+            {NodeId, ActiveVersion, CategoryId, UpdatedAt} = Row,
+            UpdatedAt2  = timestamp_pg_to_mn(UpdatedAt),
+
+            % Use the active version
+            {ok, _, [{Body, UserId}]} = pgsql:equery(C, "SELECT _body, user_id FROM node_versions WHERE node_id = " ++ integer_to_list(NodeId) ++ " AND version = " ++ integer_to_list(ActiveVersion)),
+
+            Body2 = binary_to_list(Body),
+            UserId2 = user_id_pg_to_mn(UserId),
+
+            case CategoryId of
+                0 ->
+                    Site = m_site:find(undefined),
+                    Site2 = Site#site{toc = Body2, user_id = UserId2, updated_at = UpdatedAt2},
+                    mnesia:transaction(fun() -> mnesia:write(Site2) end);
+
+                _ ->
+                    CategoryId2 = category_id_pg_to_mn(CategoryId),
+                    Q = qlc:q([R || R <- mnesia:table(category), R#category.id == CategoryId2]),
+                    [Category] = m_helper:do(Q),
+                    Category2 = Category#category{toc = Body2, user_id = UserId2, updated_at = UpdatedAt2},
+                    mnesia:transaction(fun() -> mnesia:write(Category2) end)
+            end
+        end,
+        Rows
+    ).
 
 %% First author + last version
 migrate_articles(C) ->
@@ -100,25 +123,34 @@ migrate_articles(C) ->
     lists:foreach(
         fun(Row) ->
             {Id, Views, ThreadUpdatedAt} = Row,
-            ThreadUpdatedAt2 = timestamp_pg_to_mn(ThreadUpdatedAt),
 
-            {UserId, Ip, Title, Abstract, Body, CreatedAt, UpdatedAt} = article_first_author_last_version(C, Id),
+            % case Id of
+            %     % Skip article 521 (Scalaris) becauses it is badly-written and
+            %     % contains strange characters that will cause Sphinx error
+            %     % "XML parse error: not well-formed (invalid token)"
+            %     521 -> ok;
+            % 
+            %     _ ->
+                    ThreadUpdatedAt2 = timestamp_pg_to_mn(ThreadUpdatedAt),
 
-            ContentId = m_helper:next_id(content),
-            content_id_pg_to_mn(Id, {article, ContentId}),
-            Article = #article{
-                id = ContentId,
-                title = Title, abstract = Abstract, body = Body,
-                user_id = UserId, ip = Ip,
-                created_at = CreatedAt,
-                updated_at = UpdatedAt,
-                views = Views
-            },
-            Thread = #thread{content_type_id = {article, ContentId}, updated_at = ThreadUpdatedAt2},
-            mnesia:transaction(fun() ->
-                mnesia:write(Article),
-                mnesia:write(Thread)
-            end)
+                    {UserId, Ip, Title, Abstract, Body, CreatedAt, UpdatedAt} = article_first_author_last_version(C, Id),
+
+                    ContentId = m_helper:next_id(content),
+                    content_id_pg_to_mn(Id, {article, ContentId}),
+                    Article = #article{
+                        id = ContentId,
+                        title = Title, abstract = Abstract, body = Body,
+                        user_id = UserId, ip = Ip,
+                        created_at = CreatedAt,
+                        updated_at = UpdatedAt,
+                        views = Views
+                    },
+                    Thread = #thread{content_type_id = {article, ContentId}, updated_at = ThreadUpdatedAt2},
+                    mnesia:transaction(fun() ->
+                        mnesia:write(Article),
+                        mnesia:write(Thread)
+                    end)
+            % end
         end,
         Rows
     ).
@@ -176,6 +208,9 @@ migrate_forums(C) ->
         end,
         Rows
     ).
+
+migrate_polls(C) ->
+    {ok, _, Rows} = pgsql:equery(C, "SELECT id, views, updated_at FROM nodes WHERE type LIKE 'Poll' ORDER BY id").
 
 migrate_comments(C) ->
     {ok, _, Rows} = pgsql:equery(C, "SELECT node_id, message, user_id, ip, created_at, updated_at FROM comments ORDER BY id"),
@@ -236,7 +271,7 @@ content_id_pg_to_mn(PgId, {MnType, MnId}) -> put({content_id, PgId}, {MnType, Mn
 content_id_pg_to_mn(PgId) ->
     case get({content_id, PgId}) of
         undefined ->
-            io:format("Content was not migrated: ~p~n", [PgId]),
+            io:format("Content has not been migrated or has been deleted: ~p~n", [PgId]),
             undefined;
 
         X -> X

@@ -48,11 +48,11 @@ find(ContentType, ContentId) ->
     MModule:find(ContentId).
 
 %% Returns nonsticky contents sorted reveresely by thread_updated_at.
-more(_UnixName, PrevThreadUpdatedAt) ->
+more(_UnixName, ThreadUpdatedAt) ->
     {atomic, Contents} = mnesia:transaction(fun() ->
-        Q1 = case PrevThreadUpdatedAt of
+        Q1 = case ThreadUpdatedAt of
             undefined -> qlc:q([R || R <- mnesia:table(thread)]);
-            _         -> qlc:q([R || R <- mnesia:table(thread), R#thread.updated_at < PrevThreadUpdatedAt])
+            _         -> qlc:q([R || R <- mnesia:table(thread), R#thread.updated_at < ThreadUpdatedAt])
         end,
         Q2 = qlc:keysort(3, Q1, [{order, descending}]),
         QC = qlc:cursor(Q2),
@@ -76,3 +76,33 @@ thread_updated_at(Content) ->
     Q = qlc:q([R || R <- mnesia:table(thread), R#thread.content_type_id == {ContentType, ContentId}]),
     [Thread] = m_helper:do(Q),
     Thread#thread.updated_at.
+
+%-------------------------------------------------------------------------------
+
+sphinx_xml() ->
+    mnesia:start(),
+    mnesia:wait_for_tables([article], infinity),
+
+    % http://erlang.org/doc/apps/xmerl/xmerl_ug.html
+
+    IdTitleBodyList = m_article:sphinx_id_title_body_list(),
+    Data = lists:map(
+        fun({Id, Title, Body}) ->
+            {'sphinx:document', [{id, integer_to_list(Id)}], [
+                {title, [Title]},
+                {body,  [Body]}
+            ]}
+        end,
+        IdTitleBodyList
+    ),
+
+    Content = {'sphinx:docset', [],
+        [
+            {'sphinx:schema', [], [
+                {'sphinx:field', [{name, "title"}], []},
+                {'sphinx:field', [{name, "body"}], []}
+            ]}
+        ] ++ Data
+    },
+    Docset = #xmlElement{name = 'sphinx:docset', content = [Content]},
+    io:format(xmerl:export_simple([Docset], xmerl_xml)).

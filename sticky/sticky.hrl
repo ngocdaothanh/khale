@@ -1,5 +1,6 @@
 -include_lib("ale/include/ale.hrl").
 -include_lib("stdlib/include/qlc.hrl").
+-include_lib("xmerl/include/xmerl.hrl").
 
 -define(MNESIA_WAIT_FOR_TABLES_TIMEOUT, 20000).
 -define(TABLE_OPTIONS, [{disc_copies, [node()]}]).
@@ -9,10 +10,10 @@
 -record(user, {id, type, admin = false, indexed_data, extra_data}).
 
 % user_id: ID of the admin who last editted
--record(about, {short, long, user_id, ip, updated_at}).
+-record(site, {id, name_short, name_long, about_short, about_long, toc, user_id, updated_at}).
 
-% user_id: ID of the admin who last editted TOC
--record(category, {id, name, unix_name, position, toc, user_id, ip}).
+% user_id: ID of the admin who last editted
+-record(category, {id, name, unix_name, position, toc, user_id, updated_at}).
 
 -record(category_content, {category_id, content_type, content_id}).
 

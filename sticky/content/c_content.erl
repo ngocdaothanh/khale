@@ -15,10 +15,13 @@
     get, "/",                      previews,
     get, "/cagegories/:unix_name", previews_by_category,
 
-    get, "/previews_more/:prev_thread_updated_at",         previews_more,
-    get, "/cagegories/:unix_name/:prev_thread_updated_at", previews_more_by_category,
+    get, "/previews_more/:thread_updated_at",         previews_more,
+    get, "/cagegories/:unix_name/:thread_updated_at", previews_more_by_category,
 
-    get, "/titles_more/:prev_thread_updated_at", titles_more
+    get, "/titles_more/:thread_updated_at", titles_more,
+
+    get, "/search/:keyword",       search,
+    get, "/search/:keyword/:page", search
 ]).
 
 -caches([
@@ -41,11 +44,42 @@ previews_or_titles(View) ->
         Name -> Name
     end,
 
-    PrevThreadUpdatedAt = case ale:params(prev_thread_updated_at) of
+    ThreadUpdatedAt = case ale:params(thread_updated_at) of
         undefined -> undefined;
         YMDHMiS   -> h_application:string_to_timestamp(YMDHMiS)
     end,
 
-    Contents = m_content:more(UnixName, PrevThreadUpdatedAt),
+    Contents = m_content:more(UnixName, ThreadUpdatedAt),
     ale:app(contents, Contents),
     ale:view(View).
+
+search() ->
+    Contents = case ale:params(keyword) of
+        undefined -> [];
+
+        Keyword ->
+            Q1 = giza_query:new("article", Keyword),
+            Q2 = giza_query:limit(Q1, ?ITEMS_PER_PAGE),
+            Q3 = case ale:params(page) of
+                undefined ->
+                    ale:app(next_page, 2),
+                    Q2;
+
+                PageS ->
+                    Page = list_to_integer(PageS),
+                    ale:app(next_page, Page + 1),
+                    giza_query:offset(Q2, ?ITEMS_PER_PAGE*(Page - 1))  % 20: Sphinx default
+            end,
+            {ok, L} = giza_request:send(Q3),
+            lists:foldr(
+                fun({Id, _}, Acc) ->
+                    case m_article:find(Id) of
+                        undefined -> Acc;
+                        R         -> [R | Acc]
+                    end
+                end,
+                [],
+                L
+            )
+    end,
+    ale:app(contents, Contents).

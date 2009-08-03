@@ -52,6 +52,7 @@ publish(Msg)        -> gen_server:cast(?SERVER, {publish, Msg}).
 %-------------------------------------------------------------------------------
 
 init([]) ->
+    process_flag(trap_exit, true),
     {ok, #state{msg_now_list = [], pids = []}}.
 
 handle_call(msgs, _From, State = #state{msg_now_list = MsgNowList, pids = Pids}) ->
@@ -59,6 +60,7 @@ handle_call(msgs, _From, State = #state{msg_now_list = MsgNowList, pids = Pids})
     {reply, {length(Pids), Msgs, Now}, State};
 
 handle_call({subscribe, Pid, Now}, _From, State = #state{msg_now_list = MsgNowList, pids = Pids}) ->
+    link(Pid),
     Pids2 = [Pid | Pids],
     NumUsers = length(Pids2),
     {Reply, State2} = case msgs(MsgNowList, Now) of
@@ -85,6 +87,8 @@ handle_cast({publish, Msg}, State = #state{msg_now_list = MsgNowList, pids = Pid
 
 handle_cast({unsubscribe, Pid}, State = #state{pids = Pids}) ->
     {noreply, State#state{pids = Pids -- [Pid]}}.
+
+handle_info({'EXIT', Pid, _Reason}, State) -> handle_cast({unsubscribe, Pid}, State).
 
 terminate(_Reason, _State) -> ok.
 

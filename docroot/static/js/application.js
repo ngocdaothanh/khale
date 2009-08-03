@@ -58,6 +58,16 @@ function chatMore(now) {
 };
 
 $(function() {
+    $('#search_keyword').keydown(function(evt) {
+        if (evt.keyCode == 13) {
+            var input = $('#search_keyword');
+            var keyword = $.trim(input.val());
+            if (keyword != '') {
+                window.location.href = '/search/' + encodeURIComponent(keyword);
+            }
+        }
+    });
+
     $('#chat_input').keydown(function(evt) {
         if (evt.keyCode == 13) {
             var input = $('#chat_input');

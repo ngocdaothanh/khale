@@ -10,9 +10,11 @@ migrate() ->
 all(Region) ->
     [
         #block{type = html},
+        #block{type = search},
         #block{type = chat},
         #block{type = titles},
         #block{type = current_user},
         #block{type = categories},
+        #block{type = toc},
         #block{type = about}
     ].

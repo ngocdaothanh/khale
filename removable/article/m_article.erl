@@ -26,3 +26,12 @@ find(Id) ->
         [R] -> R;
         _   -> undefined
     end.
+
+%-------------------------------------------------------------------------------
+
+sphinx_id_title_body_list() ->
+    Q = qlc:q([
+        {R#article.id, R#article.title, R#article.abstract ++ R#article.body} ||
+        R <- mnesia:table(article)
+    ]),
+    m_helper:do(Q).

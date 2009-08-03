@@ -18,10 +18,13 @@ start(_SC, Nodes) ->
     m_helper:start(Nodes),
     supervisor:start_link({local, ?SUP}, ?MODULE, []).
 
-before_action(_Controller, _Action) ->
+before_action() ->
     case ale:method() == get andalso ale:params(without_layout) == "true" of
         true  -> ok;
-        false -> ale:layout_module(default_v_layout)
+
+        false ->
+            ale:layout_module(default_v_layout),
+            ale:app(site, m_site:find(undefined))
     end,
     false.
 

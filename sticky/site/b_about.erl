@@ -5,7 +5,7 @@
 -include("sticky.hrl").
 
 render(_Id, _Data) ->
-    About = m_about:find(undefined),
+    Site = ale:app(site),
 
     % Link to users is hidden if there is no user
     UsersLink = case mnesia:table_info(user, size) of
@@ -14,14 +14,14 @@ render(_Id, _Data) ->
     end,
 
     % Link to discussions is always displayed, so that the first one can be created
-    DiscussionsLinkText = case m_discussion:count(about, undefined) of
-        0           -> ?T("Discussions about this site");
+    DiscussionsLinkText = case m_discussion:count(site, undefined) of
+        0              -> ?T("Discussions about this site");
         NumDiscussions -> ?TF("~p discussions about this site", [NumDiscussions])
     end,
-    DiscussionsLink = {li, [], {a, [{href, ale:path(about, about)}], DiscussionsLinkText}},
+    DiscussionsLink = {li, [], {a, [{href, ale:path(site, about)}], DiscussionsLinkText}},
 
     Body = [
-        About#about.short,
+        Site#site.about_short,
 
         {ul, [], [
             UsersLink,

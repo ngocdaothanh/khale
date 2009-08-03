@@ -1,4 +1,4 @@
--module(c_about).
+-module(c_site).
 
 -routes([
     get, "/about", about

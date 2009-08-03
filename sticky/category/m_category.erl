@@ -8,13 +8,13 @@ migrate() ->
     m_helper:create_table(category,         record_info(fields, category)),
     m_helper:create_table(category_content, record_info(fields, category_content), bag).
 
-create(Name, UnixName, Position, UserId, Ip) ->
+create(Name, UnixName, Position, UserId) ->
     F = fun() ->
         Id = m_helper:next_id(category),
         Category = #category{
             id = Id,
             name = Name, unix_name = UnixName, position = Position, toc = "",
-            user_id = UserId, ip = Ip
+            user_id = UserId
         },
         ok = mnesia:write(Category),
         Category
@@ -27,7 +27,7 @@ create(Name, UnixName, Position, UserId, Ip) ->
 all() ->
     Q1 = qlc:q([C || C <- mnesia:table(category)]),
     Q2 = qlc:keysort(1 + 4, Q1, [{order, ascending}]),    % sort by position
-    All = m_helper:do(Q2).
+    m_helper:do(Q2).
 
 find_by_unix_name(UnixName) ->
     undefined.

@@ -18,15 +18,16 @@ Types of content:
 * Poll
 * Event: You can invite others to participate an event
 
-A contents can be mounted to multiple categories. Each category has a TOC
-(table of contents). TOC can only be editted by admins.
+A content can be mounted to multiple categories. Each category has a table of
+contents (TOC) which contains links to important contents or to external sites.
+TOC can only be editted by admins.
 
 The whole site also has TOC and "about" to introduce about the site.
 
 Sticky property for contents is not supported, you can use TOC or HTML block
 to create links to contents you want to make sticky.
 
-All types of contents have commemts.
+All types of contents have discussions.
 
 Khale is designed so that more features can be easily added.
 
@@ -34,8 +35,9 @@ Khale is designed so that more features can be easily added.
 
 Install:
 * Ale (http://github.com/ngocdaothanh/ale)
-* MochiWeb (http://code.google.com/p/mochiweb)
+* MochiWeb (http://code.google.com/p/mochiweb), for use by ErlangOpenID
 * ErlangOpenID (http://github.com/ngocdaothanh/erlangopenid)
+* Giza (http://github.com/ngocdaothanh/giza), for search based on Sphinx
 to Erlang lib directory.
 
 Run "make" to build Khale.
