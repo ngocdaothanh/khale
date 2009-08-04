@@ -4,6 +4,8 @@
 
 -include("sticky.hrl").
 
+-define(MAX_DOCS_PER_TYPE, 100000).
+
 migrate() -> m_helper:create_table(thread, record_info(fields, thread)).
 
 %% Returns the list of content modules. Content modules should define
@@ -12,8 +14,7 @@ migrate() -> m_helper:create_table(thread, record_info(fields, thread)).
 %% Option:
 %% * noncreatable
 modules() ->
-    % FIXME: save to SC's ets
-    ale:cache("khale_content_modules", fun() ->
+    ale:conf(app, "content_modules", fun() ->
         filelib:fold_files(?ALE_ROOT ++ "/ebin", "^m_.*\.beam$", false,
             fun(ModelFile, Acc) ->
                 Base = filename:basename(ModelFile, ".beam"),
@@ -48,11 +49,32 @@ find(ContentType, ContentId) ->
     MModule:find(ContentId).
 
 %% Returns nonsticky contents sorted reveresely by thread_updated_at.
-more(_UnixName, ThreadUpdatedAt) ->
+more(TagName, ThreadUpdatedAt) ->
     {atomic, Contents} = mnesia:transaction(fun() ->
-        Q1 = case ThreadUpdatedAt of
-            undefined -> qlc:q([R || R <- mnesia:table(thread)]);
-            _         -> qlc:q([R || R <- mnesia:table(thread), R#thread.updated_at < ThreadUpdatedAt])
+        Q1 = case m_tag:find_by_name(TagName) of
+            undefined ->
+                case ThreadUpdatedAt of
+                    undefined -> qlc:q([R || R <- mnesia:table(thread)]);
+                    _         -> qlc:q([R || R <- mnesia:table(thread), R#thread.updated_at < ThreadUpdatedAt])
+                end;
+
+            Tag ->
+                case ThreadUpdatedAt of
+                    undefined ->
+                        qlc:q([T ||
+                            T <- mnesia:table(thread), TC <- mnesia:table(tag_content),
+                            T#thread.content_type_id == {TC#tag_content.content_type, TC#tag_content.content_id},
+                            TC#tag_content.tag_id == Tag#tag.id
+                        ]);
+
+                    _ ->
+                        qlc:q([T ||
+                            T <- mnesia:table(thread), TC <- mnesia:table(tag_content),
+                            T#thread.content_type_id == {TC#tag_content.content_type, TC#tag_content.content_id},
+                            TC#tag_content.tag_id == Tag#tag.id,
+                            T#thread.updated_at < ThreadUpdatedAt
+                        ])
+                end
         end,
         Q2 = qlc:keysort(3, Q1, [{order, descending}]),
         QC = qlc:cursor(Q2),
@@ -79,30 +101,68 @@ thread_updated_at(Content) ->
 
 %-------------------------------------------------------------------------------
 
+%% See sphinx.conf.
+%%
+%% All contents are merged into only one index. Because IDs must be unique, they
+%% are segmented into fixed-size segments specified by MAX_DOCS_PER_TYPE.
+%%
+%% For example:
+%% event 1 -> 100001
+%% poll  1 -> 200001
 sphinx_xml() ->
+    Tables = types(),
     mnesia:start(),
-    mnesia:wait_for_tables([article], infinity),
+    mnesia:wait_for_tables(Tables, infinity),
 
     % http://erlang.org/doc/apps/xmerl/xmerl_ug.html
 
-    IdTitleBodyList = m_article:sphinx_id_title_body_list(),
-    Data = lists:map(
-        fun({Id, Title, Body}) ->
-            {'sphinx:document', [{id, integer_to_list(Id)}], [
-                {title, [Title]},
-                {body,  [Body]}
-            ]}
+    {_, Docs} = lists:foldl(
+        fun(Type, {TypeIndex, Acc}) ->
+            MModule = m_module(Type),
+            IdTitleBodyList = MModule:sphinx_id_title_body_list(),
+
+            IdBase = ?MAX_DOCS_PER_TYPE*TypeIndex,
+
+            Acc2 = lists:foldl(
+                fun({Id, Title, Body}, Acc3) ->
+                    SegmentedId = IdBase + Id,
+
+                    Discussions = m_discussion:more(Type, Id, undefined, all_remaining),
+                    Discussions2 = lists:foldl(
+                        fun(D, Acc4) -> [Acc4, " ", D#discussion.body] end,
+                        "",
+                        Discussions
+                    ),
+
+                    Doc = {'sphinx:document', [{id, integer_to_list(SegmentedId)}], [
+                        {title,       [Title]},
+                        {body,        [Body]},
+                        {discussions, [Discussions2]}
+                    ]},
+                    [Doc | Acc3]
+                end,
+                Acc,
+                IdTitleBodyList
+            ),
+
+            {TypeIndex + 1, Acc2}
         end,
-        IdTitleBodyList
+        {0, []},
+        Tables
     ),
 
-    Content = {'sphinx:docset', [],
-        [
-            {'sphinx:schema', [], [
-                {'sphinx:field', [{name, "title"}], []},
-                {'sphinx:field', [{name, "body"}], []}
-            ]}
-        ] ++ Data
-    },
+    Schema = {'sphinx:schema', [], [
+        {'sphinx:field', [{name, "title"}],       []},
+        {'sphinx:field', [{name, "body"}],        []},
+        {'sphinx:field', [{name, "discussions"}], []}
+    ]},
+    Content = {'sphinx:docset', [], [Schema | Docs]},
     Docset = #xmlElement{name = 'sphinx:docset', content = [Content]},
     io:format(xmerl:export_simple([Docset], xmerl_xml)).
+
+sphinx_find(SegmentedId) ->
+    Modules = modules(),
+    Index   = SegmentedId div ?MAX_DOCS_PER_TYPE,
+    Module  = lists:nth(Index + 1, Modules),
+    Id      = SegmentedId rem ?MAX_DOCS_PER_TYPE,
+    Module:find(Id).

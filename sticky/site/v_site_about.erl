@@ -11,7 +11,7 @@ render() ->
 
     Site = ale:app(site),
     [
-        Site#site.about_long,
+        Site#site.about,
         {p, [], ?T("If you have any discussion about this site (bug report, idea etc.), please write it here.")},
         h_discussion:render_all(about, undefined)
     ].

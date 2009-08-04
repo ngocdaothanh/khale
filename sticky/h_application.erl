@@ -9,9 +9,11 @@ region(Region) ->
     {'ul', [{class, region}, {id, Region}], [h_block:render(B) || B <- Blocks]}.
 
 title_in_head() ->
+    Site = ale:app(site),
+    Name = yaws_api:htmlize(Site#site.name),
     case ale:app(title_in_head) of
-        undefined -> "Khale";
-        Title     -> ["Khale - ", yaws_api:htmlize(Title)]
+        undefined -> Name;
+        Title     -> [Name, " - ", yaws_api:htmlize(Title)]
     end.
 
 title_in_body() ->

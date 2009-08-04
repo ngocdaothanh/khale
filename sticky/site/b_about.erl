@@ -15,13 +15,13 @@ render(_Id, _Data) ->
 
     % Link to discussions is always displayed, so that the first one can be created
     DiscussionsLinkText = case m_discussion:count(site, undefined) of
-        0              -> ?T("Discussions about this site");
+        0              -> ?T("Discuss about this site");
         NumDiscussions -> ?TF("~p discussions about this site", [NumDiscussions])
     end,
     DiscussionsLink = {li, [], {a, [{href, ale:path(site, about)}], DiscussionsLinkText}},
 
     Body = [
-        Site#site.about_short,
+        Site#site.about,
 
         {ul, [], [
             UsersLink,

@@ -10,12 +10,11 @@
 -record(user, {id, type, admin = false, indexed_data, extra_data}).
 
 % user_id: ID of the admin who last editted
--record(site, {id, name_short, name_long, about_short, about_long, toc, user_id, updated_at}).
+-record(site, {id, name, subtitle, about}).
 
-% user_id: ID of the admin who last editted
--record(category, {id, name, unix_name, position, toc, user_id, updated_at}).
+-record(tag, {id, name}).
 
--record(category_content, {category_id, content_type, content_id}).
+-record(tag_content, {tag_id, content_type, content_id}).
 
 -record(discussion, {id, content_type, content_id, body, user_id, ip, created_at, updated_at}).
 

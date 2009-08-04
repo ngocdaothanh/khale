@@ -19,6 +19,8 @@ start(_SC, Nodes) ->
     supervisor:start_link({local, ?SUP}, ?MODULE, []).
 
 before_action() ->
+    ale:app(site, m_site:find(undefined)),
+
     case ale:method() == get andalso ale:params(without_layout) == "true" of
         true  -> ok;
 
@@ -26,6 +28,7 @@ before_action() ->
             ale:layout_module(default_v_layout),
             ale:app(site, m_site:find(undefined))
     end,
+
     false.
 
 error_404() ->

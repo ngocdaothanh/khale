@@ -18,3 +18,12 @@ create(Name, Invitation, Deadline, UserId, Ip, CategoryIds) ->
         user_id = UserId, ip = Ip, created_at = CreatedAt, updated_at = CreatedAt
     },
     m_content:save(Event, CategoryIds).
+
+%-------------------------------------------------------------------------------
+
+sphinx_id_title_body_list() ->
+    Q = qlc:q([
+        {R#event.id, R#event.name, R#event.invitation} ||
+        R <- mnesia:table(event)
+    ]),
+    m_helper:do(Q).

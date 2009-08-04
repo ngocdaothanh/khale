@@ -2,7 +2,12 @@
 
 -compile(export_all).
 
+-include("sticky.hrl").
+
 render() ->
+    Site     = ale:app(site),
+    Name     = yaws_api:htmlize(Site#site.name),
+    Subtitle = yaws_api:htmlize(Site#site.subtitle),
     E = ale:cache("default_v_layout", fun() ->
         {html, [{xmlns, "http://www.w3.org/1999/xhtml"}, {'xmlns:fb', "http://www.facebook.com/2008/fbml"}], [
             {head, [], [
@@ -28,9 +33,10 @@ render() ->
             {body, [], [
                 {'div', [{id, container}], [
                     {'div', [{id, main}], [
-                        {'div', [{id, header}],
-                            {h1, [], {a, [{href, "/"}], "Khale"}}
-                        },
+                        {'div', [{id, header}], [
+                            {h1, [], {a, [{href, "/"}], Name}},
+                            {h2, [], Subtitle}
+                        ]},
 
                         '$flash',
                         '$title_in_body',

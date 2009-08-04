@@ -30,7 +30,6 @@ code_change() ->
     migrate_site(C),
 
     migrate_catagories(C),
-    migrate_tocs(C),
 
     migrate_articles(C),
     migrate_forums(C),
@@ -65,54 +64,20 @@ migrate_users(C) ->
 migrate_site(_C) ->
     Site = #site{
         id = 1,
-        name_short = "NS", name_long = "NL",
-        about_short = "AS", about_long = "AL",
-        toc = "TOC", user_id = 1, updated_at = now()
+        name = "cntt.tv", subtitle = "Blog cộng đồng về CNTT",
+        about = "Short introduction"
     },
     mnesia:transaction(fun() -> mnesia:write(Site) end).
 
 migrate_catagories(C) ->
-    {ok, _, Rows} = pgsql:equery(C, "SELECT id, name, path, position FROM categories ORDER BY position"),
+    {ok, _, Rows} = pgsql:equery(C, "SELECT id, name FROM categories"),
     lists:foreach(
         fun(Row) ->
-            {PgId, Name, Path, Position} = Row,
-            Name2    = binary_to_list(Name),
-            UnixName = binary_to_list(Path),
-            Category = m_category:create(Name2, UnixName, Position, 1),
+            {PgId, Name} = Row,
+            Name2 = binary_to_list(Name),
+            Tag = m_tag:create(Name2),
 
-            category_id_pg_to_mn(PgId, Category#category.id)
-        end,
-        Rows
-    ).
-
-%% Only one version, all admins can edit thus the first author is not important.
-migrate_tocs(C) ->
-    % sticky = category ID, 0 = whole site
-    {ok, _, Rows} = pgsql:equery(C, "SELECT id, active_version, sticky, updated_at FROM nodes WHERE type LIKE 'Toc' ORDER BY sticky"),
-    lists:foreach(
-        fun(Row) ->
-            {NodeId, ActiveVersion, CategoryId, UpdatedAt} = Row,
-            UpdatedAt2  = timestamp_pg_to_mn(UpdatedAt),
-
-            % Use the active version
-            {ok, _, [{Body, UserId}]} = pgsql:equery(C, "SELECT _body, user_id FROM node_versions WHERE node_id = " ++ integer_to_list(NodeId) ++ " AND version = " ++ integer_to_list(ActiveVersion)),
-
-            Body2 = binary_to_list(Body),
-            UserId2 = user_id_pg_to_mn(UserId),
-
-            case CategoryId of
-                0 ->
-                    Site = m_site:find(undefined),
-                    Site2 = Site#site{toc = Body2, user_id = UserId2, updated_at = UpdatedAt2},
-                    mnesia:transaction(fun() -> mnesia:write(Site2) end);
-
-                _ ->
-                    CategoryId2 = category_id_pg_to_mn(CategoryId),
-                    Q = qlc:q([R || R <- mnesia:table(category), R#category.id == CategoryId2]),
-                    [Category] = m_helper:do(Q),
-                    Category2 = Category#category{toc = Body2, user_id = UserId2, updated_at = UpdatedAt2},
-                    mnesia:transaction(fun() -> mnesia:write(Category2) end)
-            end
+            category_id_pg_to_mn(PgId, Tag#tag.id)
         end,
         Rows
     ).
@@ -124,33 +89,27 @@ migrate_articles(C) ->
         fun(Row) ->
             {Id, Views, ThreadUpdatedAt} = Row,
 
-            % case Id of
-            %     % Skip article 521 (Scalaris) becauses it is badly-written and
-            %     % contains strange characters that will cause Sphinx error
-            %     % "XML parse error: not well-formed (invalid token)"
-            %     521 -> ok;
-            % 
-            %     _ ->
-                    ThreadUpdatedAt2 = timestamp_pg_to_mn(ThreadUpdatedAt),
+            ThreadUpdatedAt2 = timestamp_pg_to_mn(ThreadUpdatedAt),
 
-                    {UserId, Ip, Title, Abstract, Body, CreatedAt, UpdatedAt} = article_first_author_last_version(C, Id),
+            {UserId, Ip, Title, Abstract, Body, CreatedAt, UpdatedAt} = article_first_author_last_version(C, Id),
 
-                    ContentId = m_helper:next_id(content),
-                    content_id_pg_to_mn(Id, {article, ContentId}),
-                    Article = #article{
-                        id = ContentId,
-                        title = Title, abstract = Abstract, body = Body,
-                        user_id = UserId, ip = Ip,
-                        created_at = CreatedAt,
-                        updated_at = UpdatedAt,
-                        views = Views
-                    },
-                    Thread = #thread{content_type_id = {article, ContentId}, updated_at = ThreadUpdatedAt2},
-                    mnesia:transaction(fun() ->
-                        mnesia:write(Article),
-                        mnesia:write(Thread)
-                    end)
-            % end
+            ContentId = m_helper:next_id(content),
+            content_id_pg_to_mn(Id, {article, ContentId}),
+            Article = #article{
+                id = ContentId,
+                title = Title, abstract = Abstract, body = Body,
+                user_id = UserId, ip = Ip,
+                created_at = CreatedAt,
+                updated_at = UpdatedAt,
+                views = Views
+            },
+            Thread = #thread{content_type_id = {article, ContentId}, updated_at = ThreadUpdatedAt2},
+            mnesia:transaction(fun() ->
+                mnesia:write(Article),
+                mnesia:write(Thread)
+            end),
+
+            tag(C, Id)
         end,
         Rows
     ).
@@ -204,7 +163,9 @@ migrate_forums(C) ->
             mnesia:transaction(fun() ->
                 mnesia:write(Qa),
                 mnesia:write(Thread)
-            end)
+            end),
+
+            tag(C, NodeId)
         end,
         Rows
     ).
@@ -247,6 +208,18 @@ migrate_comments(C) ->
                             mnesia:transaction(fun() -> mnesia:write(Discussion) end)
                     end
             end
+        end,
+        Rows
+    ).
+
+tag(C, NodeId) ->
+    {Type, Id} = content_id_pg_to_mn(NodeId),
+    {ok, _, Rows} = pgsql:equery(C, "SELECT category_id FROM categories_nodes WHERE node_id = " ++ integer_to_list(NodeId)),
+    lists:foreach(
+        fun({CategoryId}) ->
+            TagId = category_id_pg_to_mn(CategoryId),
+            TC = #tag_content{tag_id = TagId, content_type = Type, content_id = Id},
+            mnesia:transaction(fun() -> mnesia:write(TC) end)
         end,
         Rows
     ).

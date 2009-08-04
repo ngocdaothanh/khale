@@ -48,8 +48,11 @@ last(ContentType, ContentId) ->
     end),
     Discussion.
 
-% LastDiscussionId: last id of the last more.
 more(ContentType, ContentId, LastDiscussionId) ->
+    more(ContentType, ContentId, LastDiscussionId, ?ITEMS_PER_PAGE).
+
+% LastDiscussionId: last id of the last more.
+more(ContentType, ContentId, LastDiscussionId, NumberOfAnswers) ->
     % OPTIMIZE: sort by updated at ~ sort by id
     {atomic, Discussions} = mnesia:transaction(fun() ->
         Q1 = case LastDiscussionId of
@@ -58,7 +61,7 @@ more(ContentType, ContentId, LastDiscussionId) ->
         end,
         Q2 = qlc:keysort(1 + 1, Q1, [{order, descending}]),
         QC = qlc:cursor(Q2),
-        Discussions2 = qlc:next_answers(QC, ?ITEMS_PER_PAGE),
+        Discussions2 = qlc:next_answers(QC, NumberOfAnswers),
         qlc:delete_cursor(QC),
         Discussions2
     end),

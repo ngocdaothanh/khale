@@ -20,3 +20,12 @@ create(Question, Context, Choices, UserId, Ip, CategoryIds) ->
         created_at = CreatedAt
     },
     m_content:save(Poll, CategoryIds).
+
+%-------------------------------------------------------------------------------
+
+sphinx_id_title_body_list() ->
+    Q = qlc:q([
+        {R#poll.id, R#poll.question, R#poll.context} ||
+        R <- mnesia:table(poll)
+    ]),
+    m_helper:do(Q).

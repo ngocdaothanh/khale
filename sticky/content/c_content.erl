@@ -12,15 +12,20 @@
 -module(c_content).
 
 -routes([
-    get, "/",                      previews,
-    get, "/cagegories/:unix_name", previews_by_category,
+    get, "/",                                      previews,  % site's index
+    get, "/tags/:tag_name",                        tag,       % different name to differentiate with "/previews/:thread_updated_at"
 
-    get, "/previews_more/:thread_updated_at",         previews_more,
-    get, "/cagegories/:unix_name/:thread_updated_at", previews_more_by_category,
+    % More
+    get, "/previews/:thread_updated_at",           previews,
+    get, "/previews/:tag_name/:thread_updated_at", previews,
 
-    get, "/titles_more/:thread_updated_at", titles_more,
+    % More, thread_updated_at is always included because of b_titles
+    get, "/titles/:thread_updated_at",           titles,
+    get, "/titles/:tag_name/:thread_updated_at", titles,
 
     get, "/search/:keyword",       search,
+
+    % More
     get, "/search/:keyword/:page", search
 ]).
 
@@ -32,24 +37,18 @@
 
 -include("sticky.hrl").
 
-previews()                  -> previews_or_titles(previews).
-previews_by_category()      -> previews_or_titles(previews).
-previews_more()             -> previews_or_titles(previews).
-previews_more_by_category() -> previews_or_titles(previews).
-titles_more()               -> previews_or_titles(titles).
+tag()      -> previews().
+previews() -> previews_or_titles(previews).
+titles()   -> previews_or_titles(titles).
 
 previews_or_titles(View) ->
-    UnixName = case ale:params(unix_name) of
-        undefined -> undefined;
-        Name -> Name
-    end,
-
+    TagName = ale:params(tag_name),
     ThreadUpdatedAt = case ale:params(thread_updated_at) of
         undefined -> undefined;
         YMDHMiS   -> h_application:string_to_timestamp(YMDHMiS)
     end,
 
-    Contents = m_content:more(UnixName, ThreadUpdatedAt),
+    Contents = m_content:more(TagName, ThreadUpdatedAt),
     ale:app(contents, Contents),
     ale:view(View).
 
@@ -58,7 +57,7 @@ search() ->
         undefined -> [];
 
         Keyword ->
-            Q1 = giza_query:new("article", Keyword),
+            Q1 = giza_query:new("content", Keyword),
             Q2 = giza_query:limit(Q1, ?ITEMS_PER_PAGE),
             Q3 = case ale:params(page) of
                 undefined ->
@@ -68,12 +67,12 @@ search() ->
                 PageS ->
                     Page = list_to_integer(PageS),
                     ale:app(next_page, Page + 1),
-                    giza_query:offset(Q2, ?ITEMS_PER_PAGE*(Page - 1))  % 20: Sphinx default
+                    giza_query:offset(Q2, ?ITEMS_PER_PAGE*(Page - 1))
             end,
             {ok, L} = giza_request:send(Q3),
             lists:foldr(
-                fun({Id, _}, Acc) ->
-                    case m_article:find(Id) of
+                fun({SegmentedId, _}, Acc) ->
+                    case m_content:sphinx_find(SegmentedId) of
                         undefined -> Acc;
                         R         -> [R | Acc]
                     end

@@ -13,9 +13,8 @@ find(_) ->
 
         _ ->
             #site{
-                name_short  = "Short Site Name",
-                name_long   = "Long Site Name",
-                about_short = "<p>Short introduction about this site...</p>",
-                about_long  = "<p>Long introduction about this site...</p>"
+                name     = "Site Name",
+                subtitle = "A site about...",
+                about    = "<p>Short introduction about this site...</p>"
             }
     end.
