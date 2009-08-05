@@ -19,6 +19,9 @@ h1, h2, h3, h4 { font-weight: normal; margin-top: 1em; margin-bottom: 0.5em;  }
 ul { padding-left: 7px; }
 ul li { list-style: disc inside; }
 
+ol { padding-left: 21px; }
+ol li { list-style-type: decimal; }
+
 p { margin-top: 10px; }
 
 .clear { clear: both; }
