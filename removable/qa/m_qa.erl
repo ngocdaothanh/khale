@@ -9,7 +9,7 @@ migrate() -> m_helper:create_table(qa, record_info(fields, qa)).
 
 content() -> [{public_creatable, true}].
 
-create(Question, Detail, UserId, Ip, CategoryIds) ->
+create(Question, Detail, UserId, Ip, Tags) ->
     Id = m_helper:next_id(content),
     CreatedAt = erlang:universaltime(),
     Qa = #qa{
@@ -18,7 +18,7 @@ create(Question, Detail, UserId, Ip, CategoryIds) ->
         user_id = UserId, ip = Ip,
         created_at = CreatedAt, updated_at = CreatedAt
     },
-    m_content:save(Qa, CategoryIds).
+    m_content:save(Qa, Tags).
 
 find(Id) ->
     Q = qlc:q([R || R <- mnesia:table(qa), R#qa.id == Id]),

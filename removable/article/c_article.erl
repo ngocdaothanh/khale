@@ -13,6 +13,8 @@
 
 -include("sticky.hrl").
 
+new() -> ok.
+
 show() ->
     Id = list_to_integer(ale:params(id)),
     ale:app(article, m_article:find(Id)).

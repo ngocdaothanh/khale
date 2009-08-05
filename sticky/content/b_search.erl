@@ -9,5 +9,5 @@ render(_Id, _Config) ->
         undefined -> "";
         X         -> X
     end,
-    Body = {input, [{id, search_keyword}, {type, text}, {value, yaws_api:htmlize(Keyword)}]},
+    Body = {input, [{id, search_keyword}, {type, text}, {class, textbox}, {value, yaws_api:htmlize(Keyword)}]},
     {?T("Search"), Body}.

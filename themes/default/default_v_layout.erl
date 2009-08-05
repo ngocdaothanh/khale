@@ -32,22 +32,28 @@ render() ->
 
             {body, [], [
                 {'div', [{id, container}], [
-                    {'div', [{id, main}], [
-                        {'div', [{id, header}], [
-                            {h1, [], {a, [{href, "/"}], Name}},
-                            {h2, [], Subtitle}
-                        ]},
-
-                        '$flash',
-                        '$title_in_body',
-                        '$content_for_layout'
+                    {'div', [{id, header}, {class, padding}], [
+                        {h1, [], {a, [{href, "/"}], Name}},
+                        {h2, [], Subtitle}
                     ]},
 
-                    '$sidebar',
-                    {br, [{class, clear}]},
-                    {'div', [{id, footer}], [
-                        "Powered by ", {a, [{href, "http://github.com/ngocdaothanh/khale"}], "Khale"}
-                    ]}
+                    {'div', [{id, left_column}], {'div', [{class, padding}], '$left_column'}},
+
+                    {'div', [{id, main_and_right}], [
+                        {'div', [{id, main}], {'div', [{class, padding}], [
+                            '$flash',
+                            '$title_in_body',
+                            '$content_for_layout'
+                        ]}},
+
+                        {'div', [{id, right_column}], {'div', [{class, padding}], '$right_column'}}
+                    ]},
+
+                    {br, [{class, clear}]}
+                ]},
+
+                {'div', [{id, footer}], [
+                    "Powered by ", {a, [{href, "http://github.com/ngocdaothanh/khale"}], "Khale"}
                 ]},
 
                 '$scripts'
@@ -61,7 +67,8 @@ render() ->
         {flash,              h_application:flash()},
         {title_in_body,      h_application:title_in_body()},
         {content_for_layout, ale:app(content_for_layout)},
-        {sidebar,            h_application:region(sidebar)},
+        {left_column,        h_application:region(left_column)},
+        {right_column,       h_application:region(right_column)},
         {scripts,            ale:app(scripts)}
     ]),
     [

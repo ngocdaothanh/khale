@@ -8,18 +8,24 @@ render() ->
     Title = ?T("Create new article"),
     ale:app(title_in_head, Title),
     ale:app(title_in_body, Title),
+
+    {Question, EcryptedAnswer} = ale:mathcha(),
     [
         {p, [], ?T("You can create content of type article to post a notice, a tutorial etc.")},
 
-        {form, [{method, post}, {action, ale:path(content, create, [ale:params(content_type)])}], [
+        {form, [{method, post}, {action, ale:path(create)}], [
             {span, [{class, label}], ?T("Title")},
-            {input, [{type, text}, {name, title}]},
+            {input, [{type, text}, {class, textbox}, {name, title}]},
 
             {span, [{class, label}], ?T("Abstract")},
             {textarea, [{name, abstract}]},
 
             {span, [{class, label}], ?T("Body")},
             {textarea, [{name, body}]},
+
+            {span, [{class, label}], Question},
+            {input, [{type, text}, {class, textbox}, {name, captcha}]},
+            {input, [{type, hidden}, {name, captcha_encrypted}, {value, EcryptedAnswer}]},
 
             {input, [{type, submit}, {value, ?T("Save")}]}
         ]}

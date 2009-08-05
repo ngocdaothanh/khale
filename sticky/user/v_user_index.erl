@@ -12,6 +12,6 @@ render() ->
     Users = ale:app(users),
     h_application:more(
         Users, users, undefined,
-        fun p_user:render/1,
+        fun h_user:render/1,
         fun(LastUser) -> ale:path(index, [LastUser#user.id]) end
     ).

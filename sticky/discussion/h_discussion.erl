@@ -38,6 +38,7 @@ render_all(ContentType, ContentId) ->
     ale:app(content_id, ContentId),
     ale:app(discussions, Discussions),
     [
+        {hr},
         {a, [{name, discussions}]},
         {h2, [], ?T("Discussions")},
         Composer2,

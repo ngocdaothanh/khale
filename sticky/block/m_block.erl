@@ -7,14 +7,17 @@
 migrate() ->
     m_helper:create_table(block, record_info(fields, block)).
 
-all(Region) ->
+region(left_column) ->
     [
-        #block{type = html},
         #block{type = search},
+        #block{type = about},
+        #block{type = current_user},
+        #block{type = tags}
+    ];
+
+region(right_column) ->
+    [
         #block{type = chat},
         #block{type = titles},
-        #block{type = current_user},
-        #block{type = html},
-        #block{type = about},
-        #block{type = tags}
+        #block{type = html}
     ].

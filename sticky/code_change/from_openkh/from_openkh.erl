@@ -14,6 +14,7 @@
 
 -include("sticky.hrl").
 -include("../../../removable/article/article.hrl").
+-include("../../../removable/poll/poll.hrl").
 -include("../../../removable/qa/qa.hrl").
 
 code_change() ->
@@ -26,11 +27,11 @@ code_change() ->
     {ok, C} = pgsql:connect(Host, Username, Password, [{database, Database}, {port, Port}]),
 
     migrate_users(C),
-
+    
     migrate_site(C),
-
+    
     migrate_catagories(C),
-
+    
     migrate_articles(C),
     migrate_forums(C),
     migrate_polls(C),
@@ -64,7 +65,7 @@ migrate_users(C) ->
 migrate_site(_C) ->
     Site = #site{
         id = 1,
-        name = "cntt.tv", subtitle = "Blog cộng đồng về CNTT",
+        name = "cntt.tv", subtitle = "Blog cộng đồng về Công nghệ thông tin",
         about = "Short introduction"
     },
     mnesia:transaction(fun() -> mnesia:write(Site) end).
@@ -93,7 +94,7 @@ migrate_articles(C) ->
 
             {UserId, Ip, Title, Abstract, Body, CreatedAt, UpdatedAt} = article_first_author_last_version(C, Id),
 
-            ContentId = m_helper:next_id(content),
+            ContentId = m_helper:next_id(article),
             content_id_pg_to_mn(Id, {article, ContentId}),
             Article = #article{
                 id = ContentId,
@@ -141,7 +142,7 @@ migrate_forums(C) ->
     lists:map(
         fun(Row) ->
             {NodeId, Views, UpdatedAt} = Row,
-            {ok, _, [Row2]} = pgsql:equery(C, "SELECT title, user_id, ip, created_at FROM node_versions WHERE node_id = " ++ integer_to_list(NodeId) ++ " ORDER BY version"),
+            {ok, _, [Row2]} = pgsql:equery(C, "SELECT title, user_id, ip, created_at FROM node_versions WHERE node_id = " ++ integer_to_list(NodeId)),
             {Title, UserId, Ip, CreatedAt} = Row2,
 
             Question   = binary_to_list(Title),
@@ -149,7 +150,7 @@ migrate_forums(C) ->
             CreatedAt2 = timestamp_pg_to_mn(CreatedAt),
             UpdatedAt2 = timestamp_pg_to_mn(UpdatedAt),
 
-            ContentId = m_helper:next_id(content),
+            ContentId = m_helper:next_id(qa),
             content_id_pg_to_mn(NodeId, {qa, ContentId}),
 
             UserId2 = user_id_pg_to_mn(UserId),
@@ -171,7 +172,49 @@ migrate_forums(C) ->
     ).
 
 migrate_polls(C) ->
-    {ok, _, Rows} = pgsql:equery(C, "SELECT id, views, updated_at FROM nodes WHERE type LIKE 'Poll' ORDER BY id").
+    {ok, _, Rows} = pgsql:equery(C, "SELECT id, updated_at FROM nodes WHERE type LIKE 'Poll' ORDER BY id"),
+    lists:foreach(
+        fun(Row) ->
+            {NodeId, UpdatedAt} = Row,
+            {ok, _, [Row2]} = pgsql:equery(C, "SELECT title, _body, user_id, ip, created_at FROM node_versions WHERE node_id = " ++ integer_to_list(NodeId)),
+            {Title, Yaml, UserId, Ip, CreatedAt} = Row2,
+
+
+            File = "/tmp/khale/poll/" ++ integer_to_list(NodeId) ++ ".yml",
+            %file:write_file(File, Yaml),
+
+            {ok, [{Choices, Votes, Voters}]} = file:consult(File ++ ".txt"),
+            Voters2 = lists:map(
+                fun user_id_pg_to_mn/1,
+                Voters
+            ),
+
+            Question   = binary_to_list(Title),
+            Ip2        = ip_pg_to_mn(Ip),
+            CreatedAt2 = timestamp_pg_to_mn(CreatedAt),
+            UpdatedAt2 = timestamp_pg_to_mn(UpdatedAt),
+            
+            ContentId = m_helper:next_id(poll),
+            content_id_pg_to_mn(NodeId, {poll, ContentId}),
+            
+            UserId2 = user_id_pg_to_mn(UserId),
+            Poll = #poll{
+                id = ContentId,
+                question = Question,
+                choices = Choices, votes = Votes, voters = Voters2,
+                user_id = UserId2, ip = Ip2,
+                created_at = CreatedAt2
+            },
+            Thread = #thread{content_type_id = {poll, ContentId}, updated_at = UpdatedAt2},
+            mnesia:transaction(fun() ->
+                mnesia:write(Poll),
+                mnesia:write(Thread)
+            end),
+
+            tag(C, NodeId)
+        end,
+        Rows
+    ).
 
 migrate_comments(C) ->
     {ok, _, Rows} = pgsql:equery(C, "SELECT node_id, message, user_id, ip, created_at, updated_at FROM comments ORDER BY id"),

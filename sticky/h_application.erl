@@ -5,8 +5,8 @@
 -include("sticky.hrl").
 
 region(Region) ->
-    Blocks = m_block:all(Region),
-    {'ul', [{class, region}, {id, Region}], [h_block:render(B) || B <- Blocks]}.
+    Blocks = m_block:region(Region),
+    {'ul', [{class, region}], [h_block:render(B) || B <- Blocks]}.
 
 title_in_head() ->
     Site = ale:app(site),

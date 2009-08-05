@@ -13,7 +13,7 @@ render() ->
 
         {form, [{method, post}, {action, ale:path(openid, login)}], [
             {span, [{class, label}], ?T("OpenID")},
-            {input, [{type, text}, {name, openid}]},
+            {input, [{type, text}, {class, textbox}, {name, openid}]},
             {input, [{type, submit}, {value, ?T("Login")}]}
         ]},
 

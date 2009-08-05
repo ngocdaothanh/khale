@@ -13,7 +13,7 @@
 
 -routes([
     get, "/",                                      previews,  % site's index
-    get, "/tags/:tag_name",                        tag,       % different name to differentiate with "/previews/:thread_updated_at"
+    get, "/tags/:tag_name",                        tag,       % different name to differentiate with "/titles/:thread_updated_at"
 
     % More
     get, "/previews/:thread_updated_at",           previews,
@@ -37,7 +37,7 @@
 
 -include("sticky.hrl").
 
-tag()      -> previews().
+tag()      -> titles().
 previews() -> previews_or_titles(previews).
 titles()   -> previews_or_titles(titles).
 

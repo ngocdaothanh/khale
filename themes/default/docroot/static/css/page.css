@@ -30,6 +30,7 @@ p { margin-top: 10px; }
   margin-top: 7px;
 }
 
+#header { border-bottom: solid 1px #EEE; }
 #header h1 { font-size: 2.5em; margin-top: 5px; }
 #header h2 { font-size: 1.7em; margin-top: 5px; color: gray; font-style: italic; }
 
@@ -37,26 +38,37 @@ p { margin-top: 10px; }
   margin: 5px auto;
   width: 960px;
   border: solid #EEE 1px;
-  padding: 5px;
 }
 
-#main {
-  width: 660px;
+#left_column {
+  width: 150px;
   float: left;
-  padding: 5px;
+  background-color: #F5FFFA;
 }
 
-#sidebar {
-  width: 280px;
+#main_and_right {
+  width: 810px;
   float: right;
 }
 
-#footer {
-  text-align: center;
+#main {
+  width: 590px;
+  float: left;
 }
+
+#right_column {
+  width: 220px;
+  float: right;
+  background-color: #F5FFFA;
+}
+
+.padding { padding: 5px; }
+
+#footer { text-align: center; }
 
 .textbox {
   width: 99%;
+  border: solid 1px #DDDDDD;
 }
 
 .textarea {
@@ -64,25 +76,22 @@ p { margin-top: 10px; }
   height: 400px;
 }
 
-ul.previews, ul.region, ul.users, ul.comments {
+ul.previews, ul.region, ul.users, ul.discussions {
   margin-left: 0px;
   padding-left: 0px;
 }
 
-ul.previews li.preview, ul.region li.block, ul.users li, ul.comments li.comment {
+ul.previews li.preview, ul.region li.block, ul.users li, ul.discussions li.discussion {
   list-style-type: none;
   margin-left: 0px;
   margin-bottom: 1em;
   padding-left: 0px;
   padding-bottom: 1em;
-  border-bottom: solid 1px #EEE;
 }
+
+ul.previews li.preview, ul.discussions li.discussion { border-bottom: solid 1px #EEE; }
 
 li.odd  { background-color: #EEE; }
-
-input[type="text"] {
-  width: 98%;
-}
 
 textarea {
   width: 100%;
@@ -100,7 +109,7 @@ input[type="submit"] {
 
 td.avatar { padding-right: 5px; }
 
-#comment_composer {
+#discussion_composer {
   margin-bottom: 1em;
   padding-bottom: 1em;
   border-bottom: solid 1px #EEE;
