@@ -65,7 +65,7 @@ migrate_users(C) ->
 migrate_site(_C) ->
     Site = #site{
         id = 1,
-        name = "cntt.tv", subtitle = "Blog cộng đồng về Công nghệ thông tin",
+        name = "Công Nghệ Thông Tin.Tiếng Việt", subtitle = "Blog cộng đồng về Công nghệ thông tin",
         about = "Short introduction"
     },
     mnesia:transaction(fun() -> mnesia:write(Site) end).

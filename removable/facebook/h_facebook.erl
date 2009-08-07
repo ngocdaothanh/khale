@@ -12,16 +12,16 @@ before_layout() ->
 
     Arg = ale:arg(),
     ApiKey = proplists:get_value("facebook_key", Arg#arg.opaque),
-    ale:app_add_script("FB.init(\"" ++ ApiKey ++ "\", \"/static/xd_receiver.htm\");").
+    ale:app_add_js("FB.init(\"" ++ ApiKey ++ "\", \"/static/xd_receiver.htm\");").
 
 login_link(Base64Target) ->
     Js = ale:ff("p_facebook_login.js", [Base64Target, ale:path(facebook, login, [Base64Target])]),
-    ale:app_add_script(Js),
+    ale:app_add_js(Js),
     {a, [{href, "#"}, {id, ["login_facebook", Base64Target]}], "Facebook"}.
 
 logout_link() ->
     Js = ale:ff("p_facebook_logout.js", [ale:path(user, logout)]),
-    ale:app_add_script(Js),
+    ale:app_add_js(Js),
     {a, [{href, "#"}, {id, logout_facebook}], ?T("Logout")}.
 
 render(User, AvatarSize) ->

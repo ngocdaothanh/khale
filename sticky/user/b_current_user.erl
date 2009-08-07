@@ -7,11 +7,15 @@
 render(_Id, _Config) ->
     Profile = [
         case ale:session(user) of
-            undefined -> h_user:login_links();
+            undefined ->
+                [
+                    h_user:render(undefined),
+                    h_user:login_links()
+                ];
 
             User ->
                 UserModule = m_user:type_to_module(User#user.type),
-                p_user:render(User, [UserModule:logout_link()])
+                h_user:render(User, [UserModule:logout_link()])
         end
     ],
     Content = [

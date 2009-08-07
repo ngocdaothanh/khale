@@ -30,30 +30,26 @@ login_links(Bookmark) ->
 
 render(User) -> render(User, []).
 
+%% User: undefined = Anonymous
 render(User, Extras) ->
     {Avatar, Name} = case User of
-        undefined -> {undefined, ?T("No name")};
+        undefined ->
+            {
+                {img, [{src, "/static/img/anonymous.gif"}, {width, ?AVATAR_SIZE}, {height, ?AVATAR_SIZE}]},
+                {b, [], ?T("Anonymous")}
+            };
 
         _ ->
-            UserModule = m_user:type_to_module(User#user.type),
-            UserModule:render(User, ?AVATAR_SIZE)
-    end,
-
-    Avatar2 = case Avatar of
-        undefined -> {img, [{src, "/static/img/noname.gif"}]};
-        _         -> Avatar
+            HModule = m_user:type_to_module(User#user.type),
+            HModule:render(User, ?AVATAR_SIZE)
     end,
 
     NumContents = case User of
-        undefined -> 0;
-        _         -> m_user:num_contents(User)
-    end,
-    NumContentsText = case NumContents of
-        0 -> undefined;
-        _ -> ?TF("~p contents", [NumContents])
+        undefined -> undefined;
+        _         -> ?TF("~p contents", [m_user:num_contents(User)])
     end,
 
-    Extras2 = [NumContentsText | Extras],
+    Extras2 = [NumContents | Extras],
     % Join with " | "
     Extras3 = lists:foldl(
         fun(E, Acc) ->
@@ -70,11 +66,15 @@ render(User, Extras) ->
         X                    -> X
     end,
 
-    Id = User#user.id,
+    Link = case User of
+        undefined -> Name;
+        _         -> {a, [{href, ale:path(user, show, [User#user.id])}], Name}
+    end,
+
     {table, [{class, user}], [
         {tr, [], [
-            {td, [{class, avatar}, {rowspan, 2}], Avatar2},
-            {td, [], {a, [{href, ale:path(user, show, [Id])}], Name}}
+            {td, [{class, avatar}, {rowspan, 2}], Avatar},
+            {td, [], Link}
         ]},
         {tr, [],
             {td, [], Extras4}

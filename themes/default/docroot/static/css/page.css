@@ -38,13 +38,13 @@ p { margin-top: 10px; }
 #header h2 { font-size: 1.7em; margin-top: 5px; color: gray; font-style: italic; }
 
 #container {
-  margin: 5px auto;
+  margin: 10px auto;
   width: 960px;
   border: solid #EEE 1px;
 }
 
 #left_column {
-  width: 150px;
+  width: 149px;
   float: left;
   background-color: #F5FFFA;
 }
@@ -55,7 +55,7 @@ p { margin-top: 10px; }
 }
 
 #main {
-  width: 590px;
+  width: 589px;
   float: left;
 }
 
@@ -65,7 +65,7 @@ p { margin-top: 10px; }
   background-color: #F5FFFA;
 }
 
-.padding { padding: 5px; }
+.padding { padding: 10px; }
 
 #footer { text-align: center; }
 
