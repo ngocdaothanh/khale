@@ -26,6 +26,16 @@ code_change() ->
 
     {ok, C} = pgsql:connect(Host, Username, Password, [{database, Database}, {port, Port}]),
 
+    case file:consult("pd.txt") of
+        {ok, [Pd]} ->
+            lists:foreach(
+                fun({K, V}) -> put(K, V) end,
+                Pd
+            );
+
+        _ -> ok
+    end,
+
     migrate_users(C),
     
     migrate_site(C),
@@ -340,13 +350,24 @@ convert_content_id(Html) ->
             case content_id_pg_to_mn(PgId) of
                 undefined ->
                     io:format("Later: ~p~n", [PgId]),
-                    Html;
+                    % Html;
 
-                {Type, Id} ->
+                    {Type, Id} = {article, 1},
+                    Plural = atom_to_list(Type) ++ "s/",
                     Html2 = re:replace(
                         Html,
                         "/nodes/show/" ++ integer_to_list(PgId),
-                        "/" ++ atom_to_list(Type) ++ "s/" ++ integer_to_list(Id),
+                        "/" ++ Plural ++ integer_to_list(Id),
+                        [global, {return, list}]
+                    ),
+                    convert_content_id(Html2);
+
+                {Type, Id} ->
+                    Plural = atom_to_list(Type) ++ "s/",
+                    Html2 = re:replace(
+                        Html,
+                        "/nodes/show/" ++ integer_to_list(PgId),
+                        "/" ++ Plural ++ integer_to_list(Id),
                         [global, {return, list}]
                     ),
                     convert_content_id(Html2)
