@@ -52,14 +52,20 @@ find(Id) ->
         _   -> undefined
     end.
 
-% FIXME
 contents(User) ->
-    Contents = [],
-    % {atomic, Contents} = mnesia:transaction(fun() ->
-    %     Q1 = qlc:q([R || R <- mnesia:table(content), R#content.user_id == User#user.id]),
-    %     Q2 = qlc:keysort(5, Q1, [{order, descending}]),  % Reverse sort by created_at
-    %     qlc:e(Q2)
-    % end),
-    Contents.
+    Types = m_content:types(),
+    Contents1 = lists:foldl(
+        fun(Type, Acc) ->
+            % Convention: user_id is at position 3
+            Q = qlc:q([R || R <- mnesia:table(Type), element(3, R) == User#user.id]),
+            Acc ++ m_helper:do(Q)
+        end,
+        [],
+        Types
+    ),
+
+    % Reverse sort by created_at
+    Contents2 = lists:keysort(5, Contents1),
+    lists:reverse(Contents2).
 
 num_contents(User) -> length(contents(User)).

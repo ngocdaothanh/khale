@@ -1,1 +1,1 @@
--record(qa, {id, question, detail, user_id, ip, created_at, updated_at, views = 0}).
+-record(qa, {id, user_id, ip, created_at, updated_at, question, detail, views = 0}).

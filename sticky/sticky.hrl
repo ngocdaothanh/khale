@@ -16,7 +16,7 @@
 
 -record(tag_content, {tag_id, content_type, content_id}).
 
--record(discussion, {id, content_type, content_id, body, user_id, ip, created_at, updated_at}).
+-record(discussion, {id, user_id, ip, created_at, updated_at, content_type, content_id, body}).
 
 % Used to sort contents, updated_at id updated when:
 % * Content is updated

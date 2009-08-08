@@ -1,1 +1,1 @@
--record(article, {id, title, abstract, body, user_id, ip, created_at, updated_at, views = 0}).
+-record(article, {id, user_id, ip, created_at, updated_at, title, abstract, body, views = 0}).
