@@ -303,5 +303,52 @@ ip_pg_to_mn(PgIp) ->
     {N1, N2, N3, N4}.
 
 binary_to_list2(Html) ->
+    Html2 = string:strip(binary_to_list(Html)),
+
     PSP = [10, 60, 112, 62, 194, 160, 60, 47, 112, 62],  % <p>Â </p>
-    re:replace(Html, PSP, "", [global, {return, list}]).
+    Html3 = re:replace(Html2, PSP, "", [global, {return, list}]),
+
+    Html4 = re:replace(
+        Html3,
+        "http://cntt.tv/javascripts/tiny_mce/plugins/emotions/img/",
+        "/static/tiny_mce/plugins/emotions/img/",
+        [global, {return, list}]
+    ),
+
+    Html5 = re:replace(
+        Html4,
+        " alt=\"{#emotions_dlg.*}\"",
+        "",
+        [global, {return, list}]
+    ),
+
+    Html6 = re:replace(
+        Html5,
+        " title=\"{#emotions_dlg.*}\"",
+        "",
+        [global, {return, list}]
+    ),
+
+    convert_content_id(Html6).
+
+convert_content_id(Html) ->
+    case re:run(Html, "/nodes/show/(\\d+)", [global]) of
+        nomatch -> Html;
+
+        {match, [[{_S1, _L1}, {S2, L2}] | _Rest]} ->
+            PgId = list_to_integer(string:substr(Html, S2 + 1, L2)),
+            case content_id_pg_to_mn(PgId) of
+                undefined ->
+                    io:format("Later: ~p~n", [PgId]),
+                    Html;
+
+                {Type, Id} ->
+                    Html2 = re:replace(
+                        Html,
+                        "/nodes/show/" ++ integer_to_list(PgId),
+                        "/" ++ atom_to_list(Type) ++ "s/" ++ integer_to_list(Id),
+                        [global, {return, list}]
+                    ),
+                    convert_content_id(Html2)
+            end
+    end.
