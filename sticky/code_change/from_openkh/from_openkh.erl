@@ -35,7 +35,7 @@ code_change() ->
     migrate_articles(C),
     migrate_forums(C),
     migrate_polls(C),
-
+    
     migrate_comments(C),
 
     pgsql:close(C).
@@ -65,7 +65,7 @@ migrate_users(C) ->
 migrate_site(_C) ->
     Site = #site{
         id = 1,
-        name = "Công Nghệ Thông Tin.Tiếng Việt", subtitle = "Blog cộng đồng về Công nghệ thông tin",
+        name = "CNTT.Tiếng Việt", subtitle = "Blog cộng đồng về Công nghệ thông tin",
         about = "Short introduction"
     },
     mnesia:transaction(fun() -> mnesia:write(Site) end).
@@ -109,7 +109,7 @@ migrate_articles(C) ->
                 mnesia:write(Article),
                 mnesia:write(Thread)
             end),
-
+            
             tag(C, Id)
         end,
         Rows
@@ -132,9 +132,9 @@ article_first_author_last_version(C, NodeId) ->
 
     {ok, BAbstract} = file:read_file(File ++ ".abstract.txt"),
     {ok, BBody}     = file:read_file(File ++ ".body.txt"),
-    Abstract = binary_to_list(BAbstract),
-    Body     = binary_to_list(BBody),
-
+    Abstract = binary_to_list2(BAbstract),
+    Body     = binary_to_list2(BBody),
+    
     {UserId2, Ip2, Title2, Abstract, Body, CreatedAt2, UpdatedAt2}.
 
 migrate_forums(C) ->
@@ -178,7 +178,6 @@ migrate_polls(C) ->
             {NodeId, UpdatedAt} = Row,
             {ok, _, [Row2]} = pgsql:equery(C, "SELECT title, _body, user_id, ip, created_at FROM node_versions WHERE node_id = " ++ integer_to_list(NodeId)),
             {Title, Yaml, UserId, Ip, CreatedAt} = Row2,
-
 
             File = "/tmp/khale/poll/" ++ integer_to_list(NodeId) ++ ".yml",
             %file:write_file(File, Yaml),
@@ -225,7 +224,7 @@ migrate_comments(C) ->
                 undefined -> ok;
 
                 {ContentType, ContentId} ->
-                    Body       = binary_to_list(Message),
+                    Body       = binary_to_list2(Message),
                     UserId     = user_id_pg_to_mn(PgUserId),
                     Ip2        = ip_pg_to_mn(Ip),
                     CreatedAt2 = timestamp_pg_to_mn(CreatedAt),
@@ -302,3 +301,7 @@ ip_pg_to_mn(PgIp) ->
         Tokens
     ),
     {N1, N2, N3, N4}.
+
+binary_to_list2(Html) ->
+    PSP = [10, 60, 112, 62, 194, 160, 60, 47, 112, 62],  % <p>Â </p>
+    re:replace(Html, PSP, "", [global, {return, list}]).

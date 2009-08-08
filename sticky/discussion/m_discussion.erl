@@ -49,7 +49,8 @@ last(ContentType, ContentId) ->
     Discussion.
 
 more(ContentType, ContentId, LastDiscussionId) ->
-    more(ContentType, ContentId, LastDiscussionId, ?ITEMS_PER_PAGE).
+    %more(ContentType, ContentId, LastDiscussionId, ?ITEMS_PER_PAGE).
+    more(ContentType, ContentId, LastDiscussionId, all_remaining).
 
 % LastDiscussionId: last id of the last more.
 more(ContentType, ContentId, LastDiscussionId, NumberOfAnswers) ->
@@ -59,7 +60,8 @@ more(ContentType, ContentId, LastDiscussionId, NumberOfAnswers) ->
             undefined -> qlc:q([R || R <- mnesia:table(discussion), R#discussion.content_type == ContentType, R#discussion.content_id == ContentId]);
             _         -> qlc:q([R || R <- mnesia:table(discussion), R#discussion.content_type == ContentType, R#discussion.content_id == ContentId, R#discussion.id < LastDiscussionId])
         end,
-        Q2 = qlc:keysort(1 + 1, Q1, [{order, descending}]),
+        %Q2 = qlc:keysort(1 + 1, Q1, [{order, descending}]),
+        Q2 = qlc:keysort(1 + 1, Q1, [{order, ascending}]),
         QC = qlc:cursor(Q2),
         Discussions2 = qlc:next_answers(QC, NumberOfAnswers),
         qlc:delete_cursor(QC),

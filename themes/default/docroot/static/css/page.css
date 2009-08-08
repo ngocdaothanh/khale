@@ -101,8 +101,7 @@ textarea {
   height: 350px;
 }
 
-input[type="submit"] {
-  display: block;
+.button {
   font-size: 0.9em;
   font-weight: bold;
   margin-top: 7px;
@@ -114,8 +113,6 @@ td.avatar { padding-right: 5px; }
 
 #discussion_composer {
   margin-bottom: 1em;
-  padding-bottom: 1em;
-  border-bottom: solid 1px #EEE;
 }
 
 #chat_output {
@@ -123,10 +120,17 @@ td.avatar { padding-right: 5px; }
   height: 20em;
   overflow: auto;
 }
-/*
-#chat_output li {
-  list-style-type: none;
-  margin-left: 0px;
-  padding-left: 0px;
+
+blockquote {
+  margin: 0 20px;
+  padding: 0 20px;
+  border-left: 4px solid #E8E7D0;
 }
-*/
+
+pre {
+  display: block;
+  background-color: #EEE;
+  overflow: auto;
+}
+
+code { background-color: #EEE }

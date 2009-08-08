@@ -46,7 +46,12 @@ render(User, Extras) ->
 
     NumContents = case User of
         undefined -> undefined;
-        _         -> ?TF("~p contents", [m_user:num_contents(User)])
+
+        _ ->
+            case m_user:num_contents(User) of
+                0 -> undefined;
+                X -> ?TF("~p contents", [X])
+            end
     end,
 
     Extras2 = [NumContents | Extras],
@@ -63,7 +68,7 @@ render(User, Extras) ->
     ),
     Extras4 = case lists:flatten(Extras3) of
         [32, 124, 32 | Rest] -> Rest;  % 32, 124, 32: " | "
-        X                    -> X
+        Y                    -> Y
     end,
 
     Link = case User of

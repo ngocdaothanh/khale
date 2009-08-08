@@ -11,28 +11,18 @@ render_last(ContentType, ContentId) ->
     end.
 
 render_all(ContentType, ContentId) ->
-    User = ale:session(user),
-    Composer1 = case User of
-        undefined ->
-            [
-                {p, [{class, flash}], ?T("Please login so that we know who you are.")},
-                h_user:login_links("discussions")  % See below
-            ];
-
-        _ ->
-            [
-                {textarea, [{name, body}]},
-                {input, [{type, submit}, {value, ?T("Save")}]}
-            ]
-    end,
-
     Discussions = m_discussion:more(ContentType, ContentId, undefined),
 
-    Note = case (length(Discussions) > 1) andalso (User == undefined) of
-        true  -> {p, [], {em, [], ["(", ?T("The latest discussion is displayed first"), ")"]}};
-        false -> ""
-    end,
-    Composer2 = {'div', [{id, discussion_composer}], [Composer1, Note]},
+    {Question, EcryptedAnswer} = ale:mathcha(),
+    Composer = {'div', [{id, discussion_composer}], [
+        {textarea, [{name, body}]},
+
+        {span, [{class, label}], Question},
+        {input, [{type, text}, {class, textbox}, {name, captcha}]},
+        {input, [{type, hidden}, {name, captcha_encrypted}, {value, EcryptedAnswer}]},
+
+        {input, [{type, submit}, {class, button}, {value, ?T("Save")}]}
+    ]},
 
     ale:app(content_type, ContentType),
     ale:app(content_id, ContentId),
@@ -41,8 +31,8 @@ render_all(ContentType, ContentId) ->
         {hr},
         {a, [{name, discussions}]},
         {h2, [], ?T("Discussions")},
-        Composer2,
-        v_discussion_more:render()
+        v_discussion_more:render(),
+        Composer
     ].
 
 %-------------------------------------------------------------------------------

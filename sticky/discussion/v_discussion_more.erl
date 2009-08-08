@@ -8,7 +8,7 @@ render() ->
     % Type and ID cannot be inferred from Discussions when it is empty!
     ContentType = ale:app(content_type),
     ContentId   = ale:app(content_id),
-    Discussions    = ale:app(discussions),
+    Discussions = ale:app(discussions),
     h_application:more(
         Discussions, discussions, discussion,
         fun(Discussion)     -> h_discussion:render_one(Discussion, true) end,

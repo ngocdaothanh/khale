@@ -27,6 +27,6 @@ render() ->
             {input, [{type, text}, {class, textbox}, {name, captcha}]},
             {input, [{type, hidden}, {name, captcha_encrypted}, {value, EcryptedAnswer}]},
 
-            {input, [{type, submit}, {value, ?T("Save")}]}
+            {input, [{type, submit}, {class, button}, {value, ?T("Save")}]}
         ]}
     ].

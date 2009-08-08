@@ -16,3 +16,6 @@ more() ->
     ale:app(content_type, ContentType),
     ale:app(content_id, ContentId),
     ale:app(discussions, Discussions).
+
+create() ->
+    ok.

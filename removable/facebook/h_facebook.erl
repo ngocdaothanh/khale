@@ -15,9 +15,9 @@ before_layout() ->
     ale:app_add_js("FB.init(\"" ++ ApiKey ++ "\", \"/static/xd_receiver.htm\");").
 
 login_link(Base64Target) ->
-    Js = ale:ff("p_facebook_login.js", [Base64Target, ale:path(facebook, login, [Base64Target])]),
+    Js = ale:ff("p_facebook_login.js", [ale:path(facebook, login, [Base64Target])]),
     ale:app_add_js(Js),
-    {a, [{href, "#"}, {id, ["login_facebook", Base64Target]}], "Facebook"}.
+    {a, [{href, "#"}, {id, "login_facebook"}], "Facebook"}.
 
 logout_link() ->
     Js = ale:ff("p_facebook_logout.js", [ale:path(user, logout)]),
@@ -28,5 +28,5 @@ render(User, AvatarSize) ->
     Uid  = User#user.indexed_data,
     {
         {'fb:profile-pic', [{uid, Uid}, {width, AvatarSize}]},
-        {'fb:name', [{uid, Uid}, {linked, false}, {useyou, false}]}
+        {b, [], {'fb:name', [{uid, Uid}, {linked, false}, {useyou, false}]}}
     }.
