@@ -11,9 +11,9 @@ render() ->
 
     Contents = ale:app(contents),
     h_application:more(
-        Contents, undefined, undefined,
+        Contents, undefined,
         fun(Content) ->
-            {a, [{href, h_content:show_path(Content)}], h_content:render_title(Content)}
+            {li, [], {a, [{href, h_content:show_path(Content)}], h_content:render_title(Content)}}
         end,
         fun(_LastContent) ->
             ale:path(content, search, [ale:params(keyword), ale:app(next_page)])

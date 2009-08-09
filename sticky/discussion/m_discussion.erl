@@ -29,17 +29,17 @@ create(UserId, Ip, ContentType, ContentId, Body) ->
             end)
     end.
 
-is_existing(Type, Id) ->
-    case lists:member(Type, m_content:types()) of
-        false -> false;
+delete(Id) ->
+    mnesia:transaction(fun() ->
+        Q = qlc:q([R || R <- mnesia:table(discussion), R#discussion.id == Id]),
+        [Discussion] = qlc:e(Q),
 
-        true ->
-            M = m_content:m_module(Type),
-            case M:find(Id) of
-                undefined -> false;
-                _         -> true
-            end
-    end.
+        mnesia:delete({discussion, Id}),
+
+        ContentType = Discussion#discussion.content_type,
+        ContentId   = Discussion#discussion.content_id,
+        mnesia:write(#thread{content_type_id = {ContentType, ContentId}, updated_at = erlang:universaltime()})
+    end).
 
 find(Id) ->
     Q = qlc:q([R || R <- mnesia:table(discussion), R#discussion.id == Id]),
@@ -89,3 +89,17 @@ more(ContentType, ContentId, LastDiscussionId, NumberOfAnswers) ->
         Discussions2
     end),
     Discussions.
+
+%-------------------------------------------------------------------------------
+
+is_existing(Type, Id) ->
+    case lists:member(Type, m_content:types()) of
+        false -> false;
+
+        true ->
+            M = m_content:m_module(Type),
+            case M:find(Id) of
+                undefined -> false;
+                _         -> true
+            end
+    end.

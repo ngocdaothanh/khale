@@ -57,6 +57,11 @@ function chatMore(now) {
     }, "json");
 };
 
+function discussionDelete(id) {
+    $("#discussion_" + id).remove();
+    $.post('/discussions/' + id, {_method: "delete"});
+}
+
 $(function() {
     $('#search_keyword').keydown(function(evt) {
         if (evt.keyCode == 13) {
@@ -97,8 +102,7 @@ $(function() {
             if (data.error) {
                 alert(data.error);
             } else {
-                var body = data.atomic;
-                $('.discussions').append('<li class="discussion">' + body + '</li>');
+                $('.discussions').append(data.atomic);
             }
             $('#discussion_composer .ajax-loader').remove();
             $('#discussion_composer input.button').show();

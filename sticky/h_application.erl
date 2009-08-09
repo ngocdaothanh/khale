@@ -31,7 +31,7 @@ flash() ->
 %-------------------------------------------------------------------------------
 
 %% Cycle is not supported because it makes "More..." difficult to implement.
-more(Items, UlClass, LiClass, ItemRenderFun, MorePathFun) ->
+more(Items, UlClass, ItemRenderFun, MorePathFun) ->
     More = case length(Items) < ?ITEMS_PER_PAGE of
         true -> [];
 
@@ -44,13 +44,9 @@ more(Items, UlClass, LiClass, ItemRenderFun, MorePathFun) ->
         undefined -> [];
         _         -> [{class, UlClass}]
     end,
-    LLiClass = case LiClass of
-        undefined -> [];
-        _         -> [{class, LiClass}]
-    end,
 
     [
-        {ul, LUlClass, [{li, LLiClass, ItemRenderFun(Item)} || Item <- Items]},
+        {ul, LUlClass, [ItemRenderFun(Item) || Item <- Items]},
         More
     ].
 

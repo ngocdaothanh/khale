@@ -6,8 +6,8 @@
 
 render_last(ContentType, ContentId) ->
     case m_discussion:last(ContentType, ContentId) of
-        undefined   -> "";
-        LastDiscussion -> {ul, [{class, discussions}], {li, [{class, "discussion odd"}], render_one(LastDiscussion, false)}}
+        undefined  -> "";
+        Discussion -> {ul, [{class, "discussions last_discussion"}], render_one(Discussion, false)}
     end.
 
 render_all(ContentType, ContentId) ->
@@ -38,11 +38,30 @@ render_all(ContentType, ContentId) ->
         Composer
     ].
 
+render_one(Discussion, Editable) ->
+    Id = integer_to_list(Discussion#discussion.id),
+    Edit = case Editable andalso user_editable(Discussion) of
+        false -> [];
+        true  -> [{a, [{href, "#"}, {onclick, ["discussionDelete(", Id, "); return false"]}], ?T("Delete")}]
+    end,
+
+    User = m_user:find(Discussion#discussion.user_id),
+    {li, [{id, ["discussion_", Id]}, {class, discussion}], [
+        h_user:render(User, [
+            httpd_util:rfc1123_date(Discussion#discussion.updated_at) | Edit
+        ]),
+        Discussion#discussion.body
+    ]}.
+
 %-------------------------------------------------------------------------------
 
-render_one(Discussion, Editable) ->
-    User = m_user:find(Discussion#discussion.user_id),
-    [
-        h_user:render(User),
-        Discussion#discussion.body
-    ].
+user_editable(Discussion) ->
+    case Discussion#discussion.user_id of
+        undefined -> ale:ip() == Discussion#discussion.ip;
+
+        UserId ->
+            case ale:session(user) of
+                undefined -> false;
+                User      -> UserId == User#user.id
+            end
+    end.

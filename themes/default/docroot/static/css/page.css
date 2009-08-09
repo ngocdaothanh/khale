@@ -94,8 +94,6 @@ ul.previews li.preview, ul.region li.block, ul.users li, ul.discussions li.discu
 
 ul.previews li.preview, ul.discussions li.discussion { border-bottom: solid 1px #EEE; }
 
-li.odd  { background-color: #EEE; }
-
 textarea {
   width: 100%;
   height: 350px;
@@ -110,6 +108,8 @@ textarea {
 .flash { border: solid #9c9 2px; background-color: yellow; padding: 5px; font-weight: bold; }
 
 td.avatar { padding-right: 5px; }
+
+.last_discussion { background-color: #EEE; }
 
 #discussion_composer {
   margin-bottom: 1em;

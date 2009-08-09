@@ -1,8 +1,9 @@
 -module(c_discussion).
 
 -routes([
-    get,  "/discussions/:content_type/:content_id/:prev_discussion_id", more,
-    post, "/discussions/:content_type/:content_id",                     create
+    get,    "/discussions/:content_type/:content_id/:prev_discussion_id", more,
+    post,   "/discussions/:content_type/:content_id",                     create,
+    delete, "/discussions/:id", delete
 ]).
 
 -compile(export_all).
@@ -50,3 +51,8 @@ create() ->
             end,
             ale:yaws(content, "application/json", json:encode(Data))
     end.
+
+delete() ->
+    ale:view(undefined),
+    Id = list_to_integer(ale:params(id)),
+    m_discussion:delete(Id).

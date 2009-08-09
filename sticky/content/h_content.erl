@@ -17,9 +17,9 @@ show_path(Content) ->
 
 render_titles_with_more(Contents) ->
     h_application:more(
-        Contents, undefined, undefined,
+        Contents, undefined,
         fun(Content) ->
-            {a, [{href, h_content:show_path(Content)}], h_content:render_title(Content)}
+            {li, [], {a, [{href, h_content:show_path(Content)}], h_content:render_title(Content)}}
         end,
         fun(LastContent) ->
             ThreadUpdatedAt1 = m_content:thread_updated_at(LastContent),
