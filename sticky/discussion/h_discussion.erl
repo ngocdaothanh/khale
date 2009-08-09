@@ -15,6 +15,9 @@ render_all(ContentType, ContentId) ->
 
     {Question, EcryptedAnswer} = ale:mathcha(),
     Composer = {'div', [{id, discussion_composer}], [
+        {input, [{type, hidden}, {name, content_type}, {value, ContentType}]},
+        {input, [{type, hidden}, {name, content_id}, {value, ContentId}]},
+
         {textarea, [{name, body}]},
 
         {span, [{class, label}], Question},

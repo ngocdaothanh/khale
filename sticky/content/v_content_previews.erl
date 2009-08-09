@@ -21,4 +21,10 @@ render() ->
 
 render_one(Content) ->
     HModule = h_content:h_module(Content),
-    HModule:render_preview(Content).
+    Type = m_content:type(Content),
+    Id = element(2, Content),
+    [
+        HModule:render_preview(Content),
+        {br},
+        h_discussion:render_last(Type, Id)
+    ].

@@ -60,7 +60,7 @@ function chatMore(now) {
 $(function() {
     $('#search_keyword').keydown(function(evt) {
         if (evt.keyCode == 13) {
-            var input = $('#search_keyword');
+            var input = $(this);
             var keyword = $.trim(input.val());
             if (keyword != '') {
                 window.location.href = '/search/' + encodeURIComponent(keyword);
@@ -70,12 +70,38 @@ $(function() {
 
     $('#chat_input').keydown(function(evt) {
         if (evt.keyCode == 13) {
-            var input = $('#chat_input');
+            var input = $(this);
             var msg = $.trim(input.val());
             if (msg != '') {
                 $.post('/chats', {msg: msg});
             }
             input.val('');
         }
+    });
+
+    $('#discussion_composer input.button').click(function() {
+        $(this).hide();
+        $(this).after('<img class="ajax-loader" src="/static/img/ajax-loader.gif" />');
+
+        var contentType = $('#discussion_composer input[name="content_type"]').val();
+        var contentId = $('#discussion_composer input[name="content_id"]').val();
+
+        tinyMCE.triggerSave();
+        var body = $('#discussion_composer textarea').val();
+        var answer = $('#discussion_composer input.textbox').val();
+        var encryptedAnswer = $('#discussion_composer input[name="captcha_encrypted"]').val();
+
+        var url = '/discussions/' + contentType + '/' + contentId;
+        var postData = {body: body, answer: answer, encrypted_answer: encryptedAnswer};
+        $.post(url, postData, function(data) {
+            if (data.error) {
+                alert(data.error);
+            } else {
+                var body = data.atomic;
+                $('.discussions').append('<li class="discussion">' + body + '</li>');
+            }
+            $('#discussion_composer .ajax-loader').remove();
+            $('#discussion_composer input.button').show();
+        }, "json");
     });
 });

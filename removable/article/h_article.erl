@@ -14,6 +14,5 @@ render_preview(Article) ->
     [
         {h1, [], {a, [{href, ale:path(article, show, [Article#article.id])}], render_title(Article)}},
         h_user:render(User),
-        {'div', [], Article#article.abstract},
-        h_discussion:render_last(article, Article#article.id)
+        {'div', [], Article#article.abstract}
     ].

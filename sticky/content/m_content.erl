@@ -38,11 +38,11 @@ types() ->
         modules()
     ).
 
+m_module(Type) -> list_to_atom([$m, $_ | atom_to_list(Type)]).
+
 type_strings() -> [atom_to_list(T) || T <- types()].
 
 type(Content) -> element(1, Content).
-
-m_module(ContentType) -> list_to_atom([$m, $_ | atom_to_list(ContentType)]).
 
 find(ContentType, ContentId) ->
     MModule = m_module(ContentType),

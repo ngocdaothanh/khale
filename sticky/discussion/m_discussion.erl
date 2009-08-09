@@ -6,19 +6,40 @@
 
 migrate() -> m_helper:create_table(discussion, record_info(fields, discussion)).
 
-create(ContentType, ContentId, Body, UserId) ->
-    mnesia:transaction(fun() ->
-        Id = m_helper:next_id(discussion),
-        CreatedAt = erlang:universaltime(),
-        Discussion = #discussion{
-            id = Id,
-            content_type = ContentType, content_id = ContentId,
-            body = Body,
-            user_id = UserId,
-            created_at = CreatedAt, updated_at = CreatedAt
-        },
-        mnesia:write(Discussion)
-    end).
+%% Returns {error, Error} | {atomic, Discusstion}.
+create(UserId, Ip, ContentType, ContentId, Body) ->
+    % Make sure that ContentType and ContentId is valid
+    case is_existing(ContentType, ContentId) of
+        false -> {error, ?T("Invalid input")};
+
+        true ->
+            mnesia:transaction(fun() ->
+                Id = m_helper:next_id(discussion),
+                CreatedAt = erlang:universaltime(),
+                Discussion = #discussion{
+                    id = Id,
+                    user_id = UserId, ip = Ip,
+                    created_at = CreatedAt, updated_at = CreatedAt,
+                    content_type = ContentType, content_id = ContentId,
+                    body = Body
+                },
+                mnesia:write(Discussion),
+                mnesia:write(#thread{content_type_id = {ContentType, ContentId}, updated_at = CreatedAt}),
+                Discussion
+            end)
+    end.
+
+is_existing(Type, Id) ->
+    case lists:member(Type, m_content:types()) of
+        false -> false;
+
+        true ->
+            M = m_content:m_module(Type),
+            case M:find(Id) of
+                undefined -> false;
+                _         -> true
+            end
+    end.
 
 find(Id) ->
     Q = qlc:q([R || R <- mnesia:table(discussion), R#discussion.id == Id]),
