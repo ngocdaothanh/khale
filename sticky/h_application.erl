@@ -71,3 +71,17 @@ string_to_now(String) ->
         string:tokens(String, "-")
     ),
     {Mega, S, Micro}.
+
+%-------------------------------------------------------------------------------
+
+%% Erlang only has string:join/2 to join only string.
+join([], _Separator) -> [];
+join([H | T], Separator) ->
+    Injected = lists:foldr(
+        fun(E, Acc) ->
+            [Separator, E | Acc]
+        end,
+        [],
+        T
+    ),
+    [H | Injected].

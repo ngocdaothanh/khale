@@ -270,8 +270,8 @@ tag(C, NodeId) ->
     lists:foreach(
         fun({CategoryId}) ->
             TagId = category_id_pg_to_mn(CategoryId),
-            TC = #tag_content{tag_id = TagId, content_type = Type, content_id = Id},
-            mnesia:transaction(fun() -> mnesia:write(TC) end)
+            CT = #content_tag{content_id = Id, tag_id = TagId, content_type = Type},
+            mnesia:transaction(fun() -> mnesia:write(CT) end)
         end,
         Rows
     ).

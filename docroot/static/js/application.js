@@ -94,7 +94,7 @@ $(function() {
         tinyMCE.triggerSave();
         var body = $('#discussion_composer textarea').val();
         var answer = $('#discussion_composer input.textbox').val();
-        var encryptedAnswer = $('#discussion_composer input[name="captcha_encrypted"]').val();
+        var encryptedAnswer = $('#discussion_composer input[name="encrypted_answer"]').val();
 
         var url = '/discussions/' + contentType + '/' + contentId;
         var postData = {body: body, answer: answer, encrypted_answer: encryptedAnswer};

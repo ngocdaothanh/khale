@@ -21,8 +21,8 @@ render_all(ContentType, ContentId) ->
         {textarea, [{name, body}]},
 
         {span, [{class, label}], Question},
-        {input, [{type, text}, {class, textbox}, {name, captcha}]},
-        {input, [{type, hidden}, {name, captcha_encrypted}, {value, EcryptedAnswer}]},
+        {input, [{type, text}, {class, textbox}, {name, answer}]},
+        {input, [{type, hidden}, {name, encrypted_answer}, {value, EcryptedAnswer}]},
 
         {input, [{type, submit}, {class, button}, {value, ?T("Save")}]}
     ]},

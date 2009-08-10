@@ -14,7 +14,7 @@
 
 -record(tag, {id, name}).
 
--record(tag_content, {tag_id, content_type, content_id}).
+-record(content_tag, {content_type, content_id, tag_id}).
 
 -record(discussion, {id, user_id, ip, created_at, updated_at, content_type, content_id, body}).
 

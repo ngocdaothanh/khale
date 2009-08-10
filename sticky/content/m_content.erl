@@ -62,16 +62,16 @@ more(TagName, ThreadUpdatedAt) ->
                 case ThreadUpdatedAt of
                     undefined ->
                         qlc:q([T ||
-                            T <- mnesia:table(thread), TC <- mnesia:table(tag_content),
-                            T#thread.content_type_id == {TC#tag_content.content_type, TC#tag_content.content_id},
-                            TC#tag_content.tag_id == Tag#tag.id
+                            T <- mnesia:table(thread), CT <- mnesia:table(content_tag),
+                            T#thread.content_type_id == {CT#content_tag.content_type, CT#content_tag.content_id},
+                            CT#content_tag.tag_id == Tag#tag.id
                         ]);
 
                     _ ->
                         qlc:q([T ||
-                            T <- mnesia:table(thread), TC <- mnesia:table(tag_content),
-                            T#thread.content_type_id == {TC#tag_content.content_type, TC#tag_content.content_id},
-                            TC#tag_content.tag_id == Tag#tag.id,
+                            T <- mnesia:table(thread), CT <- mnesia:table(content_tag),
+                            T#thread.content_type_id == {CT#content_tag.content_type, CT#content_tag.content_id},
+                            CT#content_tag.tag_id == Tag#tag.id,
                             T#thread.updated_at < ThreadUpdatedAt
                         ])
                 end

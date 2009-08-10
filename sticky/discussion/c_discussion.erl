@@ -34,7 +34,7 @@ create() ->
             ContentType = list_to_existing_atom(ale:params(content_type)),
             ContentId   = list_to_integer(ale:params(content_id)),
             {ok, Body}  = esan:san(ale:params(body)),
-            Body2       = binary_to_list(unicode:characters_to_binary(Body)),  % must be plain list of 0-255 for ehtml_expand to work
+            Body2       = binary_to_list(unicode:characters_to_binary(Body)),  % Must be plain list of 0-255 for ehtml_expand to work
             UserId      = case ale:session(user) of
                 undefined -> undefined;
                 User      -> User#user.id
@@ -47,7 +47,7 @@ create() ->
                 {atomic, Discussion} ->
                     Ehtml = h_discussion:render_one(Discussion, true),
                     Html = yaws_api:ehtml_expand(Ehtml),
-                    {struct, [{atomic, lists:flatten(Html)}]}  % must be plain list
+                    {struct, [{atomic, lists:flatten(Html)}]}  % Must be plain list
             end,
             ale:yaws(content, "application/json", json:encode(Data))
     end.
