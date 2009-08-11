@@ -26,7 +26,9 @@
     get, "/search/:keyword",       search,
 
     % More
-    get, "/search/:keyword/:page", search
+    get, "/search/:keyword/:page", search,
+
+    get, "/feed.atom", feed
 ]).
 
 -caches([
@@ -36,6 +38,8 @@
 -compile(export_all).
 
 -include("sticky.hrl").
+
+%-------------------------------------------------------------------------------
 
 tag()      -> titles().
 previews() -> previews_or_titles(previews).
@@ -82,3 +86,36 @@ search() ->
             )
     end,
     ale:app(contents, Contents).
+
+%-------------------------------------------------------------------------------
+
+feed() ->
+    ale:view(undefined),
+    Xml = feed_xml(),
+    ale:yaws(content, "application/atom+xml", Xml).
+
+%% See http://www.atomenabled.org/developers/syndication/
+feed_xml() ->
+    Site = ale:app(site),
+    Head = [
+        {id, [Site#site.name]},
+        {title, [Site#site.name]},
+        {subtitle, [Site#site.subtitle]}
+    ],
+    Entries = lists:map(
+        fun(Content) ->
+            {entry, [], [
+                {id, [h_content:show_path(Content)]},
+                {title, [h_content:render_title(Content)]},
+                {link, [h_content:show_path(Content)]},
+                {updated, [rfc3339(m_content:thread_updated_at(Content))]},
+                {content, [{type, html}], [yaws_api:ehtml_expand(v_content_previews:render_one(Content))]}
+            ]}
+        end,
+        m_content:more(undefined, undefined)
+    ),
+    Feed = #xmlElement{name = 'feed', attributes = [{xmlns, "http://www.w3.org/2005/Atom"}], content = Head ++ Entries},
+    xmerl:export_simple([Feed], xmerl_xml).
+
+rfc3339({{Y, M, D}, {H, Mi, S}}) ->
+    io_lib:format("~p-~p-~pT~p:~p:~pZ", [Y, M, D, H, Mi, S]).

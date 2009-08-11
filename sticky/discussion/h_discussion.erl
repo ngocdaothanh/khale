@@ -48,7 +48,8 @@ render_one(Discussion, Editable) ->
     User = m_user:find(Discussion#discussion.user_id),
     {li, [{id, ["discussion_", Id]}, {class, discussion}], [
         h_user:render(User, [
-            httpd_util:rfc1123_date(Discussion#discussion.updated_at) | Edit
+            h_application:render_timestamp(Discussion#discussion.created_at, Discussion#discussion.updated_at) |
+            Edit
         ]),
         Discussion#discussion.body
     ]}.

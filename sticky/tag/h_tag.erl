@@ -26,14 +26,18 @@ render_tag_selection() ->
         }
     ].
 
+%% Returns EHTML or undefined so that the result can be used in h_user:render/2.
 render_tags(ContentType, ContentId) ->
-    Tags = m_tag:all(ContentType, ContentId),
-    
-    Links = lists:map(
-        fun(Tag) ->
-            Name = yaws_api:htmlize(Tag#tag.name),
-            {a, [{href, ale:path(content, tag, [Tag#tag.name])}], Name}
-        end,
-        Tags
-    ),
-    h_application:join(Links, ", ").
+    case m_tag:all(ContentType, ContentId) of
+        [] -> undefined;
+
+        Tags ->
+            Links = lists:map(
+                fun(Tag) ->
+                    Name = yaws_api:htmlize(Tag#tag.name),
+                    {a, [{href, ale:path(content, tag, [Tag#tag.name])}], Name}
+                end,
+                Tags
+            ),
+            h_application:join(Links, ", ")
+    end.

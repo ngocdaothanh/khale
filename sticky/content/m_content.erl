@@ -156,8 +156,7 @@ sphinx_xml() ->
         {'sphinx:field', [{name, "body"}],        []},
         {'sphinx:field', [{name, "discussions"}], []}
     ]},
-    Content = {'sphinx:docset', [], [Schema | Docs]},
-    Docset = #xmlElement{name = 'sphinx:docset', content = [Content]},
+    Docset = #xmlElement{name = 'sphinx:docset', content = [Schema | Docs]},
     io:format(xmerl:export_simple([Docset], xmerl_xml)).
 
 sphinx_find(SegmentedId) ->

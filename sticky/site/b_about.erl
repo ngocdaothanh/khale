@@ -13,6 +13,10 @@ render(_Id, _Data) ->
         NumUsers -> {li, [], {a, [{href, ale:path(user,  index)}], ?TF("~p users", [NumUsers])}}
     end,
 
+    FeedLink = {li, [],
+        {a, [{href, ale:path(content, feed)}], ?TF("~p contents", [mnesia:table_info(thread, size)])}
+    },
+
     % Link to discussions is always displayed, so that the first one can be created
     DiscussionsLinkText = case m_discussion:count(site, undefined) of
         0              -> ?T("Discuss about this site");
@@ -25,6 +29,7 @@ render(_Id, _Data) ->
 
         {ul, [], [
             UsersLink,
+            FeedLink,
             DiscussionsLink
         ]}
     ],

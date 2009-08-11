@@ -15,10 +15,11 @@ render() ->
                 {meta, [{name, "description"}, {content, "CMS based on Ale based on Yaws"}]},
                 {meta, [{name, "keywords"}, {content, "ale, erlang, yaws, web"}]},
 
+                {title, [], '$title_in_head'},
+
+                {link, [{rel, "alternate"}, {type, "application/atom+xml"}, {href, ale:path(content, feed)}, {title, '$title_in_feed'}]},
                 {link, [{rel, "icon"}, {type, "img/x-icon"}, {href, "/favicon.ico"}]},
                 {link, [{rel, "shortcut icon"}, {type, "img/x-icon"}, {href, "/favicon.ico"}]},
-
-                {title, [], '$title_in_head'},
 
                 {link, [{rel, "stylesheet"}, {type, "text/css"}, {href, "/static/css/reset.css"}]},
                 {link, [{rel, "stylesheet"}, {type, "text/css"}, {href, "/static/css/page.css"}]},
@@ -63,6 +64,7 @@ render() ->
 
     T = yaws_api:ehtml_apply(E, [
         {title_in_head,      h_application:title_in_head()},
+        {title_in_feed,      h_application:title_in_feed()},
         {heads,              ale:app(heads)},
         {flash,              h_application:flash()},
         {title_in_body,      h_application:title_in_body()},

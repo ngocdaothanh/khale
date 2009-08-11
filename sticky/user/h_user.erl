@@ -32,7 +32,7 @@ render(User) -> render(User, []).
 
 %% User: undefined = Anonymous
 render(User, Extras) ->
-    {Avatar, Name} = case User of
+    {Avatar, Link} = case User of
         undefined ->
             {
                 {img, [{src, "/static/img/anonymous.gif"}, {width, ?AVATAR_SIZE}, {height, ?AVATAR_SIZE}]},
@@ -41,22 +41,16 @@ render(User, Extras) ->
 
         _ ->
             HModule = m_user:type_to_module(User#user.type),
-            HModule:render(User, ?AVATAR_SIZE)
+            {A, N} = HModule:render(User, ?AVATAR_SIZE),
+            L = case m_user:num_contents(User) of
+                 0 -> N;
+                 X -> [N, " | ", {a, [{href, ale:path(user, show, [User#user.id])}], integer_to_list(X)}]
+            end,
+            {A, L}
     end,
 
-    NumContents = case User of
-        undefined -> undefined;
-
-        _ ->
-            case m_user:num_contents(User) of
-                0 -> undefined;
-                X -> ?TF("~p contents", [X])
-            end
-    end,
-
-    Extras2 = [NumContents | Extras],
-    % Join with " | "
-    Extras3 = lists:foldl(
+    % Join with " | ", ignoring undefined
+    Extras2 = lists:foldl(
         fun(E, Acc) ->
             case E of
                 undefined -> Acc;
@@ -64,16 +58,11 @@ render(User, Extras) ->
             end
         end,
         [],
-        Extras2
+        Extras
     ),
-    Extras4 = case lists:flatten(Extras3) of
+    Extras3 = case lists:flatten(Extras2) of
         [32, 124, 32 | Rest] -> Rest;  % 32, 124, 32: " | "
         Y                    -> Y
-    end,
-
-    Link = case User of
-        undefined -> Name;
-        _         -> {a, [{href, ale:path(user, show, [User#user.id])}], Name}
     end,
 
     {table, [{class, user}], [
@@ -82,6 +71,6 @@ render(User, Extras) ->
             {td, [], Link}
         ]},
         {tr, [],
-            {td, [], Extras4}
+            {td, [], Extras3}
         }
     ]}.
