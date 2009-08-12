@@ -12,32 +12,74 @@
 -compile(export_all).
 
 -include("sticky.hrl").
+-include("article.hrl").
 
-new() -> ok.
+%-------------------------------------------------------------------------------
 
 show() ->
     Id = list_to_integer(ale:params(id)),
+    ale:app(article, m_article:find_and_inc_views(Id)).
+
+new() -> ok.
+
+create() -> create_or_update(create).
+
+edit() ->
+    Id = list_to_integer(ale:params(id)),
     ale:app(article, m_article:find(Id)).
 
-create() ->
-    Answer = ale:params(answer),
-    EncryptedAnswer = ale:params(encrypted_answer),
-    case ale:mathcha(Answer, EncryptedAnswer) of
-        false ->
-            Data = {struct, [{error, ?T("Wrong math result!")}]},
-            ale:yaws(content, "application/json", json:encode(Data));
-
-        true ->
-            T1 = ale:params(title),
-            A1 = ale:params(abstract),
-            B1 = ale:params(body),
-            {ok, T2} = esan:san(T1),
-            {ok, A2} = esan:san(A1),
-            {ok, B2} = esan:san(B1),
-
-            m_article:create(1, [], T2, A2, B2),
-            ale:view(v_content_new)
+update() ->
+    Id = list_to_integer(ale:params(id)),
+    Article = m_article:find(Id),
+    case h_application:editable(Article) of
+        true  -> create_or_update(update);
+        false -> {struct, [{error, ?T("Please login.")}]}
     end.
 
-update(Id) ->
-    "update" ++ Id.
+%-------------------------------------------------------------------------------
+
+create_or_update(Which) ->
+    Answer = ale:params(answer),
+    EncryptedAnswer = ale:params(encrypted_answer),
+    Data = case ale:mathcha(Answer, EncryptedAnswer) of
+        false -> {struct, [{error, ?T("The result for the simple math problem is wrong!")}]};
+
+        true ->
+            T1  = ale:params(title),
+            A1 = ale:params(abstract),
+            B1 = ale:params(body),
+            case (T1 == undefined) orelse (A1 == undefined) orelse (B1 == undefined) of
+                true -> {struct, [{error, ?T("Article title, abstract, and body must not be empty.")}]};
+
+                false ->
+                    T2 = string:strip(T1),
+                    {ok, A2} = esan:san(string:strip(A1)),
+                    {ok, B2} = esan:san(string:strip(B1)),
+
+                    Tags = case ale:params(tags) of
+                        undefined -> "";
+                        X         -> X
+                    end,
+
+                    Ip = ale:ip(),
+                    ErrorOrAtomic = case Which of
+                        create ->
+                            UserId = case ale:session(user) of
+                                undefined -> undefined;
+                                User      -> User#user.id
+                            end,
+                            m_article:create(UserId, Ip, T2, A2, B2, Tags);
+
+                        update ->
+                            Id = list_to_integer(ale:params(id)),
+                            m_article:update(Id, Ip, T2, A2, B2, Tags)
+                    end,
+
+                    case ErrorOrAtomic of
+                        {error, Error}    -> {struct, [{error, Error}]};
+                        {atomic, Article} -> {struct, [{atomic, Article#article.id}]}
+                    end
+            end
+    end,
+    ale:view(undefined),
+    ale:yaws(content, "application/json", json:encode(Data)).

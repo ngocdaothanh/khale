@@ -10,7 +10,7 @@ body {
 a { color: #3B5998; text-decoration: none; }
 a:hover { color: #3B5998; text-decoration: underline; }
 
-h1 { font-size: 1.6em; color: #BBB; clear: both; letter-spacing: -1px; }
+h1 { font-size: 1.6em; color: #444; clear: both; letter-spacing: -1px; }
 h2 { font-size: 1.3em; color: #DB0; clear: both; letter-spacing: -1px; }
 h3 { font-size: 1.0em; color: #DB0; letter-spacing: -1px; }
 h4 { font-size: 0.7em; color: #777; text-transform: uppercase;  }

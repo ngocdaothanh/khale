@@ -17,7 +17,7 @@ render() ->
 
                 {title, [], '$title_in_head'},
 
-                {link, [{rel, "alternate"}, {type, "application/atom+xml"}, {href, ale:path(content, feed)}, {title, '$title_in_feed'}]},
+                {link, [{rel, "alternate"}, {type, "application/atom+xml"}, {href, ale:path(content, feed)}]},
                 {link, [{rel, "icon"}, {type, "img/x-icon"}, {href, "/favicon.ico"}]},
                 {link, [{rel, "shortcut icon"}, {type, "img/x-icon"}, {href, "/favicon.ico"}]},
 
@@ -64,7 +64,6 @@ render() ->
 
     T = yaws_api:ehtml_apply(E, [
         {title_in_head,      h_application:title_in_head()},
-        {title_in_feed,      h_application:title_in_feed()},
         {heads,              ale:app(heads)},
         {flash,              h_application:flash()},
         {title_in_body,      h_application:title_in_body()},

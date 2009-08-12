@@ -40,7 +40,7 @@ render_all(ContentType, ContentId) ->
 
 render_one(Discussion, Editable) ->
     Id = integer_to_list(Discussion#discussion.id),
-    Edit = case Editable andalso user_editable(Discussion) of
+    Edit = case Editable andalso h_application:editable(Discussion) of
         false -> [];
         true  -> [{a, [{href, "#"}, {onclick, ["discussionDelete(", Id, "); return false"]}], ?T("Delete")}]
     end,
@@ -53,16 +53,3 @@ render_one(Discussion, Editable) ->
         ]),
         Discussion#discussion.body
     ]}.
-
-%-------------------------------------------------------------------------------
-
-user_editable(Discussion) ->
-    case Discussion#discussion.user_id of
-        undefined -> ale:ip() == Discussion#discussion.ip;
-
-        UserId ->
-            case ale:session(user) of
-                undefined -> false;
-                User      -> UserId == User#user.id
-            end
-    end.

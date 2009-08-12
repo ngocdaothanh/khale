@@ -8,10 +8,6 @@ region(Region) ->
     Blocks = m_block:region(Region),
     {'ul', [{class, region}], [h_block:render(B) || B <- Blocks]}.
 
-title_in_feed() ->
-    Site = ale:app(site),
-    yaws_api:htmlize(Site#site.name).
-
 title_in_head() ->
     Site = ale:app(site),
     Name = yaws_api:htmlize(Site#site.name),
@@ -19,6 +15,10 @@ title_in_head() ->
         undefined -> Name;
         Title     -> [Name, " - ", yaws_api:htmlize(Title)]
     end.
+
+title_in_feed() ->
+    Site = ale:app(site),
+    yaws_api:htmlize(Site#site.name).
 
 title_in_body() ->
     case ale:app(title_in_body) of
@@ -95,6 +95,20 @@ render_timestamp({Date1, Time1}, {Date2, Time2}) ->
 date_binding({Y, M, D}) ->
     [Y2, M2, D2] = [integer_to_list(I) || I <- [Y, M, D]],
     [{year, Y2}, {month, M2}, {day, D2}].
+
+%-------------------------------------------------------------------------------
+
+%% Thing must be a record in the form {Type, Id, UserId, Ip, ...}.
+editable(Thing) ->
+    case element(3, Thing) of
+        undefined -> ale:ip() == element(4, Thing);
+
+        UserId ->
+            case ale:session(user) of
+                undefined -> false;
+                User      -> UserId == User#user.id
+            end
+    end.
 
 %-------------------------------------------------------------------------------
 

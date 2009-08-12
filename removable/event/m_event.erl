@@ -10,7 +10,7 @@ migrate() -> m_helper:create_table(event, record_info(fields, event)).
 content() -> [{public_creatable, true}].
 
 create(Name, Invitation, Deadline, UserId, Ip, Tags) ->
-    Id = m_helper:next_id(content),
+    Id = m_helper:next_id(event),
     CreatedAt = erlang:universaltime(),
     Event = #event{
         id = Id,

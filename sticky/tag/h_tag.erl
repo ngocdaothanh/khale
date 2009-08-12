@@ -4,20 +4,14 @@
 
 -include("sticky.hrl").
 
-render_tag_selection() ->
-    Js = "$('a.tag').click(function() {
-        var tag   = this.innerHTML;
-        var input = $('input.textbox[name=tags]');
-        var val   = jQuery.trim(input.val());
-        var tag2  = (val == '')? tag : (', ' + tag);
-        input.val(val + tag2);
-        return false;
-    });",
+render_tag_selection(Tags) ->
+    Js = ale:ff("p_tag_selection.js"),
     ale:app_add_js(Js),
 
+    TagNames = [yaws_api:htmlize(Tag#tag.name) || Tag <- Tags],
     [
-        {span, [{class, label}], ?T("Tags")},
-        {input, [{type, text}, {class, textbox}, {name, tags}]},
+        {span, [{class, label}], ?T("Tags (separated by comma)")},
+        {input, [{type, text}, {class, textbox}, {name, tags}, {value, h_application:join(TagNames, ", ")}]},
 
         {ul, [],
             [{li, [],

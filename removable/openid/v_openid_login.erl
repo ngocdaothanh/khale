@@ -14,7 +14,7 @@ render() ->
         {form, [{method, post}, {action, ale:path(openid, login)}], [
             {span, [{class, label}], ?T("OpenID")},
             {input, [{type, text}, {class, textbox}, {name, openid}]},
-            {input, [{type, submit}, {value, ?T("Login")}]}
+            {input, [{type, submit}, {class, button}, {value, ?T("Login")}]}
         ]},
 
         {p, [], ?T("Input your OpenID and click Login button. You will be redirected to your OpenID site to login, then you will be redirected back to this site.")}

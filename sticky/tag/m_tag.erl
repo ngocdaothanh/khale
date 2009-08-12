@@ -53,26 +53,38 @@ find_by_name(Name) ->
         _   -> undefined
     end.
 
+%% TagNames: comma-separated string
+%%
+%% This function must be run inside an Mnesia transaction.
 tag(ContentType, ContentId, TagNames) ->
-    mnesia:transaction(fun() ->
-        TagNames2 = string:tokens(TagNames, ", "),
-        TagNames3 = lists:usort(TagNames2),
-        TagIds = lists:map(
-            fun(TagName) ->
-                Tag = case find_by_name(TagName) of
-                    undefined -> create(TagName);
-                    X         -> X
-                end,
-                Tag#tag.id
+    TagNames2 = [string:strip(T) || T <- string:tokens(TagNames, ",")],
+    TagNames3 = lists:usort(TagNames2),
+    TagIds = lists:map(
+        fun(TagName) ->
+            Tag = case find_by_name(TagName) of
+                undefined -> create(TagName);
+                X         -> X
             end,
-            TagNames3
-        ),
+            Tag#tag.id
+        end,
+        TagNames3
+    ),
 
-        lists:foreach(
-            fun(TagId) ->
-                ContentTag = #content_tag{content_type = ContentType, content_id = ContentId, tag_id = TagId},
-                ok = mnesia:write(ContentTag)
-            end,
-            TagIds
-        )
-    end).
+    % Remove all tags for this content
+    OldTags = all(ContentType, ContentId),
+    lists:foreach(
+        fun(Tag) ->
+            Object = #content_tag{content_type = ContentType, content_id = ContentId, tag_id = Tag#tag.id},
+            mnesia:delete_object(content_tag, Object, write)
+        end,
+        OldTags
+    ),
+
+    % Then add again
+    lists:foreach(
+        fun(TagId) ->
+            ContentTag = #content_tag{content_type = ContentType, content_id = ContentId, tag_id = TagId},
+            ok = mnesia:write(ContentTag)
+        end,
+        TagIds
+    ).

@@ -10,7 +10,7 @@ migrate() -> m_helper:create_table(poll, record_info(fields, poll)).
 content() -> [{public_creatable, true}].
 
 create(Question, Detail, Choices, UserId, Ip, Tags) ->
-    Id = m_helper:next_id(content),
+    Id = m_helper:next_id(poll),
     CreatedAt = erlang:universaltime(),
     Votes  = lists:duplicate(length(Choices), 0),
     Voters = [],

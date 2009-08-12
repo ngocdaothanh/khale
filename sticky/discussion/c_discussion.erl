@@ -27,7 +27,7 @@ create() ->
     EncryptedAnswer = ale:params(encrypted_answer),
     case ale:mathcha(Answer, EncryptedAnswer) of
         false ->
-            Data = {struct, [{error, ?T("Wrong math result!")}]},
+            Data = {struct, [{error, ?T("The result for the simple math problem is wrong!")}]},
             ale:yaws(content, "application/json", json:encode(Data));
 
         true ->
