@@ -13,7 +13,8 @@ render() ->
 
     User = m_user:find(Qa#qa.user_id),
     [
-        h_qa:render_header(User, Qa, false),
+        {h1, [], h_qa:render_title(Qa)},
+        h_qa:render_header(User, Qa),
         {'div', [], Qa#qa.detail},
         h_discussion:render_all(qa, Qa#qa.id)
     ].

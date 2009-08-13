@@ -12,15 +12,11 @@ render_title(Qa) -> yaws_api:htmlize(Qa#qa.question).
 render_preview(Qa) ->
     User = m_user:find(Qa#qa.user_id),
     [
-        render_header(User, Qa, true),
+        render_header(User, Qa),
         {'div', [], Qa#qa.detail}
     ].
 
-render_header(User, Qa, Linked) ->
-    Title = case Linked of
-        false -> render_title(Qa);
-        true  -> {a, [{href, ale:path(qa, show, [Qa#qa.id])}], render_title(Qa)}
-    end,
+render_header(User, Qa) ->
     Views = case Qa#qa.views > 1 of
         true  -> ?TF("~p views", [Qa#qa.views]);
         false -> undefined
@@ -30,7 +26,6 @@ render_header(User, Qa, Linked) ->
         false -> undefined
     end,
     [
-        {h1, [], Title},
         h_user:render(User, [
             h_tag:render_tags(qa, Qa#qa.id),
             h_application:render_timestamp(Qa#qa.created_at, Qa#qa.updated_at),

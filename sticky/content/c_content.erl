@@ -109,7 +109,7 @@ feed_xml() ->
                 {title, [h_content:render_title(Content)]},
                 {link, [h_content:show_path(Content)]},
                 {updated, [rfc3339(m_content:thread_updated_at(Content))]},
-                {content, [{type, html}], [yaws_api:ehtml_expand(v_content_previews:render_one(Content))]}
+                {content, [{type, html}], [yaws_api:ehtml_expand(h_content:render_preview_without_title(Content))]}
             ]}
         end,
         m_content:more(undefined, undefined)

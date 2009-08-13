@@ -8,7 +8,7 @@ render() ->
     Contents = ale:app(contents),
     h_application:more(
         Contents, previews,
-        fun(Content) -> {li, [{class, preview}], render_one(Content)} end,
+        fun(Content) -> {li, [{class, preview}], h_content:render_preview(Content)} end,
         fun(LastContent) ->
             ThreadUpdatedAt1 = m_content:thread_updated_at(LastContent),
             ThreadUpdatedAt2 = h_application:timestamp_to_string(ThreadUpdatedAt1),
@@ -18,13 +18,3 @@ render() ->
             end
         end
     ).
-
-render_one(Content) ->
-    HModule = h_content:h_module(Content),
-    Type = m_content:type(Content),
-    Id = element(2, Content),
-    [
-        HModule:render_preview(Content),
-        {br},
-        h_discussion:render_last(Type, Id)
-    ].
