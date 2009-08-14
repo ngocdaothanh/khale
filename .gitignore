@@ -3,10 +3,10 @@
 erl_crash.dump
 *.beam
 
-nodes/sample/log/*
-nodes/n*
-
 ale_routes.erl
 ale_is_cached.erl
+
+log/*
 mnesia
 docroot/static/tiny_mce
+yaws.conf

@@ -8,3 +8,14 @@ compile:
 clean:
 	rm -rf ebin/*.beam
 
+start:
+	yaws \
+		--pa ebin \
+		--mnesiadir mnesia
+
+migrate:
+	erl \
+		-noshell \
+		-pa ebin \
+		-mnesia dir mnesia \
+		-s m_helper migrate -s init stop

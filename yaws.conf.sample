@@ -16,14 +16,15 @@ max_size_cached_file = 102400    # 100KB
     # This is of the app "cntt.tv" on Facebook, you may want to clone this app
     # (http://www.facebook.com/developers/createapp.php) and set the key below
     # to that of your clone
-    facebook_key    = your_key
-    facebook_secret = your_secret
+    facebook_key    = your_facebook_key
+    facebook_secret = your_facebook_secret
 
     # See Makefile
     nodes = "khale_n1@ngoc-2.local:khale_n2@ngoc-2.local"
 
-    # Cache should be disabled when you are developing
-    cache = cherly:100
+    session_secret = secret
+
+#    cache = cherly:100
 #    cache = memcached:localhost:11211
 #    cache = memcached_with_libketama:ketama.servers
   </opaque>
