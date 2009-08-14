@@ -26,7 +26,7 @@ code_change() ->
 
     {ok, C} = pgsql:connect(Host, Username, Password, [{database, Database}, {port, Port}]),
 
-    case file:consult("pd.txt") of
+    case file:consult("/tmp/khale/pd.txt") of
         {ok, [Pd]} ->
             lists:foreach(
                 fun({K, V}) -> put(K, V) end,

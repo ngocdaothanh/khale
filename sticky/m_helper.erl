@@ -4,6 +4,8 @@
 
 -include("sticky.hrl").
 
+%-------------------------------------------------------------------------------
+
 migrate() ->
     mnesia:create_schema([node()]),
     mnesia:start(),
@@ -12,28 +14,7 @@ migrate() ->
     mnesia:stop().
 
 %% Called by c_application on application start.
-start(Nodes) ->
-    mnesia:start(),
-    replicate(Nodes).
-
-%% If there is no directory "mnesia", replicates one from other nodes.
-replicate(Nodes) ->
-    % See: http://erlanganswers.com/web/mcedemo/mnesia/DistributedHelloWorld.html
-
-    % Merge tables of this node with those of other nodes
-    mnesia:change_config(extra_db_nodes, Nodes),
-
-    % This line will create directory "mnesia" if none exists
-    mnesia:change_table_copy_type(schema, node (), disc_copies),
-
-    % Replicate
-    lists:foreach(
-        fun(Table) ->
-            io:format("Replicate ~p...~n", [Table]),
-            mnesia:add_table_copy(Table, node(), disc_copies)
-        end,
-        mnesia:system_info(tables)
-    ).
+start() -> mnesia:start().
 
 %-------------------------------------------------------------------------------
 

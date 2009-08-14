@@ -19,9 +19,6 @@ max_size_cached_file = 102400    # 100KB
     facebook_key    = your_facebook_key
     facebook_secret = your_facebook_secret
 
-    # See Makefile
-    nodes = "khale_n1@ngoc-2.local:khale_n2@ngoc-2.local"
-
     session_secret = secret
 
 #    cache = cherly:100

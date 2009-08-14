@@ -14,8 +14,8 @@
 %%
 %% SC   : see yaws.hrl
 %% Nodes: list of nodes as specified in yaws.conf
-start(_SC, Nodes) ->
-    m_helper:start(Nodes),
+start(_SC) ->
+    m_helper:start(),
     supervisor:start_link({local, ?SUP}, ?MODULE, []).
 
 before_action() ->
