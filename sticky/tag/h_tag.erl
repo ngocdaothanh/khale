@@ -15,7 +15,7 @@ render_tag_selection(Tags) ->
 
         {ul, [],
             [{li, [],
-                {a, [{href, "#"}, {class, tag}], yaws_api:htmlize(Tag#tag.name)}
+                {a, [{title, ?T("Click to select")}, {href, "#"}, {class, tag}], yaws_api:htmlize(Tag#tag.name)}
             } || Tag <- m_tag:all()]
         }
     ].

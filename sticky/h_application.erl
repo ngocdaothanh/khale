@@ -54,6 +54,24 @@ more(Items, UlClass, ItemRenderFun, MorePathFun) ->
         More
     ].
 
+user_id() ->
+    case ale:session(user) of
+        undefined -> undefined;
+        User      -> User#user.id
+    end.
+
+%% Thing must be a record in the form {Type, Id, UserId, Ip, ...}.
+editable(Thing) ->
+    case element(3, Thing) of
+        undefined -> ale:ip() == element(4, Thing);
+
+        UserId ->
+            case ale:session(user) of
+                undefined -> false;
+                User      -> UserId == User#user.id
+            end
+    end.
+
 %-------------------------------------------------------------------------------
 
 timestamp_to_string({{Y, M, D}, {H, Mi, S}}) ->
@@ -95,20 +113,6 @@ render_timestamp({Date1, Time1}, {Date2, Time2}) ->
 date_binding({Y, M, D}) ->
     [Y2, M2, D2] = [integer_to_list(I) || I <- [Y, M, D]],
     [{year, Y2}, {month, M2}, {day, D2}].
-
-%-------------------------------------------------------------------------------
-
-%% Thing must be a record in the form {Type, Id, UserId, Ip, ...}.
-editable(Thing) ->
-    case element(3, Thing) of
-        undefined -> ale:ip() == element(4, Thing);
-
-        UserId ->
-            case ale:session(user) of
-                undefined -> false;
-                User      -> UserId == User#user.id
-            end
-    end.
 
 %-------------------------------------------------------------------------------
 

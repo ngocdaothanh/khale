@@ -45,40 +45,29 @@ create_or_update(Which) ->
         false -> {struct, [{error, ?T("The result for the simple math problem is wrong!")}]};
 
         true ->
-            T1  = ale:params(title),
-            A1 = ale:params(abstract),
-            B1 = ale:params(body),
-            case (T1 == undefined) orelse (A1 == undefined) orelse (B1 == undefined) of
-                true -> {struct, [{error, ?T("Article title, abstract, and body must not be empty.")}]};
+            TagNames = ale:params(tags),
 
-                false ->
-                    T2 = string:strip(T1),
-                    {ok, A2} = esan:san(string:strip(A1)),
-                    {ok, B2} = esan:san(string:strip(B1)),
+            ErrorOrAtomic = case Which of
+                create ->
+                    Article = #article{
+                        user_id = h_application:user_id(), ip = ale:ip(),
+                        title = ale:params(title), abstract = ale:params(abstract), body = ale:params(body)
+                    },
+                    m_article:create(Article, TagNames);
 
-                    Tags = case ale:params(tags) of
-                        undefined -> "";
-                        X         -> X
-                    end,
+                update ->
+                    Id = list_to_integer(ale:params(id)),
+                    Article = m_article:find(Id),
+                    Article2 = Article#article{
+                        ip = ale:ip(),
+                        title = ale:params(title), abstract = ale:params(abstract), body = ale:params(body)
+                    },
+                    m_article:update(Article2, TagNames)
+            end,
 
-                    Ip = ale:ip(),
-                    ErrorOrAtomic = case Which of
-                        create ->
-                            UserId = case ale:session(user) of
-                                undefined -> undefined;
-                                User      -> User#user.id
-                            end,
-                            m_article:create(UserId, Ip, T2, A2, B2, Tags);
-
-                        update ->
-                            Id = list_to_integer(ale:params(id)),
-                            m_article:update(Id, Ip, T2, A2, B2, Tags)
-                    end,
-
-                    case ErrorOrAtomic of
-                        {error, Error}    -> {struct, [{error, Error}]};
-                        {atomic, Article} -> {struct, [{atomic, Article#article.id}]}
-                    end
+            case ErrorOrAtomic of
+                {error, Error}    -> {struct, [{error, Error}]};
+                {atomic, Article3} -> {struct, [{atomic, Article3#article.id}]}
             end
     end,
     ale:view(undefined),

@@ -5,9 +5,13 @@
 -include("sticky.hrl").
 -include("article.hrl").
 
+%-------------------------------------------------------------------------------
+
 migrate() -> m_helper:create_table(article, record_info(fields, article)).
 
 content() -> [{public_creatable, true}].
+
+%-------------------------------------------------------------------------------
 
 find(Id) ->
     Q = qlc:q([R || R <- mnesia:table(article), R#article.id == Id]),
@@ -34,42 +38,72 @@ find_and_inc_views(Id) ->
         _           -> undefined
     end.
 
-create(UserId, Ip, Title, Abstract, Body, Tags) ->
-    F = fun() ->
-        Id = m_helper:next_id(article),
-        CreatedAt = erlang:universaltime(),
-        Article = #article{
-            id = Id,
-            title = Title, abstract = Abstract, body = Body,
-            user_id = UserId, ip = Ip,
-            created_at = CreatedAt, updated_at = CreatedAt
-        },
-        Thread = #thread{content_type_id = {article, Id}, updated_at = CreatedAt},
+%-------------------------------------------------------------------------------
 
-        mnesia:write(Article),
-        m_tag:tag(article, Id, Tags),
-        mnesia:write(Thread),
-        Article
-    end,
-    mnesia:transaction(F).
+validate(Article) ->
+    T1 = Article#article.title,
+    A1 = Article#article.abstract,
+    B1 = Article#article.body,
+    case (T1 == undefined) orelse (A1 == undefined) orelse (B1 == undefined) of
+        true -> {error, ?T("Article title, abstract, and body must not be empty.")};
 
-update(Id, Ip, Title, Abstract, Body, Tags) ->
-    F = fun() ->
-        Article = find(Id),
-        UpdatedAt = erlang:universaltime(),
-        Article2 = Article#article{
-            title = Title, abstract = Abstract, body = Body,
-            ip = Ip,
-            updated_at = UpdatedAt
-        },
-        Thread = #thread{content_type_id = {article, Id}, updated_at = UpdatedAt},
+        false ->
+            case esan:san(string:strip(A1)) of
+                {error, _} -> {error, ?T("Abstract contains invalid HTML.")};
 
-        mnesia:write(Article2),
-        m_tag:tag(article, Id, Tags),
-        mnesia:write(Thread),
-        Article2
-    end,
-    mnesia:transaction(F).
+                {ok, A2} ->
+                    case esan:san(string:strip(B1)) of
+                        {error, _} -> {error, ?T("Body contains invalid HTML.")};
+
+                        {ok, B2} ->
+                            T2 = string:strip(T1),
+                            case (T2 == "") orelse (A2 == "") orelse (B2 == "") of
+                                true  -> {error, ?T("Article title, abstract, and body must not be empty.")};
+                                false -> {ok, Article#article{title = T2, abstract = A2, body = B2}}
+                            end
+                    end
+            end
+    end.
+
+create(Article, TagNames) ->
+    case validate(Article) of
+        {error, Error} -> {error, Error};
+
+        {ok, Article2} ->
+            F = fun() ->
+                Id = m_helper:next_id(article),
+                CreatedAt = erlang:universaltime(),
+                Article3 = Article2#article{id = Id, created_at = CreatedAt, updated_at = CreatedAt},
+                mnesia:write(Article3),
+
+                m_tag:tag(article, Id, TagNames),
+                Thread = #thread{content_type_id = {article, Id}, updated_at = CreatedAt},
+                mnesia:write(Thread),
+
+                Article3
+            end,
+            mnesia:transaction(F)
+    end.
+
+update(Article, TagNames) ->
+    case validate(Article) of
+        {error, Error} -> {error, Error};
+
+        {ok, Article2} ->
+            F = fun() ->
+                UpdatedAt = erlang:universaltime(),
+                Article3 = Article2#article{updated_at = UpdatedAt},
+                mnesia:write(Article3),
+
+                Id = Article3#article.id,
+                m_tag:tag(article, Id, TagNames),
+                Thread = #thread{content_type_id = {article, Id}, updated_at = UpdatedAt},
+                mnesia:write(Thread),
+
+                Article3
+            end,
+            mnesia:transaction(F)
+    end.
 
 %-------------------------------------------------------------------------------
 

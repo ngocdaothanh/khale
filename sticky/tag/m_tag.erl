@@ -57,17 +57,21 @@ find_by_name(Name) ->
 %%
 %% This function must be run inside an Mnesia transaction.
 tag(ContentType, ContentId, TagNames) ->
-    TagNames2 = [string:strip(T) || T <- string:tokens(TagNames, ",")],
-    TagNames3 = lists:usort(TagNames2),
+    TagNames2 = case TagNames of
+        undefined -> "";
+        X         -> X
+    end,
+    TagNames3 = [string:strip(T) || T <- string:tokens(TagNames2, ",")],
+    TagNames4 = lists:usort(TagNames3),
     TagIds = lists:map(
         fun(TagName) ->
             Tag = case find_by_name(TagName) of
                 undefined -> create(TagName);
-                X         -> X
+                Y         -> Y
             end,
             Tag#tag.id
         end,
-        TagNames3
+        TagNames4
     ),
 
     % Remove all tags for this content
