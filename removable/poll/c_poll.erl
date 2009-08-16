@@ -4,6 +4,7 @@
     get,    "/polls/new",      new,
     get,    "/polls/:id",      show,
     post,   "/polls",          create,
+    put,    "/polls/:id",      update,
     delete, "/polls/:id",      delete
 ]).
 
@@ -30,7 +31,7 @@ create() ->
             TagNames = ale:params(tags),
             Poll = #poll{
                 user_id = h_application:user_id(), ip = ale:ip(),
-                question = ale:params(question), choices = ale:params("choices[]"), deadline_at = ale:params(deadline_at)
+                question = ale:params(question), choices = ale:params("choices[]"), deadline_on = ale:params(deadline_on)
             },
             case m_poll:create(Poll, TagNames) of
                 {error, Error}  -> {struct, [{error, Error}]};
@@ -39,3 +40,11 @@ create() ->
     end,
     ale:view(undefined),
     ale:yaws(content, "application/json", json:encode(Data)).
+
+%% Votes (edit is not allowed once the poll has been created).
+update() ->
+    Id     = list_to_integer(ale:params(id)),
+    Choice = list_to_integer(ale:params(choice)),
+    UserId = h_poll:user_id(),
+    m_poll:vote(Id, UserId, Choice),
+    ale:view(undefined).

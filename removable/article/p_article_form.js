@@ -1,4 +1,7 @@
 $('#article_form input[type=submit]').click(function() {
+    $(this).hide();
+    $(this).after('<img class="ajax-loader" src="/static/img/ajax-loader.gif" />');
+
     tinyMCE.triggerSave();
 
     var action   = $('#article_form').attr('action');
@@ -11,8 +14,6 @@ $('#article_form input[type=submit]').click(function() {
     var eAnswer  = $('#article_form input[name=encrypted_answer]').val();
     var postData = {_method: _method, title: title, abstract: abstract, body: body, tags: tags, answer: answer, encrypted_answer: eAnswer};
 
-    $(this).hide();
-    $(this).after('<img class="ajax-loader" src="/static/img/ajax-loader.gif" />');
     $.post(action, postData, function(data) {
         if (data.error) {
             alert(data.error);

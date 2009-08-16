@@ -3,6 +3,9 @@ $('#poll_form input[type=button]').click(function() {
 });
 
 $('#poll_form input[type=submit]').click(function() {
+    $(this).hide();
+    $(this).after('<img class="ajax-loader" src="/static/img/ajax-loader.gif" />');
+
     var action   = $('#poll_form').attr('action');
     var question = $('#poll_form input[name=question]').val();
     var choices  = $('#poll_form input[name="choices[]"]').map(function(i, e) {
@@ -14,8 +17,6 @@ $('#poll_form input[type=submit]').click(function() {
     var eAnswer  = $('#poll_form input[name=encrypted_answer]').val();
     var postData = {question: question, 'choices[]': jQuery.makeArray(choices), tags: tags, answer: answer, encrypted_answer: eAnswer};
 
-    $(this).hide();
-    $(this).after('<img class="ajax-loader" src="/static/img/ajax-loader.gif" />');
     $.post(action, postData, function(data) {
         if (data.error) {
             alert(data.error);

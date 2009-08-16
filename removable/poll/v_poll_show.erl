@@ -13,6 +13,6 @@ render() ->
 
     [
         {h1, [], TitleInHead},
-        h_poll:render_preview(Poll),
+        h_poll:render_poll(Poll, m_poll:votable(Poll, h_poll:user_id())),
         h_discussion:render_all(poll, Poll#poll.id)
     ].

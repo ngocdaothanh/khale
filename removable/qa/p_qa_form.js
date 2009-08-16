@@ -1,4 +1,7 @@
 $('#qa_form input[type=submit]').click(function() {
+    $(this).hide();
+    $(this).after('<img class="ajax-loader" src="/static/img/ajax-loader.gif" />');
+
     tinyMCE.triggerSave();
 
     var action   = $('#qa_form').attr('action');
@@ -10,8 +13,6 @@ $('#qa_form input[type=submit]').click(function() {
     var eAnswer  = $('#qa_form input[name=encrypted_answer]').val();
     var postData = {_method: _method, question: question, detail: detail, tags: tags, answer: answer, encrypted_answer: eAnswer};
 
-    $(this).hide();
-    $(this).after('<img class="ajax-loader" src="/static/img/ajax-loader.gif" />');
     $.post(action, postData, function(data) {
         if (data.error) {
             alert(data.error);

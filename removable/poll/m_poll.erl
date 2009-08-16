@@ -1,3 +1,5 @@
+%% Voters are identified by user ID so that a user can only vote once. For
+%% anonymous user, IP is used instead of user ID.
 -module(m_poll).
 
 -compile(export_all).
@@ -29,7 +31,7 @@ validate(Poll) ->
         true -> {error, ?T("Poll question and choices must not be empty.")};
 
         false ->
-            % Make sure C1 is list of strings
+            % Make sure C1 is list of at least 2 strings
             case (length(C1) > 1) andalso (is_list(hd(C1))) of
                 false -> {error, ?T("There should be at least 2 choices.")};
 
@@ -80,6 +82,34 @@ create(Poll, TagNames) ->
             mnesia:transaction(F)
     end.
 
+vote(Id, UserId, Choice) ->
+    Poll = find(Id),
+
+    % Both check and write must be run in a transaction
+    F = fun() ->
+        case votable(Poll, UserId) of
+            false -> ok;  % voted
+
+            true ->
+                case (Choice > 0) andalso (Choice =< length(Poll#poll.choices)) of
+                    false -> ok;  % Invalid choice
+
+                    true ->
+                        Votes = Poll#poll.votes,
+                        Left  = lists:sublist(Votes, 1, Choice - 1),
+                        Right = lists:sublist(Votes, Choice + 1, length(Votes) - Choice),
+                        Votes2 = Left ++ [lists:nth(Choice, Votes) + 1] ++ Right,
+
+                        Voters  = Poll#poll.voters,
+                        Voters2 = [UserId | Voters],
+
+                        Poll2 = Poll#poll{votes = Votes2, voters = Voters2},
+                        mnesia:write(Poll2)
+                end
+        end
+    end,
+    mnesia:transaction(F).
+
 %-------------------------------------------------------------------------------
 
 sphinx_id_title_body_list() ->
@@ -88,3 +118,12 @@ sphinx_id_title_body_list() ->
         R <- mnesia:table(poll)
     ]),
     m_helper:do(Q).
+
+votable(Poll, UserId) ->
+    case Poll#poll.deadline_on of
+        undefined -> not lists:member(UserId, Poll#poll.voters);
+
+        D ->
+            {Date, _Time} = erlang:universaltime(),
+            (not lists:member(UserId, Poll#poll.voters)) andalso (Date =< D)
+    end.

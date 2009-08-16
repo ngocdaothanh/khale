@@ -9,12 +9,37 @@ render_name() -> yaws_api:htmlize(?T("Poll")).
 
 render_title(Poll) -> yaws_api:htmlize(Poll#poll.question).
 
-render_preview(Poll) ->
+render_preview(Poll) -> render_poll(Poll, false).
+
+render_poll(Poll, Votable) ->
     User = m_user:find(Poll#poll.user_id),
 
-    Choices = {ol, [],
-        [{li, [], yaws_api:htmlize(C)} || C <- Poll#poll.choices]
-    },
+    Choices = case Votable of
+        false ->
+            {ol, [],
+                [{li, [], yaws_api:htmlize(C)} || C <- Poll#poll.choices]
+            };
+
+        true ->
+            {_, Lis} = lists:foldr(
+                fun(C, {Index, Acc}) ->
+                    Li = {li, [], [
+                        {input, [{type, radio}, {name, choice}, {value, integer_to_list(Index)}]}, " ",
+                        yaws_api:htmlize(C)
+                    ]},
+                    {Index - 1, [Li | Acc]}
+                end,
+                {length(Poll#poll.choices), []},
+                Poll#poll.choices
+            ),
+
+            Id = Poll#poll.id,
+            ale:app_add_js(ale:ff("p_poll_vote.js", [Id, Id])),
+            [
+                {ol, [], Lis},
+                {input, [{id, vote}, {type, submit}, {class, button}, {value, ?T("Vote")}]}, {br}
+            ]
+    end,
 
     Sum = lists:sum(Poll#poll.votes),
     Img = case Sum of
@@ -44,7 +69,6 @@ render_preview(Poll) ->
         Img
     ].
 
-
 render_header(User, Poll) ->
     [
         h_user:render(User, [
@@ -52,3 +76,10 @@ render_header(User, Poll) ->
             h_application:render_timestamp(Poll#poll.created_at)
         ])
     ].
+
+%% Returns ID or IP of the current user.
+user_id() ->
+    case ale:session(user) of
+        undefined -> ale:ip();
+        User      -> User#user.id
+    end.
