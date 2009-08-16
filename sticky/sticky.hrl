@@ -26,3 +26,5 @@
 -record(thread, {content_type_id, updated_at}).
 
 -record(block, {id, type, data, region, position}).
+
+-define(WRONG_MATHCHA, ?T("Wrong result for the simple math problem!")).

@@ -25,7 +25,7 @@ render() ->
         ]},
         {input, [{type, button}, {class, button}, {value, ?T("Add")}]},
 
-        {span, [{class, label}], ?T("Last votable date (empty means forever)")},
+        {span, [{class, label}], ?T("Poll deadline (empty means forever)")},
         {input, [{type, text}, {class, "textbox quarter date_picker"}, {name, deadline_on}]},
 
         h_tag:render_tag_selection([]),

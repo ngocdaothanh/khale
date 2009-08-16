@@ -4,42 +4,11 @@
 
 -include("sticky.hrl").
 
+%-------------------------------------------------------------------------------
+
 migrate() -> m_helper:create_table(discussion, record_info(fields, discussion)).
 
-%% Returns {error, Error} | {atomic, Discusstion}.
-create(UserId, Ip, ContentType, ContentId, Body) ->
-    % Make sure that ContentType and ContentId is valid
-    case is_existing(ContentType, ContentId) of
-        false -> {error, ?T("Invalid input")};
-
-        true ->
-            mnesia:transaction(fun() ->
-                Id = m_helper:next_id(discussion),
-                CreatedAt = erlang:universaltime(),
-                Discussion = #discussion{
-                    id = Id,
-                    user_id = UserId, ip = Ip,
-                    created_at = CreatedAt, updated_at = CreatedAt,
-                    content_type = ContentType, content_id = ContentId,
-                    body = Body
-                },
-                mnesia:write(Discussion),
-                mnesia:write(#thread{content_type_id = {ContentType, ContentId}, updated_at = CreatedAt}),
-                Discussion
-            end)
-    end.
-
-delete(Id) ->
-    mnesia:transaction(fun() ->
-        Q = qlc:q([R || R <- mnesia:table(discussion), R#discussion.id == Id]),
-        [Discussion] = qlc:e(Q),
-
-        mnesia:delete({discussion, Id}),
-
-        ContentType = Discussion#discussion.content_type,
-        ContentId   = Discussion#discussion.content_id,
-        mnesia:write(#thread{content_type_id = {ContentType, ContentId}, updated_at = erlang:universaltime()})
-    end).
+%-------------------------------------------------------------------------------
 
 find(Id) ->
     Q = qlc:q([R || R <- mnesia:table(discussion), R#discussion.id == Id]),
@@ -89,6 +58,62 @@ more(ContentType, ContentId, LastDiscussionId, NumberOfAnswers) ->
         Discussions2
     end),
     Discussions.
+
+%-------------------------------------------------------------------------------
+
+validate(Discussion) ->
+    % Make sure that ContentType and ContentId is valid
+    case is_existing(Discussion#discussion.content_type, Discussion#discussion.content_id) of
+        false -> {error, ?T("Invalid input")};
+
+        true ->
+            case Discussion#discussion.body of
+                undefined -> {error, ?T("Discussion body must not be empty.")};
+
+                Body ->
+                    case esan:san(Body) of
+                        {error, _}  -> {error, ?T("Body contains invalid HTML.")};
+                        {ok, Body2} -> {ok, Discussion#discussion{body = Body2}}
+                    end
+            end
+    end.
+
+%% Returns {error, Error} | {atomic, Discusstion}.
+create(Discussion) ->
+    case validate(Discussion) of
+        {error, Error} -> {error, Error};
+
+        {ok, Discussion2} ->
+            mnesia:transaction(fun() ->
+                Id = m_helper:next_id(discussion),
+                CreatedAt = erlang:universaltime(),
+                Discussion3 = Discussion2#discussion{
+                    id = Id,
+                    created_at = CreatedAt, updated_at = CreatedAt
+                },
+                mnesia:write(Discussion3),
+
+                Thread = #thread{
+                    content_type_id = {Discussion3#discussion.content_type, Discussion3#discussion.content_id},
+                    updated_at = CreatedAt
+                },
+                mnesia:write(Thread),
+
+                Discussion3
+            end)
+    end.
+
+delete(Id) ->
+    mnesia:transaction(fun() ->
+        Q = qlc:q([R || R <- mnesia:table(discussion), R#discussion.id == Id]),
+        [Discussion] = qlc:e(Q),
+
+        mnesia:delete({discussion, Id}),
+
+        ContentType = Discussion#discussion.content_type,
+        ContentId   = Discussion#discussion.content_id,
+        mnesia:write(#thread{content_type_id = {ContentType, ContentId}, updated_at = erlang:universaltime()})
+    end).
 
 %-------------------------------------------------------------------------------
 

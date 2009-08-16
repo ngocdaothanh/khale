@@ -110,7 +110,10 @@ vote(Id, UserId, Choice) ->
                         Voters2 = [UserId | Voters],
 
                         Poll2 = Poll#poll{votes = Votes2, voters = Voters2},
-                        mnesia:write(Poll2)
+                        mnesia:write(Poll2),
+
+                        Thread = #thread{content_type_id = {poll, Poll#poll.id}, updated_at = erlang:universaltime()},
+                        mnesia:write(Thread)
                 end
         end
     end,

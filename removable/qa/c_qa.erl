@@ -42,41 +42,32 @@ create_or_update(Which) ->
     Answer = ale:params(answer),
     EncryptedAnswer = ale:params(encrypted_answer),
     Data = case ale:mathcha(Answer, EncryptedAnswer) of
-        false -> {struct, [{error, ?T("The result for the simple math problem is wrong!")}]};
+        false -> {struct, [{error, ?WRONG_MATHCHA}]};
 
         true ->
-            Q1 = ale:params(question),
-            D1 = ale:params(detail),
-            case (Q1 == undefined) orelse (D1 == undefined) of
-                true -> {struct, [{error, ?T("Q/A question and detail must not be empty.")}]};
+            TagNames = ale:params(tags),
 
-                false ->
-                    Q2 = string:strip(Q1),
-                    {ok, D2} = esan:san(string:strip(D1)),
+            ErrorOrAtomic = case Which of
+                create ->
+                    Qa = #qa{
+                        user_id = h_application:user_id(), ip = ale:ip(),
+                        question = ale:params(question), detail = ale:params(detail)
+                    },
+                    m_qa:create(Qa, TagNames);
 
-                    Tags = case ale:params(tags) of
-                        undefined -> "";
-                        X         -> X
-                    end,
+                update ->
+                    Id = list_to_integer(ale:params(id)),
+                    Qa = m_qa:find(Id),
+                    Qa2 = Qa#qa{
+                        ip = ale:ip(),
+                        question = ale:params(question), detail = ale:params(detail)
+                    },
+                    m_qa:update(Qa2, TagNames)
+            end,
 
-                    Ip = ale:ip(),
-                    ErrorOrAtomic = case Which of
-                        create ->
-                            UserId = case ale:session(user) of
-                                undefined -> undefined;
-                                User      -> User#user.id
-                            end,
-                            m_qa:create(UserId, Ip, Q2, D2, Tags);
-
-                        update ->
-                            Id = list_to_integer(ale:params(id)),
-                            m_qa:update(Id, Ip, Q2, D2, Tags)
-                    end,
-
-                    case ErrorOrAtomic of
-                        {error, Error}    -> {struct, [{error, Error}]};
-                        {atomic, Qa} -> {struct, [{atomic, Qa#qa.id}]}
-                    end
+            case ErrorOrAtomic of
+                {error, Error} -> {struct, [{error, Error}]};
+                {atomic, Qa3}  -> {struct, [{atomic, Qa3#qa.id}]}
             end
     end,
     ale:view(undefined),

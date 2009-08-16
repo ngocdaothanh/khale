@@ -21,36 +21,34 @@ more() ->
     ale:app(discussions, Discussions).
 
 create() ->
-    ale:view(undefined),
-
     Answer = ale:params(answer),
     EncryptedAnswer = ale:params(encrypted_answer),
-    case ale:mathcha(Answer, EncryptedAnswer) of
-        false ->
-            Data = {struct, [{error, ?T("The result for the simple math problem is wrong!")}]},
-            ale:yaws(content, "application/json", json:encode(Data));
+    Data = case ale:mathcha(Answer, EncryptedAnswer) of
+        false -> {struct, [{error, ?WRONG_MATHCHA}]};
 
         true ->
             ContentType = list_to_existing_atom(ale:params(content_type)),
             ContentId   = list_to_integer(ale:params(content_id)),
-            {ok, Body}  = esan:san(ale:params(body)),
-            Body2       = binary_to_list(unicode:characters_to_binary(Body)),  % Must be plain list of 0-255 for ehtml_expand to work
-            UserId      = case ale:session(user) of
-                undefined -> undefined;
-                User      -> User#user.id
-            end,
+            Body        = esan:san(ale:params(body)),
+            UserId      = h_application:user_id(),
             Ip          = ale:ip(),
 
-            Data = case m_discussion:create(UserId, Ip, ContentType, ContentId, Body2) of
+            Discussion = #discussion{
+                user_id = UserId, ip = Ip,
+                content_type = ContentType, content_id = ContentId, body = Body
+            },
+
+            case m_discussion:create(Discussion) of
                 {error, Error} -> {struct, [{error, Error}]};
 
-                {atomic, Discussion} ->
-                    Ehtml = h_discussion:render_one(Discussion, true),
+                {atomic, Discussion2} ->
+                    Ehtml = h_discussion:render_one(Discussion2, true),
                     Html = yaws_api:ehtml_expand(Ehtml),
                     {struct, [{atomic, lists:flatten(Html)}]}  % Must be plain list
-            end,
-            ale:yaws(content, "application/json", json:encode(Data))
-    end.
+            end
+    end,
+    ale:view(undefined),
+    ale:yaws(content, "application/json", json:encode(Data)).
 
 delete() ->
     ale:view(undefined),
