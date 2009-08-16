@@ -25,7 +25,7 @@ create() ->
     Answer = ale:params(answer),
     EncryptedAnswer = ale:params(encrypted_answer),
     Data = case ale:mathcha(Answer, EncryptedAnswer) of
-        false -> {struct, [{error, ?T("The result for the simple math problem is wrong!")}]};
+        false -> {struct, [{error, ?WRONG_MATHCHA}]};
 
         true ->
             Poll = #poll{

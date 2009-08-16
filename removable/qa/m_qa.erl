@@ -80,7 +80,7 @@ create(Qa, TagNames) ->
             mnesia:transaction(F)
     end.
 
-update(Qa, Tags) ->
+update(Qa, TagNames) ->
     case validate(Qa) of
         {error, Error} -> {error, Error};
 
@@ -91,7 +91,7 @@ update(Qa, Tags) ->
                 mnesia:write(Qa3),
 
                 Id = Qa3#qa.id,
-                m_tag:tag(article, Id, Tags),
+                m_tag:tag(article, Id, TagNames),
                 Thread = #thread{content_type_id = {qa, Id}, updated_at = UpdatedAt},
                 mnesia:write(Thread),
 

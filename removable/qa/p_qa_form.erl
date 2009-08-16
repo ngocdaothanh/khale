@@ -26,5 +26,5 @@ render(Method, Action, Qa, Tags) ->
 
         h_application:render_mathcha(),
 
-        Cancel, {input, [{type, submit}, {class, button}, {value, ?T("Save")}]}
+        {input, [{type, submit}, {class, button}, {value, ?T("Save")}]}, " ", Cancel
     ]}.

@@ -102,16 +102,18 @@ string_to_now(String) ->
     ),
     {Mega, S, Micro}.
 
+render_date(Date) -> ?TFB(":month/:day/:year", date_binding(Date)).
+
 render_timestamp(CreatedAt) -> render_timestamp(CreatedAt, CreatedAt).
 
 render_timestamp({Date1, Time1}, {Date2, Time2}) ->
     case {Date1 == Date2, Time1 == Time2} of
-        {true, true}  -> ?TFB(":month/:day/:year", date_binding(Date1));
+        {true, true}  -> render_date(Date1);
         {true, false} -> ?TFB("Updated :month/:day/:year", date_binding(Date2));
 
         {false, _} ->
             [
-                ?TFB(":month/:day/:year", date_binding(Date1)),
+                render_date(Date1),
                 " (",
                 ?TFB("updated :month/:day/:year", date_binding(Date2)),
                 ")"
