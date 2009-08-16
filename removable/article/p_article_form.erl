@@ -9,7 +9,6 @@ render(Method, Action, Article, Tags) ->
     Js = ale:ff("p_article_form.js"),
     ale:app_add_js(Js),
 
-    {Question, EncryptedAnswer} = ale:mathcha(),
     Cancel = case Method of
         put -> [{a, [{href, ale:path(article, show, [Article#article.id])}], ?T("Cancel")}, " "];
         _   -> ""
@@ -28,9 +27,7 @@ render(Method, Action, Article, Tags) ->
 
         h_tag:render_tag_selection(Tags),
 
-        {span, [{class, label}], Question},
-        {input, [{type, text}, {class, textbox}, {name, answer}]},
-        {input, [{type, hidden}, {name, encrypted_answer}, {value, EncryptedAnswer}]},
+        h_application:render_mathcha(),
 
         Cancel, {input, [{type, submit}, {class, button}, {value, ?T("Save")}]}
     ]}.

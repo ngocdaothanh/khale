@@ -13,7 +13,6 @@ render() ->
     Js = ale:ff("p_poll_form.js"),
     ale:app_add_js(Js),
 
-    {Question, EncryptedAnswer} = ale:mathcha(),
     {form, [{id, poll_form}, {method, post}, {action, ale:path(create)}], [
         {span, [{class, label}], ?T("Question")},
         {input, [{type, text}, {class, textbox}, {name, question}]},
@@ -26,11 +25,12 @@ render() ->
         ]},
         {input, [{type, button}, {class, button}, {value, ?T("Add")}]},
 
+        {span, [{class, label}], ?T("Last votable date (empty means forever)")},
+        {input, [{type, text}, {class, "textbox quarter date_picker"}, {name, deadline_on}]},
+
         h_tag:render_tag_selection([]),
 
-        {span, [{class, label}], Question},
-        {input, [{type, text}, {class, textbox}, {name, answer}]},
-        {input, [{type, hidden}, {name, encrypted_answer}, {value, EncryptedAnswer}]},
+        h_application:render_mathcha(),
 
         {input, [{type, submit}, {class, button}, {value, ?T("Save")}]},
         [" (", ?T("Please be careful because you cannot edit this poll once it is created."), ")"]

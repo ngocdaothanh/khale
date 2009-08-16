@@ -12,10 +12,15 @@ $('#poll_form input[type=submit]').click(function() {
         var v = jQuery.trim($(e).val());
         if (v != '') return v;  // Empty choice is not included in choices by map
     });
+    var deadline = $('#poll_form input[name=deadline_on]').val();
     var tags     = $('#poll_form input[name=tags]').val();
     var answer   = $('#poll_form input[name=answer]').val();
     var eAnswer  = $('#poll_form input[name=encrypted_answer]').val();
-    var postData = {question: question, 'choices[]': jQuery.makeArray(choices), tags: tags, answer: answer, encrypted_answer: eAnswer};
+    var postData = {
+        question: question, 'choices[]': jQuery.makeArray(choices),
+        deadline_on: deadline,
+        tags: tags, answer: answer, encrypted_answer: eAnswer
+    };
 
     $.post(action, postData, function(data) {
         if (data.error) {

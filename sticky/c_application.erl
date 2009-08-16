@@ -20,15 +20,11 @@ start(_SC) ->
 
 before_action() ->
     ale:app(site, m_site:find(undefined)),
-
+    ale:app_add_js(["Date.format = '", ?TFB(":month/:day/:year", [{month, "mm"}, {day, "dd"}, {year, "yyyy"}]), "';"]),
     case ale:method() == get andalso ale:params(without_layout) == "true" of
         true  -> ok;
-
-        false ->
-            ale:layout_module(default_v_layout),
-            ale:app(site, m_site:find(undefined))
+        false -> ale:layout_module(default_v_layout)
     end,
-
     false.
 
 error_404() ->

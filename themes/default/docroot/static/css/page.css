@@ -69,15 +69,11 @@ p { margin-top: 10px; }
 
 #footer { text-align: center; }
 
-.textbox {
-  width: 99%;
-  border: solid 1px #DDDDDD;
-}
+.textbox { width: 99%; border: solid 1px #DDDDDD; }
 
-.textarea {
-  width: 100%;
-  height: 400px;
-}
+.textarea { width: 99%; height: 400px; }
+
+.quarter { width: 25%; }
 
 ul.previews, ul.region, ul.users, ul.discussions {
   margin-left: 0px;

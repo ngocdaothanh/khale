@@ -28,12 +28,12 @@ create() ->
         false -> {struct, [{error, ?T("The result for the simple math problem is wrong!")}]};
 
         true ->
-            TagNames = ale:params(tags),
             Poll = #poll{
                 user_id = h_application:user_id(), ip = ale:ip(),
-                question = ale:params(question), choices = ale:params("choices[]"), deadline_on = ale:params(deadline_on)
+                question = ale:params(question), choices = ale:params("choices[]"),
+                deadline_on = h_application:parse_date(ale:params(deadline_on))
             },
-            case m_poll:create(Poll, TagNames) of
+            case m_poll:create(Poll, ale:params(tags)) of
                 {error, Error}  -> {struct, [{error, Error}]};
                 {atomic, Poll2} -> {struct, [{atomic, Poll2#poll.id}]}
             end

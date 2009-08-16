@@ -108,4 +108,6 @@ $(function() {
             $('#discussion_composer input.button').show();
         }, "json");
     });
+
+    $('.date_picker').datePicker({clickInput: true, createButton: false});
 });

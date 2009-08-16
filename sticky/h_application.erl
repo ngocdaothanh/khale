@@ -32,6 +32,14 @@ flash() ->
         Flash     -> {'div', [{class, flash}], Flash}
     end.
 
+render_mathcha() ->
+    {Question, EncryptedAnswer} = ale:mathcha(),
+    [
+        {span, [{class, label}], Question},
+        {input, [{type, hidden}, {name, encrypted_answer}, {value, EncryptedAnswer}]},
+        {input, [{type, text}, {class, "textbox quarter"}, {name, answer}]}, {br}
+    ].
+
 %-------------------------------------------------------------------------------
 
 %% Cycle is not supported because it makes "More..." difficult to implement.
@@ -98,14 +106,14 @@ render_timestamp(CreatedAt) -> render_timestamp(CreatedAt, CreatedAt).
 
 render_timestamp({Date1, Time1}, {Date2, Time2}) ->
     case {Date1 == Date2, Time1 == Time2} of
-        {true, true}  -> ?TFB(":month/:day, :year", date_binding(Date1));
-        {true, false} -> ?TFB("Updated :month/:day, :year", date_binding(Date2));
+        {true, true}  -> ?TFB(":month/:day/:year", date_binding(Date1));
+        {true, false} -> ?TFB("Updated :month/:day/:year", date_binding(Date2));
 
         {false, _} ->
             [
-                ?TFB(":month/:day, :year", date_binding(Date1)),
+                ?TFB(":month/:day/:year", date_binding(Date1)),
                 " (",
-                ?TFB("updated :month/:day, :year", date_binding(Date2)),
+                ?TFB("updated :month/:day/:year", date_binding(Date2)),
                 ")"
             ]
     end.
@@ -113,6 +121,25 @@ render_timestamp({Date1, Time1}, {Date2, Time2}) ->
 date_binding({Y, M, D}) ->
     [Y2, M2, D2] = [integer_to_list(I) || I <- [Y, M, D]],
     [{year, Y2}, {month, M2}, {day, D2}].
+
+%% Converts localized string date to Erlang's {Y, M, D} format. Tokens must be
+%% separated by "/"
+%%
+%% Ex: 30/12/2009 -> {2009, 12, 30}
+parse_date(String) ->
+    try
+        [I1, I2, I3] = [list_to_integer(S) || S <- string:tokens(String, "/")],
+        case ?T(":month/:day/:year") of
+            ":month/:day/:year" -> {I3, I1, I2};
+            ":month/:year/:day" -> {I2, I1, I3};
+            ":day/:month/:year" -> {I3, I2, I1};
+            ":day/:year/:month" -> {I2, I3, I1};
+            ":year/:day/:month" -> {I1, I3, I2};
+            ":year/:month/:day" -> {I1, I2, I3}
+        end
+    catch
+        _ : _ -> undefined
+    end.
 
 %-------------------------------------------------------------------------------
 

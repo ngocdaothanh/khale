@@ -41,6 +41,11 @@ render_poll(Poll, Votable) ->
             ]
     end,
 
+    Deadline = case Poll#poll.deadline_on of
+        undefined -> "";
+        X         -> {p, [], ?TF("Last votable date: ~s", [?TFB(":month/:day/:year", h_application:date_binding(X))])}
+    end,
+
     Sum = lists:sum(Poll#poll.votes),
     Img = case Sum of
         0 -> "";
@@ -66,6 +71,7 @@ render_poll(Poll, Votable) ->
     [
         render_header(User, Poll),
         Choices,
+        Deadline,
         Img
     ].
 

@@ -22,9 +22,12 @@ render() ->
                 {link, [{rel, "shortcut icon"}, {type, "img/x-icon"}, {href, "/favicon.ico"}]},
 
                 {link, [{rel, "stylesheet"}, {type, "text/css"}, {href, "/static/css/reset.css"}]},
+                {link, [{rel, "stylesheet"}, {type, "text/css"}, {href, "/static/date_picker/date_picker.css"}]},
                 {link, [{rel, "stylesheet"}, {type, "text/css"}, {href, "/static/css/page.css"}]},
 
                 {script, [{type, "text/javascript"}, {src, "/static/js/jquery.js"}]},
+                {script, [{type, "text/javascript"}, {src, "/static/date_picker/date.js"}]},
+                {script, [{type, "text/javascript"}, {src, "/static/date_picker/date_picker.js"}]},
                 {script, [{type, "text/javascript"}, {src, "/static/tiny_mce/tiny_mce.js"}]},
                 {script, [{type, "text/javascript"}, {src, "/static/js/application.js"}]},
 

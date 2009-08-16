@@ -84,9 +84,7 @@ create(Poll, TagNames) ->
 
 vote(Id, UserId, Choice) ->
     Poll = find(Id),
-
-    % Both check and write must be run in a transaction
-    F = fun() ->
+    F = fun() ->  % Both check and write must be run in a transaction
         case votable(Poll, UserId) of
             false -> ok;  % voted
 
@@ -95,9 +93,17 @@ vote(Id, UserId, Choice) ->
                     false -> ok;  % Invalid choice
 
                     true ->
-                        Votes = Poll#poll.votes,
-                        Left  = lists:sublist(Votes, 1, Choice - 1),
-                        Right = lists:sublist(Votes, Choice + 1, length(Votes) - Choice),
+                        Votes  = Poll#poll.votes,
+                        Length = length(Votes),
+
+                        Left  = case Choice > 1 of
+                            true  -> lists:sublist(Votes, 1, Choice - 1);
+                            false -> []
+                        end,
+                        Right = case Choice < Length of
+                            true  -> lists:sublist(Votes, Choice + 1, Length - Choice);
+                            false -> []
+                        end,
                         Votes2 = Left ++ [lists:nth(Choice, Votes) + 1] ++ Right,
 
                         Voters  = Poll#poll.voters,
