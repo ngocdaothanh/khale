@@ -24,6 +24,8 @@ ol li { list-style-type: decimal; }
 
 p { margin-top: 10px; }
 
+hr { border-top: none; border-left: none; border-right: none; border-bottom: solid 1px #EEE; }
+
 .clear { clear: both; }
 
 .label {
