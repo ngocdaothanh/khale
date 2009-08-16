@@ -17,13 +17,18 @@ render() ->
 
                 {title, [], '$title_in_head'},
 
-                {link, [{rel, "alternate"}, {type, "application/atom+xml"}, {href, ale:path(content, feed)}]},
-                {link, [{rel, "icon"}, {type, "img/x-icon"}, {href, "/favicon.ico"}]},
+                {link, [{rel, alternate}, {type, "application/atom+xml"}, {href, ale:path(content, feed)}]},
+                {link, [{rel, icon}, {type, "img/x-icon"}, {href, "/favicon.ico"}]},
                 {link, [{rel, "shortcut icon"}, {type, "img/x-icon"}, {href, "/favicon.ico"}]},
 
-                {link, [{rel, "stylesheet"}, {type, "text/css"}, {href, "/static/css/reset.css"}]},
-                {link, [{rel, "stylesheet"}, {type, "text/css"}, {href, "/static/date_picker/date_picker.css"}]},
-                {link, [{rel, "stylesheet"}, {type, "text/css"}, {href, "/static/css/page.css"}]},
+                {link, [{rel, stylesheet}, {type, "text/css"}, {media, "screen, projection"}, {href, "/static/css/screen.css"}]},
+                {link, [{rel, stylesheet}, {type, "text/css"}, {media, "screen, projection"}, {href, "/static/css/fancy-type/screen.css"}]},
+                {link, [{rel, stylesheet}, {type, "text/css"}, {media, "print"}, {href, "/static/css/print.css"}]},
+%                "<!--[if lt IE 8]>",
+%                {link, [{rel, stylesheet}, {type, "text/css"}, {media, "screen, projection"}, {href, "/static/css/ie.css"}]},
+%                "<![endif]-->",
+                {link, [{rel, stylesheet}, {type, "text/css"}, {href, "/static/date_picker/date_picker.css"}]},
+                {link, [{rel, stylesheet}, {type, "text/css"}, {href, "/static/css/page.css"}]},
 
                 {script, [{type, "text/javascript"}, {src, "/static/js/jquery.js"}]},
                 {script, [{type, "text/javascript"}, {src, "/static/date_picker/date.js"}]},
@@ -35,28 +40,26 @@ render() ->
             ]},
 
             {body, [], [
-                {'div', [{id, container}], [
-                    {'div', [{id, header}, {class, padding}], [
+                {'div', [{id, container}, {class, "container"}], [
+                    {'div', [{id, header}, {class, "span-24"}], [
                         {h1, [], {a, [{href, "/"}], Name}},
-                        {h2, [], Subtitle}
+                        {h3, [{class, "alt quiet"}], Subtitle}
                     ]},
+                    
+                    {'hr', [], []},
 
-                    {'div', [{id, left_column}], {'div', [{class, padding}], '$left_column'}},
+                    {'div', [{id, left_column}, {class, "span-4 quiet"}], '$left_column'},
 
-                    {'div', [{id, main_and_right}], [
-                        {'div', [{id, main}], {'div', [{class, padding}], [
+                    {'div', [{id, main}, {class, "span-15"}], [
                             '$flash',
                             '$title_in_body',
                             '$content_for_layout'
-                        ]}},
-
-                        {'div', [{id, right_column}], {'div', [{class, padding}], '$right_column'}}
                     ]},
 
-                    {br, [{class, clear}]}
+                    {'div', [{id, right_column}, {class, "span-5 last"}], '$right_column'}
                 ]},
 
-                {'div', [{id, footer}], [
+                {'div', [{id, footer}, {class, "clear span-24"}], [
                     "Powered by ", {a, [{href, "http://github.com/ngocdaothanh/khale"}], "Khale"}
                 ]},
 

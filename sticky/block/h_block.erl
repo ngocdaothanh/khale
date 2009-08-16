@@ -8,6 +8,6 @@ render(Block) ->
     Module = list_to_atom("b_" ++ atom_to_list(Block#block.type)),
     {Title, Body} = Module:render(Block#block.id, Block#block.data),
     {'li', [{class, "block"}], [
-        {h3, [{class, "title"}], Title},
+        {h5, [{class, "title"}], Title},
         {'div', [{class, "body"}], Body}
     ]}.

@@ -1,33 +1,10 @@
-html { background: #fff; }
-body {
-  color: #444;
-  font-family: "lucida grande", tahoma, verdana, arial, sans-serif;
-  font-size: 11px;
-  line-height: 1.6em;
-  margin: 0px;
+#container {
+  margin: 10px auto;
 }
 
-a { color: #3B5998; text-decoration: none; }
-a:hover { color: #3B5998; text-decoration: underline; }
+#footer { text-align: center; }
 
-h1 { font-size: 1.6em; color: #444; clear: both; letter-spacing: -1px; }
-h2 { font-size: 1.3em; color: #DB0; clear: both; letter-spacing: -1px; }
-h3 { font-size: 1.0em; color: #DB0; letter-spacing: -1px; }
-h4 { font-size: 0.7em; color: #777; text-transform: uppercase;  }
-h1, h2, h3, h4 { font-weight: normal; margin-top: 1em; margin-bottom: 0.5em;  }
-
-ul { padding-left: 7px; }
-ul li { list-style: disc inside; }
-
-ol { padding-left: 21px; }
-ol li { list-style-type: decimal; }
-
-p { margin-top: 10px; }
-
-hr { border-top: none; border-left: none; border-right: none; border-bottom: solid 1px #EEE; }
-
-.clear { clear: both; }
-
+/* Form */
 .label {
   display: block;
   font-size: 0.9em;
@@ -35,48 +12,11 @@ hr { border-top: none; border-left: none; border-right: none; border-bottom: sol
   margin-top: 7px;
 }
 
-#header { border-bottom: solid 1px #EEE; }
-#header h1 { font-size: 2.5em; margin-top: 5px; }
-#header h2 { font-size: 1.7em; margin-top: 5px; color: gray; font-style: italic; }
-
-#container {
-  margin: 10px auto;
-  width: 960px;
-  border: solid #EEE 1px;
-}
-
-#left_column {
-  width: 149px;
-  float: left;
-  background-color: #F5FFFA;
-}
-
-#main_and_right {
-  width: 810px;
-  float: right;
-}
-
-#main {
-  width: 589px;
-  float: left;
-}
-
-#right_column {
-  width: 220px;
-  float: right;
-  background-color: #F5FFFA;
-}
-
-.padding { padding: 10px; }
-
-#footer { text-align: center; }
-
 .textbox { width: 99%; border: solid 1px #DDDDDD; }
 
-.textarea { width: 99%; height: 400px; }
+textarea { width: 98%; height: 400px; }
 
-.quarter { width: 25%; }
-
+/* Basic elements */
 ul.previews, ul.region, ul.users, ul.discussions {
   margin-left: 0px;
   padding-left: 0px;
@@ -92,16 +32,24 @@ ul.previews li.preview, ul.region li.block, ul.users li, ul.discussions li.discu
 
 ul.previews li.preview, ul.discussions li.discussion { border-bottom: solid 1px #EEE; }
 
-textarea {
-  width: 100%;
-  height: 350px;
+blockquote {
+  margin: 0 20px;
+  padding: 0 20px;
+  border-left: 4px solid #E8E7D0;
 }
 
-.button {
-  font-size: 0.9em;
-  font-weight: bold;
-  margin-top: 7px;
+pre {
+  display: block;
+  background-color: #EEE;
+  overflow: auto;
 }
+
+code { background-color: #EEE }
+
+/* Misc */
+.padding { padding: 10px; }
+
+.quarter { width: 25%; }
 
 .flash { border: solid #9c9 2px; background-color: yellow; padding: 5px; font-weight: bold; }
 
@@ -119,16 +67,24 @@ td.avatar { padding-right: 5px; }
   overflow: auto;
 }
 
-blockquote {
-  margin: 0 20px;
-  padding: 0 20px;
-  border-left: 4px solid #E8E7D0;
+.button {
+  font-size: 0.9em;
+  font-weight: bold;
+  margin-top: 7px;
 }
 
-pre {
-  display: block;
-  background-color: #EEE;
-  overflow: auto;
+/* Styling */
+a, a:link, a:visited {
+    color: #ff5500;
+    text-decoration: none;
 }
 
-code { background-color: #EEE }
+#header a, #left_column a, #right_column a {
+    color: #001166;
+}
+
+.block .title {
+    background-color: #ff4400;
+    color: #fff;
+    padding-left: 0.5em;
+}
