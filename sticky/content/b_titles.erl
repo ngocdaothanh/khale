@@ -7,4 +7,4 @@
 render(_Id, _Config) ->
     Contents = m_content:more(undefined, undefined),
     Body = h_content:render_titles_with_more(Contents),
-    {?T("Recently Updated Titles"), Body}.
+    {?T("Recent Updates"), Body}.

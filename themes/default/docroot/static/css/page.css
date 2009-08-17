@@ -14,7 +14,7 @@
 
 .textbox { width: 99%; border: solid 1px #DDDDDD; }
 
-textarea { width: 98%; height: 400px; }
+textarea { width: 98%; height: 300px; }
 
 /* Basic elements */
 ul.previews, ul.region, ul.users, ul.discussions {
