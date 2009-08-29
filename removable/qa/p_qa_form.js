@@ -1,6 +1,6 @@
 $('#qa_form input[type=submit]').click(function() {
     $(this).hide();
-    $(this).after('<img class="ajax-loader" src="/static/img/ajax-loader.gif" />');
+    $(this).after('<img class="ajax-loader" src="/static/img/spinner.gif" />');
 
     tinyMCE.triggerSave();
 

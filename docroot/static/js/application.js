@@ -22,7 +22,7 @@ tinyMCE.init({
 
 function more(a) {
     $(a).hide();
-    $(a).after('<img class="ajax-loader" src="/static/img/ajax-loader.gif" />');
+    $(a).after('<img class="ajax-loader" src="/static/img/spinner.gif" />');
     var url = a.href + '?without_layout=true';
     $.get(url, function(Html) {
         $(a).replaceWith(Html);
@@ -86,7 +86,7 @@ $(function() {
 
     $('#discussion_composer input.button').click(function() {
         $(this).hide();
-        $(this).after('<img class="ajax-loader" src="/static/img/ajax-loader.gif" />');
+        $(this).after('<img class="ajax-loader" src="/static/img/spinner.gif" />');
 
         var contentType = $('#discussion_composer input[name="content_type"]').val();
         var contentId = $('#discussion_composer input[name="content_id"]').val();

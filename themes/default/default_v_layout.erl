@@ -45,22 +45,25 @@ render() ->
                         {h1, [], {a, [{href, "/"}], Name}},
                         {h3, [{class, "alt quiet"}], Subtitle}
                     ]},
-                    
-                    {'hr', [], []},
 
-                    {'div', [{id, left_column}, {class, "span-4 quiet"}], '$left_column'},
+                    {hr},
 
+                    {'div', [{id, left1}, {class, "span-4 quiet"}], '$left1'},
                     {'div', [{id, main}, {class, "span-15"}], [
                             '$flash',
                             '$title_in_body',
                             '$content_for_layout'
                     ]},
+                    {'div', [{id, right1}, {class, "span-5 last"}], '$right1'},
 
-                    {'div', [{id, right_column}, {class, "span-5 last"}], '$right_column'}
-                ]},
+                    {'div', [{id, bottom}, {class, "clear prepend-top span-24"}], [
+                        {'div', [{id, left2},  {class, "span-12"}],      '$left2'},
+                        {'div', [{id, right2}, {class, "span-12 last"}], '$right2'}
+                    ]},
 
-                {'div', [{id, footer}, {class, "clear span-24"}], [
-                    "Powered by ", {a, [{href, "http://github.com/ngocdaothanh/khale"}], "Khale"}
+                    {'div', [{id, footer}, {class, "span-24"}], [
+                        "Powered by ", {a, [{href, "http://github.com/ngocdaothanh/khale"}], "Khale"}
+                    ]}
                 ]},
 
                 '$scripts'
@@ -74,8 +77,10 @@ render() ->
         {flash,              h_application:flash()},
         {title_in_body,      h_application:title_in_body()},
         {content_for_layout, ale:app(content_for_layout)},
-        {left_column,        h_application:region(left_column)},
-        {right_column,       h_application:region(right_column)},
+        {left1,              h_application:region(left1)},
+        {right1,             h_application:region(right1)},
+        {left2,              h_application:region(left2)},
+        {right2,             h_application:region(right2)},
         {scripts,            ale:app(scripts)}
     ]),
     [

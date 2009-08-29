@@ -4,7 +4,7 @@ $('#poll_form input[type=button]').click(function() {
 
 $('#poll_form input[type=submit]').click(function() {
     $(this).hide();
-    $(this).after('<img class="ajax-loader" src="/static/img/ajax-loader.gif" />');
+    $(this).after('<img class="ajax-loader" src="/static/img/spinner.gif" />');
 
     var action     = $('#poll_form').attr('action');
     var question   = $('#poll_form input[name=question]').val();

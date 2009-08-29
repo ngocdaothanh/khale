@@ -1,6 +1,6 @@
 $('#vote').click(function() {
     $(this).hide();
-    $(this).after('<img class="ajax-loader" src="/static/img/ajax-loader.gif" />');
+    $(this).after('<img class="ajax-loader" src="/static/img/spinner.gif" />');
 
     var choice = $('input[name=choice]:checked').val();
     if (choice) {
