@@ -1,5 +1,8 @@
 .DS_Store
 
+.project
+.settings
+
 erl_crash.dump
 *.beam
 
