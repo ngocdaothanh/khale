@@ -38,8 +38,6 @@ Run "make" to build Khale.
 
 == Run
 
-Copy nodes/sample to nodes/n1, then modify as you wish. From nodes/n1, run:
-* "make migrate" to prepare DB schema
+Copy yaws.conf.sample to yaws.conf and modify as you wish. Then run:
+* "make migrate" to create DB schema
 * "make start" to start
-
-You may create nodes/n2, n3 etc. if you wish to run Khale on multiple nodes.

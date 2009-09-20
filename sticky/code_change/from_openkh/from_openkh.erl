@@ -27,25 +27,20 @@ code_change() ->
     {ok, C} = pgsql:connect(Host, Username, Password, [{database, Database}, {port, Port}]),
 
     case file:consult("/tmp/khale/pd.txt") of
-        {ok, [Pd]} ->
-            lists:foreach(
-                fun({K, V}) -> put(K, V) end,
-                Pd
-            );
-
-        _ -> ok
+        {ok, [Pd]} -> lists:foreach(fun({K, V}) -> put(K, V) end, Pd);
+        _          -> ok
     end,
 
     migrate_users(C),
-    
+
     migrate_site(C),
-    
+
     migrate_catagories(C),
-    
+
     migrate_articles(C),
     migrate_forums(C),
     migrate_polls(C),
-    
+
     migrate_comments(C),
 
     pgsql:close(C).
@@ -119,7 +114,7 @@ migrate_articles(C) ->
                 mnesia:write(Article),
                 mnesia:write(Thread)
             end),
-            
+
             tag(C, Id)
         end,
         Rows
@@ -144,7 +139,7 @@ article_first_author_last_version(C, NodeId) ->
     {ok, BBody}     = file:read_file(File ++ ".body.txt"),
     Abstract = binary_to_list2(BAbstract),
     Body     = binary_to_list2(BBody),
-    
+
     {UserId2, Ip2, Title2, Abstract, Body, CreatedAt2, UpdatedAt2}.
 
 migrate_forums(C) ->
@@ -202,10 +197,10 @@ migrate_polls(C) ->
             Ip2        = ip_pg_to_mn(Ip),
             CreatedAt2 = timestamp_pg_to_mn(CreatedAt),
             UpdatedAt2 = timestamp_pg_to_mn(UpdatedAt),
-            
+
             ContentId = m_helper:next_id(poll),
             content_id_pg_to_mn(NodeId, {poll, ContentId}),
-            
+
             UserId2 = user_id_pg_to_mn(UserId),
             Poll = #poll{
                 id = ContentId,

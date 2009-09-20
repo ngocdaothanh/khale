@@ -27,13 +27,9 @@ before_action() ->
     end,
     false.
 
-error_404() ->
-    ale:yaws(status, 404),
-    ale:view_module(default_v_error_404).
+error_404() -> ale:view_module(default_v_error_404).
 
-error_500(_Type, _Reason) ->
-    ale:yaws(status, 500),
-    ale:view_module(default_v_error_500).
+error_500(_Type, _Reason) -> ale:view_module(default_v_error_500).
 
 init([]) ->
     ChildSpec = {chat, {s_chat, start_link, []}, permanent, brutal_kill, worker, [s_chat]},
