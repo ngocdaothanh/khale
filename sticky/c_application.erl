@@ -12,8 +12,7 @@
 %% function to give the application a chance to prepare things. The return value
 %% should be {ok, SupPid} or ignore.
 %%
-%% SC   : see yaws.hrl
-%% Nodes: list of nodes as specified in yaws.conf
+%% SC: see yaws.hrl
 start(_SC) ->
     m_helper:start(),
     supervisor:start_link({local, ?SUP}, ?MODULE, []).
