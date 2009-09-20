@@ -4,6 +4,7 @@ logdir = log
 
 max_num_cached_bytes = 10240000  # 10MB
 max_size_cached_file = 102400    # 100KB
+cache_refresh_secs   = 0
 
 <server localhost>
   port           = 3000
