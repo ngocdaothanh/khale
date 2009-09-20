@@ -16,13 +16,13 @@ before_action() ->
 
 more() ->
     Now1 = ale:params(now),
-    Now2 = h_application:string_to_now(Now1),
+    Now2 = h_app:string_to_now(Now1),
     case s_chat:subscribe(self(), Now2) of
         {NumUsers, Msgs, Now3} ->
             Data = {struct, [
                 {numUsers, NumUsers},
                 {msgs, {array, Msgs}},
-                {now, h_application:now_to_string(Now3)}
+                {now, h_app:now_to_string(Now3)}
             ]},
             ale:yaws(content, "application/json", json:encode(Data));
 
@@ -32,7 +32,7 @@ more() ->
                     Data = {struct, [
                         {numUsers, NumUsers2},
                         {msgs, {array, [Msg]}},
-                        {now, h_application:now_to_string(Now3)}
+                        {now, h_app:now_to_string(Now3)}
                     ]},
                     ale:yaws(content, "application/json", json:encode(Data))
             after ?TIMEOUT ->

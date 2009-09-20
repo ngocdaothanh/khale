@@ -34,7 +34,7 @@ render() ->
                 {script, [{type, "text/javascript"}, {src, "/static/date_picker/date.js"}]},
                 {script, [{type, "text/javascript"}, {src, "/static/date_picker/date_picker.js"}]},
                 {script, [{type, "text/javascript"}, {src, "/static/tiny_mce/tiny_mce.js"}]},
-                {script, [{type, "text/javascript"}, {src, "/static/js/application.js"}]},
+                {script, [{type, "text/javascript"}, {src, "/static/js/app.js"}]},
 
                 '$heads'
             ]},
@@ -72,15 +72,15 @@ render() ->
     end, ehtmle),
 
     T = yaws_api:ehtml_apply(E, [
-        {title_in_head,      h_application:title_in_head()},
+        {title_in_head,      h_app:title_in_head()},
         {heads,              ale:app(heads)},
-        {flash,              h_application:flash()},
-        {title_in_body,      h_application:title_in_body()},
+        {flash,              h_app:flash()},
+        {title_in_body,      h_app:title_in_body()},
         {content_for_layout, ale:app(content_for_layout)},
-        {left1,              h_application:region(left1)},
-        {right1,             h_application:region(right1)},
-        {left2,              h_application:region(left2)},
-        {right2,             h_application:region(right2)},
+        {left1,              h_app:region(left1)},
+        {right1,             h_app:region(right1)},
+        {left2,              h_app:region(left2)},
+        {right2,             h_app:region(right2)},
         {scripts,            ale:app(scripts)}
     ]),
     [

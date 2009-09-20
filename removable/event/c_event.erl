@@ -31,7 +31,7 @@ edit() ->
 update() ->
     Id = list_to_integer(ale:params(id)),
     Event = m_event:find(Id),
-    case h_application:editable(Event) of
+    case h_app:editable(Event) of
         true  -> create_or_update(update);
         false -> {struct, [{error, ?T("Please login.")}]}
     end.
@@ -50,9 +50,9 @@ create_or_update(Which) ->
             ErrorOrAtomic = case Which of
                 create ->
                     Event = #event{
-                        user_id = h_application:user_id(), ip = ale:ip(),
+                        user_id = h_app:user_id(), ip = ale:ip(),
                         name = ale:params(name), invitation = ale:params(invitation),
-                        deadline_on = h_application:parse_date(ale:params(deadline_on))
+                        deadline_on = h_app:parse_date(ale:params(deadline_on))
                     },
                     m_event:create(Event, TagNames);
 
@@ -62,7 +62,7 @@ create_or_update(Which) ->
                     Event2 = Event#event{
                         ip = ale:ip(),
                         name = ale:params(name), invitation = ale:params(invitation),
-                        deadline_on = h_application:parse_date(ale:params(deadline_on))
+                        deadline_on = h_app:parse_date(ale:params(deadline_on))
                     },
                     m_event:update(Event2, TagNames)
             end,

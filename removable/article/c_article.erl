@@ -31,7 +31,7 @@ edit() ->
 update() ->
     Id = list_to_integer(ale:params(id)),
     Article = m_article:find(Id),
-    case h_application:editable(Article) of
+    case h_app:editable(Article) of
         true  -> create_or_update(update);
         false -> {struct, [{error, ?T("Please login.")}]}
     end.
@@ -50,7 +50,7 @@ create_or_update(Which) ->
             ErrorOrAtomic = case Which of
                 create ->
                     Article = #article{
-                        user_id = h_application:user_id(), ip = ale:ip(),
+                        user_id = h_app:user_id(), ip = ale:ip(),
                         title = ale:params(title), abstract = ale:params(abstract), body = ale:params(body)
                     },
                     m_article:create(Article, TagNames);

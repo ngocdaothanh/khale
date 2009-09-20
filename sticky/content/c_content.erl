@@ -49,7 +49,7 @@ previews_or_titles(View) ->
     TagName = ale:params(tag_name),
     ThreadUpdatedAt = case ale:params(thread_updated_at) of
         undefined -> undefined;
-        YMDHMiS   -> h_application:string_to_timestamp(YMDHMiS)
+        YMDHMiS   -> h_app:string_to_timestamp(YMDHMiS)
     end,
 
     Contents = m_content:more(TagName, ThreadUpdatedAt),

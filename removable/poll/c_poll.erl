@@ -29,9 +29,9 @@ create() ->
 
         true ->
             Poll = #poll{
-                user_id = h_application:user_id(), ip = ale:ip(),
+                user_id = h_app:user_id(), ip = ale:ip(),
                 question = ale:params(question), choices = ale:params("choices[]"),
-                deadline_on = h_application:parse_date(ale:params(deadline_on))
+                deadline_on = h_app:parse_date(ale:params(deadline_on))
             },
             case m_poll:create(Poll, ale:params(tags)) of
                 {error, Error}  -> {struct, [{error, Error}]};

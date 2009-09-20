@@ -40,7 +40,7 @@ render_all(ContentType, ContentId) ->
 
 render_one(Discussion, Editable) ->
     Id = integer_to_list(Discussion#discussion.id),
-    Edit = case Editable andalso h_application:editable(Discussion) of
+    Edit = case Editable andalso h_app:editable(Discussion) of
         false -> [];
         true  -> [{a, [{href, "#"}, {onclick, ["discussionDelete(", Id, "); return false"]}], ?T("Delete")}]
     end,
@@ -48,7 +48,7 @@ render_one(Discussion, Editable) ->
     User = m_user:find(Discussion#discussion.user_id),
     {li, [{id, ["discussion_", Id]}, {class, discussion}], [
         h_user:render(User, [
-            h_application:render_timestamp(Discussion#discussion.created_at, Discussion#discussion.updated_at) |
+            h_app:render_timestamp(Discussion#discussion.created_at, Discussion#discussion.updated_at) |
             Edit
         ]),
         Discussion#discussion.body

@@ -1,4 +1,4 @@
--module(c_application).
+-module(c_app).
 
 -compile(export_all).
 

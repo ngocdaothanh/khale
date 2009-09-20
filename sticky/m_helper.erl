@@ -13,7 +13,7 @@ migrate() ->
     apply_to_all("^m_.*\.beam$", migrate),
     mnesia:stop().
 
-%% Called by c_application on application start.
+%% Called by c_app on application start.
 start() -> mnesia:start().
 
 %-------------------------------------------------------------------------------

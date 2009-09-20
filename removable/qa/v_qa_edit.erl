@@ -11,7 +11,7 @@ render() ->
     ale:app(title_in_body, Title),
 
     Qa = ale:app(qa),
-    case h_application:editable(Qa) of
+    case h_app:editable(Qa) of
         false -> {p, [], ?T("Please login.")};
 
         true ->

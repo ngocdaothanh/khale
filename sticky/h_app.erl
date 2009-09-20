@@ -1,4 +1,4 @@
--module(h_application).
+-module(h_app).
 
 -compile(export_all).
 

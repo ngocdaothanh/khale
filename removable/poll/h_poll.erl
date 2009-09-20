@@ -43,7 +43,7 @@ render_poll(Poll, Votable) ->
 
     Deadline = case Poll#poll.deadline_on of
         undefined -> "";
-        X         -> {p, [], ?TF("Last votable date: ~s", [?TFB(":month/:day/:year", h_application:date_binding(X))])}
+        X         -> {p, [], ?TF("Last votable date: ~s", [?TFB(":month/:day/:year", h_app:date_binding(X))])}
     end,
 
     Sum = lists:sum(Poll#poll.votes),
@@ -79,7 +79,7 @@ render_header(User, Poll) ->
     [
         h_user:render(User, [
             h_tag:render_tags(poll, Poll#poll.id),
-            h_application:render_timestamp(Poll#poll.created_at)
+            h_app:render_timestamp(Poll#poll.created_at)
         ])
     ].
 

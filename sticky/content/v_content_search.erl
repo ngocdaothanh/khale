@@ -10,7 +10,7 @@ render() ->
     ale:app(title_in_body, Title),
 
     Contents = ale:app(contents),
-    h_application:more(
+    h_app:more(
         Contents, undefined,
         fun(Content) ->
             {li, [], {a, [{href, h_content:show_path(Content)}], h_content:render_title(Content)}}

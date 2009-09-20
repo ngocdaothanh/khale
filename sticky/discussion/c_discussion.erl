@@ -30,7 +30,7 @@ create() ->
             ContentType = list_to_existing_atom(ale:params(content_type)),
             ContentId   = list_to_integer(ale:params(content_id)),
             Body        = esan:san(ale:params(body)),
-            UserId      = h_application:user_id(),
+            UserId      = h_app:user_id(),
             Ip          = ale:ip(),
 
             Discussion = #discussion{

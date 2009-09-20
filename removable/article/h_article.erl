@@ -21,14 +21,14 @@ render_header(User, Article) ->
         true  -> ?TF("~p views", [Article#article.views]);
         false -> undefined
     end,
-    Edit = case h_application:editable(Article) of
+    Edit = case h_app:editable(Article) of
         true  -> {a, [{href, ale:path(article, edit, [Article#article.id])}], ?T("Edit")};
         false -> undefined
     end,
     [
         h_user:render(User, [
             h_tag:render_tags(article, Article#article.id),
-            h_application:render_timestamp(Article#article.created_at, Article#article.updated_at),
+            h_app:render_timestamp(Article#article.created_at, Article#article.updated_at),
             Views,
             Edit
         ])

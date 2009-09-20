@@ -24,7 +24,7 @@ render(Method, Action, Qa, Tags) ->
 
         h_tag:render_tag_selection(Tags),
 
-        h_application:render_mathcha(),
+        h_app:render_mathcha(),
 
         {input, [{type, submit}, {class, button}, {value, ?T("Save")}]}, " ", Cancel
     ]}.

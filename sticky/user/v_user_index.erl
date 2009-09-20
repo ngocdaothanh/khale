@@ -10,7 +10,7 @@ render() ->
     ale:app(title_in_body, Title),
 
     Users = ale:app(users),
-    h_application:more(
+    h_app:more(
         Users, users,
         fun(User) -> {li, [], h_user:render(User)} end,
         fun(LastUser) -> ale:path(index, [LastUser#user.id]) end

@@ -11,7 +11,7 @@ render_tag_selection(Tags) ->
     TagNames = [yaws_api:htmlize(Tag#tag.name) || Tag <- Tags],
     [
         {span, [{class, label}], ?T("Tags (separated by comma)")},
-        {input, [{type, text}, {class, textbox}, {name, tags}, {value, h_application:join(TagNames, ", ")}]},
+        {input, [{type, text}, {class, textbox}, {name, tags}, {value, h_app:join(TagNames, ", ")}]},
 
         {ul, [],
             [{li, [],
@@ -33,5 +33,5 @@ render_tags(ContentType, ContentId) ->
                 end,
                 Tags
             ),
-            h_application:join(Links, ", ")
+            h_app:join(Links, ", ")
     end.

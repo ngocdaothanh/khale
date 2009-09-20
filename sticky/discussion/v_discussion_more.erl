@@ -9,7 +9,7 @@ render() ->
     ContentType = ale:app(content_type),
     ContentId   = ale:app(content_id),
     Discussions = ale:app(discussions),
-    h_application:more(
+    h_app:more(
         Discussions, discussions,
         fun(Discussion)     -> h_discussion:render_one(Discussion, true) end,
         fun(LastDiscussion) -> ale:path(discussion, more, [ContentType, ContentId, LastDiscussion#discussion.id]) end

@@ -23,11 +23,11 @@ render(Method, Action, Event, Tags) ->
         {textarea, [{name, invitation}], Event#event.invitation},
 
         {span, [{class, label}], ?T("Registration deadline")},
-        {input, [{type, text}, {class, "textbox quarter date_picker"}, {name, deadline_on}, {value, h_application:render_date(Event#event.deadline_on)}]},
+        {input, [{type, text}, {class, "textbox quarter date_picker"}, {name, deadline_on}, {value, h_app:render_date(Event#event.deadline_on)}]},
 
         h_tag:render_tag_selection(Tags),
 
-        h_application:render_mathcha(),
+        h_app:render_mathcha(),
 
         {input, [{type, submit}, {class, button}, {value, ?T("Save")}]}, " ", Cancel
     ]}.

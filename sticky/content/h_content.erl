@@ -16,14 +16,14 @@ show_path(Content) ->
     ale:path(Type, show, [Id]).
 
 render_titles_with_more(Contents) ->
-    h_application:more(
+    h_app:more(
         Contents, undefined,
         fun(Content) ->
             {li, [], {a, [{href, h_content:show_path(Content)}], h_content:render_title(Content)}}
         end,
         fun(LastContent) ->
             ThreadUpdatedAt1 = m_content:thread_updated_at(LastContent),
-            ThreadUpdatedAt2 = h_application:timestamp_to_string(ThreadUpdatedAt1),
+            ThreadUpdatedAt2 = h_app:timestamp_to_string(ThreadUpdatedAt1),
             case ale:params(tag_name) of
                 undefined -> ale:path(content, titles, [ThreadUpdatedAt2]);
                 TagName   -> ale:path(content, titles, [TagName, ThreadUpdatedAt2])

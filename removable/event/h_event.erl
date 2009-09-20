@@ -21,14 +21,14 @@ render_header(User, Event) ->
         true  -> ?TF("~p views", [Event#event.views]);
         false -> undefined
     end,
-    Edit = case h_application:editable(Event) of
+    Edit = case h_app:editable(Event) of
         true  -> {a, [{href, ale:path(event, edit, [Event#event.id])}], ?T("Edit")};
         false -> undefined
     end,
     [
         h_user:render(User, [
             h_tag:render_tags(event, Event#event.id),
-            h_application:render_timestamp(Event#event.created_at, Event#event.updated_at),
+            h_app:render_timestamp(Event#event.created_at, Event#event.updated_at),
             Views,
             Edit
         ])

@@ -31,7 +31,7 @@ edit() ->
 update() ->
     Id = list_to_integer(ale:params(id)),
     Qa = m_qa:find(Id),
-    case h_application:editable(Qa) of
+    case h_app:editable(Qa) of
         true  -> create_or_update(update);
         false -> {struct, [{error, ?T("Please login.")}]}
     end.
@@ -50,7 +50,7 @@ create_or_update(Which) ->
             ErrorOrAtomic = case Which of
                 create ->
                     Qa = #qa{
-                        user_id = h_application:user_id(), ip = ale:ip(),
+                        user_id = h_app:user_id(), ip = ale:ip(),
                         question = ale:params(question), detail = ale:params(detail)
                     },
                     m_qa:create(Qa, TagNames);
