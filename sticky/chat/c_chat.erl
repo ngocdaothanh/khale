@@ -12,7 +12,7 @@
 
 before_action() ->
     ale:view(undefined),
-    false.
+    true.
 
 more() ->
     Now1 = ale:params(now),

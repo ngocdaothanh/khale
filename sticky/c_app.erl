@@ -24,7 +24,7 @@ before_action() ->
         true  -> ok;
         false -> ale:layout_module(default_v_layout)
     end,
-    false.
+    true.
 
 error_404() -> ale:view_module(default_v_error_404).
 
