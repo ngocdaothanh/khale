@@ -9,7 +9,7 @@ cache_refresh_secs   = 0
 <server localhost>
   port           = 3000
   listen         = 0.0.0.0
-  listen_backlog = 100
+  listen_backlog = 128
 
   deflate = true
 
