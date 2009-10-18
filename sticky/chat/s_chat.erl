@@ -1,5 +1,9 @@
-%%% Anonymous chat implemented using long polling. Forever frame was not chosen
-%%% mainly because the browser displays "Loading..." status and if the use
+%%% Anonymous single web chat room:
+%%% * Users only care about chat messages and relative number of online users.
+%%% * There is only one room (lobby).
+%%%
+%%% Long polling Comet is chosen. Forever frame was not chosen because the
+%%% browser would display the ugly "Loading..." status, and if the use
 %%% clicks Stop button the frame is stopped.
 %%%
 %%% See:
@@ -9,8 +13,10 @@
 %%% * http://cometdaily.com/2007/11/16/more-on-long-polling/
 %%% * http://cometdaily.com/2007/12/18/latency-long-polling-vs-forever-frame/
 %%%
-%%% Anonymous chat: users only care about chat messages and the current number
-%%% of online users.
+%%% Existing clients are not notified when a client leaves or enters the chat
+%%% room. This is to avoid continuos Ajax connection disconnection. The reason
+%%% is because of the nature of HTTP connections: only when "keep-alive" is
+%%% specified, the connection may be CLOSED on Comet reply.
 %%%
 %%% This module is tightly coupled with b_chat and c_chat.
 -module(s_chat).
@@ -59,10 +65,17 @@ handle_call(msgs, _From, State = #state{msg_now_list = MsgNowList, pids = Pids})
     {Msgs, Now} = msgs(MsgNowList, {0, 0, 0}),
     {reply, {length(Pids), Msgs, Now}, State};
 
+%% See comment about CLOSED on top.
 handle_call({subscribe, Pid, Now}, _From, State = #state{msg_now_list = MsgNowList, pids = Pids}) ->
-    link(Pid),
-    Pids2 = [Pid | Pids],
+    Pids2 = case lists:member(Pid, Pids) of
+        false ->
+            link(Pid),
+            [Pid | Pids];
+
+        true -> Pids
+    end,
     NumUsers = length(Pids2),
+
     {Reply, State2} = case msgs(MsgNowList, Now) of
         {[], _}      -> {NumUsers, State#state{pids = Pids2}};
         {Msgs, Now2} -> {{NumUsers, Msgs, Now2}, State}
@@ -70,9 +83,10 @@ handle_call({subscribe, Pid, Now}, _From, State = #state{msg_now_list = MsgNowLi
     {reply, Reply, State2}.
 
 handle_cast({publish, Msg}, State = #state{msg_now_list = MsgNowList, pids = Pids}) ->
-    Now = now(),
+    NumUsers = length(Pids),
+    Now      = now(),
     lists:foreach(
-        fun(Pid) -> Pid ! {chat, length(Pids), Msg, Now} end,
+        fun(Pid) -> Pid ! {chat, NumUsers, Msg, Now} end,
         Pids
     ),
 
@@ -85,8 +99,10 @@ handle_cast({publish, Msg}, State = #state{msg_now_list = MsgNowList, pids = Pid
     end,
     {noreply, State#state{msg_now_list = MsgNowList2 ++ [{Msg, Now}], pids = []}};
 
+%% See comment about CLOSED on top.
 handle_cast({unsubscribe, Pid}, State = #state{pids = Pids}) ->
-    {noreply, State#state{pids = Pids -- [Pid]}}.
+    Pids2 = Pids -- [Pid],
+    {noreply, State#state{pids = Pids2}}.
 
 handle_info({'EXIT', Pid, _Reason}, State) -> handle_cast({unsubscribe, Pid}, State).
 

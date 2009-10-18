@@ -8,7 +8,8 @@
 -compile(export_all).
 
 -include("sticky.hrl").
--define(TIMEOUT, 60000).
+
+-define(TIMEOUT, 100*1000).
 
 before_action() ->
     ale:view(undefined),
@@ -27,6 +28,12 @@ more() ->
             ale:yaws(content, "application/json", json:encode(Data));
 
         NumUsers ->
+            % Set socket to active mode to capture tcp_closed message, so that
+            % we can actively detect client disconnection
+            Arg  = ale:arg(),
+            Sock = Arg#arg.clisock,
+            inet:setopts(Sock, [{active, once}]),
+
             receive
                 {chat, NumUsers2, Msg, Now3} ->
                     Data = {struct, [
@@ -34,9 +41,17 @@ more() ->
                         {msgs, {array, [Msg]}},
                         {now, h_app:now_to_string(Now3)}
                     ]},
-                    ale:yaws(content, "application/json", json:encode(Data))
+                    ale:yaws(content, "application/json", json:encode(Data));
+
+                {chat, NumUsers2} ->
+                    Data = {struct, [{numUsers, NumUsers2}]},
+                    ale:yaws(content, "application/json", json:encode(Data));
+
+                % Typically {tcp_closed, Sock}
+                _ ->
+                    s_chat:unsubscribe(self()),
+                    ale:yaws(content, "application/json", "{}")
             after ?TIMEOUT ->
-                s_chat:unsubscribe(self()),
                 Data = {struct, [{numUsers, NumUsers}]},
                 ale:yaws(content, "application/json", json:encode(Data))
             end
